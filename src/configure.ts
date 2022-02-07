@@ -4,7 +4,6 @@ import { setCurrentInvoke } from './utils/current-invoke';
 import { getEventSource } from './event-sources';
 import { getEventSourceNameBasedOnEvent } from './event-sources/utils';
 import { getFramework } from './frameworks';
-import { ConfigureParams } from './interfaces/configure-params';
 import {
   forwardRequestToNodeServer,
   respondToEventSourceWithError,

@@ -1,7 +1,7 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
 import http, { IncomingMessage, OutgoingHttpHeaders } from 'http';
 import { Socket } from 'net';
-import { NO_OP } from '../utils/no-op';
+import { NO_OP } from '../core';
 
 const headerEnd = '\r\n\r\n';
 
