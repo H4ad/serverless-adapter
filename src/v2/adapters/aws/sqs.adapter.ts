@@ -4,6 +4,7 @@ import { Context, SQSEvent } from 'aws-lambda';
 import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
 import {
   EmptyResponse,
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
   IEmptyResponse,
 } from '../../core';
@@ -11,15 +12,34 @@ import {
 //#endregion
 
 /**
+ * The options to customize the {@link SQSAdapter}
+ */
+export interface SQSAdapterOptions {
+  /**
+   * The path that will be used to create a request to be forwarded to the framework.
+   *
+   * @default /sqs
+   */
+  sqsForwardPath?: string;
+
+  /**
+   * The http method that will be used to create a request to be forwarded to the framework.
+   *
+   * @default POST
+   */
+  sqsForwardMethod?: string;
+}
+
+/**
  * The adapter to handle requests from AWS SQS.
+ *
+ * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html Event Reference}
  *
  * @example```typescript
  * const sqsForwardPath = '/your/route/sqs'; // default /sqs
  * const sqsForwardMethod = 'POST'; // default POST
- * const adapter = new SQSAdapter(sqsForwardPath, sqsForwardMethod);
+ * const adapter = new SQSAdapter({ sqsForwardPath, sqsForwardMethod });
  * ```
- *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html Event Reference}
  */
 export class SQSAdapter
   implements AdapterContract<SQSEvent, Context, IEmptyResponse>
@@ -29,13 +49,9 @@ export class SQSAdapter
   /**
    * Default constructor
    *
-   * @param sqsForwardPath The path that will be used to create a request to be forwarded to the framework. Default: /sqs
-   * @param sqsForwardMethod The http method that will be used to create a request to be forwarded to the framework. Default: POST
+   * @param options The options to customize the {@link SQSAdapter}
    */
-  constructor(
-    protected readonly sqsForwardPath: string = '/sqs',
-    protected readonly sqsForwardMethod: string = 'POST'
-  ) {}
+  constructor(protected readonly options?: SQSAdapterOptions) {}
 
   //#endregion
 
@@ -65,8 +81,11 @@ export class SQSAdapter
    * @inheritDoc
    */
   public getRequest(event: SQSEvent): AdapterRequest {
-    const path = this.sqsForwardPath;
-    const method = this.sqsForwardMethod;
+    const path = getDefaultIfUndefined(this.options?.sqsForwardPath, '/sqs');
+    const method = getDefaultIfUndefined(
+      this.options?.sqsForwardMethod,
+      'POST'
+    );
     const headers = { host: 'sqs.amazonaws.com' };
     const [body] = getEventBodyAsBuffer(JSON.stringify(event), false);
 
@@ -91,7 +110,7 @@ export class SQSAdapter
   public onErrorWhileForwarding({
     error,
     resolver,
-  }: OnErrorProps<IEmptyResponse>): void {
+  }: OnErrorProps<SQSEvent, IEmptyResponse>): void {
     resolver.fail(error);
   }
 

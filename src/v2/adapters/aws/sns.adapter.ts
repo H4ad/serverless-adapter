@@ -4,6 +4,7 @@ import { Context, SNSEvent } from 'aws-lambda';
 import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
 import {
   EmptyResponse,
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
   IEmptyResponse,
 } from '../../core';
@@ -11,15 +12,34 @@ import {
 //#endregion
 
 /**
+ * The options to customize the {@link SNSAdapter}
+ */
+export interface SNSAdapterOptions {
+  /**
+   * The path that will be used to create a request to be forwarded to the framework.
+   *
+   * @default /sns
+   */
+  snsForwardPath?: string;
+
+  /**
+   * The http method that will be used to create a request to be forwarded to the framework.
+   *
+   * @default POST
+   */
+  snsForwardMethod?: string;
+}
+
+/**
  * The adapter to handle requests from AWS SNS.
+ *
+ * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html Event Reference}
  *
  * @example```typescript
  * const snsForwardPath = '/your/route/sns'; // default /sns
  * const snsForwardMethod = 'POST'; // default POST
- * const adapter = new SNSAdapter(snsForwardPath, snsForwardMethod);
+ * const adapter = new SNSAdapter({ snsForwardPath, snsForwardMethod });
  * ```
- *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html Event Reference}
  */
 export class SNSAdapter
   implements AdapterContract<SNSEvent, Context, IEmptyResponse>
@@ -29,13 +49,9 @@ export class SNSAdapter
   /**
    * Default constructor
    *
-   * @param snsForwardPath The path that will be used to create a request to be forwarded to the framework. Default: /sns
-   * @param snsForwardMethod The http method that will be used to create a request to be forwarded to the framework. Default: POST
+   * @param options The options to customize the {@link SNSAdapter}
    */
-  constructor(
-    protected readonly snsForwardPath: string = '/sns',
-    protected readonly snsForwardMethod: string = 'POST'
-  ) {}
+  constructor(protected readonly options?: SNSAdapterOptions) {}
 
   //#endregion
 
@@ -65,8 +81,11 @@ export class SNSAdapter
    * @inheritDoc
    */
   public getRequest(event: SNSEvent): AdapterRequest {
-    const path = this.snsForwardPath;
-    const method = this.snsForwardMethod;
+    const path = getDefaultIfUndefined(this.options?.snsForwardPath, '/sqs');
+    const method = getDefaultIfUndefined(
+      this.options?.snsForwardMethod,
+      'POST'
+    );
     const headers = { host: 'sns.amazonaws.com' };
     const [body] = getEventBodyAsBuffer(JSON.stringify(event), false);
 
@@ -91,7 +110,7 @@ export class SNSAdapter
   public onErrorWhileForwarding({
     error,
     resolver,
-  }: OnErrorProps<IEmptyResponse>): void {
+  }: OnErrorProps<SNSEvent, IEmptyResponse>): void {
     resolver.fail(error);
   }
 

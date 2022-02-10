@@ -14,9 +14,12 @@
  */
 export function getPathWithQueryStringParams(
   path: string,
-  queryParams: Record<string, string | string[] | undefined>
+  queryParams: string | Record<string, string | string[] | undefined>
 ): string {
   const searchParams = new URLSearchParams();
+
+  if (typeof queryParams === 'string') return `${path}?${queryParams}`;
+
   const multiValueHeadersEntries: [string, string | string[] | undefined][] =
     Object.entries(queryParams || {});
 

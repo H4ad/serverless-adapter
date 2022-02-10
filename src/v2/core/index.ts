@@ -5,5 +5,6 @@ export * from './headers';
 export * from './is-binary';
 export * from './logger';
 export * from './no-op';
+export * from './optional';
 export * from './path';
 export * from './stream';

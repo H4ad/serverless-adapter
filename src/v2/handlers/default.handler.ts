@@ -100,6 +100,8 @@ export class DefaultHandler<
               resolver,
               respondWithErrors,
               error,
+              event,
+              log,
             });
           }
         };
@@ -321,6 +323,7 @@ export class DefaultHandler<
       headers,
       isBase64Encoded,
       response,
+      log,
     });
 
     this.onForwardResponseAdapterResponse(log, successResponse, logBody);

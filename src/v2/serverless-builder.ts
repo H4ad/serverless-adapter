@@ -24,6 +24,7 @@ import { createDefaultLogger, DEFAULT_BINARY_ENCODINGS, ILogger } from './core';
  *   .setRespondWithErrors(true)
  *   .addAdapter(new AlbAdapter())
  *   .addAdapter(new SQSAdapter())
+ *   .addAdapter(new SNSAdapter())
  *   .build();
  * ```
  */

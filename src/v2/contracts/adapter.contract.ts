@@ -20,18 +20,21 @@ export interface AdapterRequest {
 }
 
 export interface GetResponseAdapterProps<TEvent> {
-  event?: TEvent;
+  event: TEvent;
   response?: ServerlessResponse;
   statusCode: number;
-  body: any;
+  body: string;
   headers: Record<string, string | string[]>;
   isBase64Encoded: boolean;
+  log: ILogger;
 }
 
-export interface OnErrorProps<TResponse> {
+export interface OnErrorProps<TEvent, TResponse> {
+  event: TEvent;
   error: Error;
   resolver: Resolver<TResponse>;
   respondWithErrors: boolean;
+  log: ILogger;
 }
 
 /**
@@ -77,5 +80,5 @@ export interface AdapterContract<
    *
    * @note You must call resolver.fail or resolver.succeed when implementing this method.
    */
-  onErrorWhileForwarding(props: OnErrorProps<TResponse>): void;
+  onErrorWhileForwarding(props: OnErrorProps<TEvent, TResponse>): void;
 }

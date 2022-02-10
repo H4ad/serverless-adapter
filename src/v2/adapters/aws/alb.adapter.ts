@@ -131,13 +131,17 @@ export class AlbAdapter
     error,
     resolver,
     respondWithErrors,
-  }: OnErrorProps<ALBResult>): void {
+    event,
+    log,
+  }: OnErrorProps<ALBEvent, ALBResult>): void {
     const body = respondWithErrors ? error.stack : '';
     const errorResponse = this.getResponse({
+      event,
       statusCode: 500,
-      body,
+      body: body || '',
       headers: {},
       isBase64Encoded: false,
+      log,
     });
 
     resolver.succeed(errorResponse);
