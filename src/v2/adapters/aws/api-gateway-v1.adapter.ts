@@ -75,9 +75,9 @@ export class ApiGatewayV1Adapter
     const method = event.httpMethod;
     const path = this.getPathFromEvent(event);
 
-    const headers = event.multiValueHeaders
-      ? getFlattenedHeadersMap(event.multiValueHeaders, ',', true)
-      : event.headers || {};
+    const headers = event.headers
+      ? event.headers
+      : getFlattenedHeadersMap(event.multiValueHeaders, ',', true);
 
     let body: Buffer | undefined;
 
@@ -174,7 +174,9 @@ export class ApiGatewayV1Adapter
     const replaceRegex = new RegExp(`^${this.stripBasePath}`);
     const path = event.path.replace(replaceRegex, '');
 
-    const queryParams = event.multiValueQueryStringParameters;
+    const queryParams = event.headers
+      ? event.queryStringParameters
+      : event.multiValueQueryStringParameters;
 
     return getPathWithQueryStringParams(path, queryParams || {});
   }

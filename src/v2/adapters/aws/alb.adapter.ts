@@ -8,6 +8,7 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
@@ -15,6 +16,18 @@ import {
 } from '../../core';
 
 //#endregion
+
+/**
+ * The options to customize the {@link AlbAdapter}
+ */
+export interface AlbAdapterOptions {
+  /**
+   * Strip base path for custom domains
+   *
+   * @default ''
+   */
+  stripBasePath?: string;
+}
 
 /**
  * The adapter to handle requests from AWS ALB
@@ -34,9 +47,9 @@ export class AlbAdapter
   /**
    * Default constructor
    *
-   * @param stripBasePath Strip base path for custom domains
+   * @param options The options to customize the {@link AlbAdapter}
    */
-  constructor(protected readonly stripBasePath: string = '') {}
+  constructor(protected readonly options?: AlbAdapterOptions) {}
 
   //#endregion
 
@@ -55,7 +68,7 @@ export class AlbAdapter
   public canHandle(event: unknown): event is ALBEvent {
     const albEvent = event as Partial<ALBEvent>;
 
-    return !!(albEvent?.requestContext && albEvent?.requestContext?.elb);
+    return !!(albEvent?.requestContext && albEvent.requestContext.elb);
   }
 
   /**
@@ -67,7 +80,7 @@ export class AlbAdapter
 
     const headers = event.multiValueHeaders
       ? getFlattenedHeadersMap(event.multiValueHeaders, ',', true)
-      : event.headers || {};
+      : event.headers!;
 
     let body: Buffer | undefined;
 
@@ -107,11 +120,11 @@ export class AlbAdapter
     isBase64Encoded,
     statusCode,
   }: GetResponseAdapterProps<ALBEvent>): ALBResult {
-    const multiValueHeaders = !event?.headers
+    const multiValueHeaders = !event.headers
       ? getMultiValueHeadersMap(responseHeaders)
       : undefined;
 
-    const headers = event?.headers
+    const headers = event.headers
       ? getFlattenedHeadersMap(responseHeaders)
       : undefined;
 
@@ -134,11 +147,11 @@ export class AlbAdapter
     event,
     log,
   }: OnErrorProps<ALBEvent, ALBResult>): void {
-    const body = respondWithErrors ? error.stack : '';
+    const body = respondWithErrors ? error.stack || '' : '';
     const errorResponse = this.getResponse({
       event,
       statusCode: 500,
-      body: body || '',
+      body,
       headers: {},
       isBase64Encoded: false,
       log,
@@ -157,11 +170,16 @@ export class AlbAdapter
    * @param event The event sent by serverless
    */
   protected getPathFromEvent(event: ALBEvent): string {
-    // NOTE: Strip base path for custom domains
-    const replaceRegex = new RegExp(`^${this.stripBasePath}`);
+    const stripBasePath = getDefaultIfUndefined(
+      this.options?.stripBasePath,
+      ''
+    );
+    const replaceRegex = new RegExp(`^${stripBasePath}`);
     const path = event.path.replace(replaceRegex, '');
 
-    const queryParams = event.multiValueQueryStringParameters;
+    const queryParams = event.headers
+      ? event.queryStringParameters
+      : event.multiValueQueryStringParameters;
 
     return getPathWithQueryStringParams(path, queryParams || {});
   }
