@@ -9,6 +9,7 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getPathWithQueryStringParams,
@@ -17,13 +18,25 @@ import {
 //#endregion
 
 /**
+ * The options to customize the {@link ApiGatewayV2Adapter}
+ */
+export interface ApiGatewayV2Options {
+  /**
+   * Strip base path for custom domains
+   *
+   * @default ''
+   */
+  stripBasePath?: string;
+}
+
+/**
  * The adapter to handle requests from AWS Api Gateway V2
  *
  * As per {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html know issues}, we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
  *
  * @example```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
- * const adapter = new ApiGatewayV2Adapter(stripBasePath);
+ * const adapter = new ApiGatewayV2Adapter({ stripBasePath });
  * ```
  *
  * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html Event Reference}
@@ -41,9 +54,9 @@ export class ApiGatewayV2Adapter
   /**
    * Default constructor
    *
-   * @param stripBasePath Strip base path for custom domains
+   * @param options The options to customize the {@link ApiGatewayV2Adapter}
    */
-  constructor(protected readonly stripBasePath: string = '') {}
+  constructor(protected readonly options?: ApiGatewayV2Options) {}
 
   //#endregion
 
@@ -176,8 +189,11 @@ export class ApiGatewayV2Adapter
    * @param event The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEventV2): string {
-    // NOTE: Strip base path for custom domains
-    const replaceRegex = new RegExp(`^${this.stripBasePath}`);
+    const stripBasePath = getDefaultIfUndefined(
+      this.options?.stripBasePath,
+      ''
+    );
+    const replaceRegex = new RegExp(`^${stripBasePath}`);
     const path = event.rawPath.replace(replaceRegex, '');
 
     const queryParams = event.rawQueryString;

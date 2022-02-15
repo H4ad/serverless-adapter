@@ -34,7 +34,7 @@ export interface AlbAdapterOptions {
  *
  * @example```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
- * const adapter = new AlbAdapter(stripBasePath);
+ * const adapter = new AlbAdapter({ stripBasePath });
  * ```
  *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html Event Reference}

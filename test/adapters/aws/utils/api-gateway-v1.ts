@@ -1,11 +1,15 @@
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyEventQueryStringParameters,
+} from 'aws-lambda/trigger/api-gateway-proxy';
 import { getMultiValueHeadersMap } from '../../../../src/v2/core';
 
 export function createApiGatewayV1(
   httpMethod: string,
   path: string,
   body?: Record<string, unknown>,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
+  queryParams?: APIGatewayProxyEventQueryStringParameters
 ): APIGatewayProxyEvent {
   return {
     resource: '/{proxy+}',
@@ -66,8 +70,9 @@ export function createApiGatewayV1(
       'X-Forwarded-Proto': ['https'],
       ...(headers && getMultiValueHeadersMap(headers)),
     },
-    queryStringParameters: null,
-    multiValueQueryStringParameters: null,
+    queryStringParameters: queryParams || null,
+    multiValueQueryStringParameters:
+      (queryParams && getMultiValueHeadersMap(queryParams)) || null,
     pathParameters: {
       path: path.replace(/^\//, ''),
     },
@@ -110,7 +115,7 @@ export function createApiGatewayV1(
       domainName: 'xxxxxx.execute-api.us-east-1.amazonaws.com',
       apiId: 'xxxxxx',
     },
-    body: '',
+    body: (body && JSON.stringify(body)) || null,
     isBase64Encoded: false,
   };
 }

@@ -1,0 +1,63 @@
+describe(Adapter.name, () => {
+  let adapter!: Adapter;
+
+  beforeEach(() => {
+    adapter = new Adapter();
+  });
+
+  describe('getAdapterName', () => {
+    it('should be the same name of the class', () => {
+      expect(adapter.getAdapterName()).toBe(Adapter.name);
+    });
+  });
+
+  describe('canHandle', () => {
+    it('should return true when is valid event', () => {
+      const events = allExampleEvents.filter(
+        ([adapterName]) => adapterName === adapter.getAdapterName()
+      )!;
+
+      for (const [, event] of events) {
+        expect(adapter.canHandle(event)).toBe(true);
+      }
+    });
+
+    it('should return false when is not a valid event', () => {
+      const events = allExampleEvents.filter(
+        ([adapterName]) => adapterName !== adapter.getAdapterName()
+      );
+
+      for (const [, event] of events) {
+        expect(adapter.canHandle(event)).toBe(false);
+      }
+    });
+  });
+
+  describe('getRequest', () => {
+    it('should return the correct mapping for the request', () => {
+      const method = 'PUT';
+      const path = '/events';
+      const body = { name: 'H4ad Event' };
+    });
+  });
+
+  describe('getResponse', () => {
+    it('should return the correct mapping for the response', () => {
+      const method = 'PUT';
+      const path = '/events';
+      const requestBody = { name: 'H4ad Event' };
+
+      const resultBody = '{"success":true}';
+      const resultStatusCode = 200;
+      const resultIsBase64Encoded = false;
+    });
+  });
+
+  describe('onErrorWhileForwarding', () => {
+    it('should resolver call succeed', () => {
+      const method = 'GET';
+      const path = '/events';
+      const requestBody = undefined;
+    });
+  });
+});

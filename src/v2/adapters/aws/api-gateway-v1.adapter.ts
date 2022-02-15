@@ -9,13 +9,25 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
-  getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
 } from '../../core';
 
 //#endregion
+
+/**
+ * The options to customize the {@link ApiGatewayV1Adapter}
+ */
+export interface ApiGatewayV1Options {
+  /**
+   * Strip base path for custom domains
+   *
+   * @default ''
+   */
+  stripBasePath?: string;
+}
 
 /**
  * The adapter to handle requests from AWS Api Gateway V1
@@ -26,7 +38,7 @@ import {
  *
  * @example```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
- * const adapter = new ApiGatewayV1Adapter(stripBasePath);
+ * const adapter = new ApiGatewayV1Adapter({ stripBasePath });
  * ```
  *
  * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html Event Reference}
@@ -40,9 +52,9 @@ export class ApiGatewayV1Adapter
   /**
    * Default constructor
    *
-   * @param stripBasePath Strip base path for custom domains
+   * @param options The options to customize the {@link ApiGatewayV1Adapter}
    */
-  constructor(protected readonly stripBasePath: string = '') {}
+  constructor(protected readonly options?: ApiGatewayV1Options) {}
 
   //#endregion
 
@@ -59,12 +71,19 @@ export class ApiGatewayV1Adapter
    * @inheritDoc
    */
   public canHandle(event: unknown): event is APIGatewayProxyEvent {
-    const apiGatewayEvent = event as Partial<APIGatewayProxyEvent> & {
-      version?: string;
+    const partialEventV1 = event as Partial<APIGatewayProxyEvent> & {
+      version?: '2.0';
     };
 
     return !!(
-      apiGatewayEvent?.requestContext && apiGatewayEvent.version === '1.0'
+      partialEventV1?.requestContext &&
+      partialEventV1.version !== '2.0' &&
+      partialEventV1.headers &&
+      partialEventV1.multiValueHeaders &&
+      (partialEventV1.queryStringParameters ===
+        partialEventV1.multiValueQueryStringParameters ||
+        (partialEventV1.queryStringParameters &&
+          partialEventV1.multiValueQueryStringParameters))
     );
   }
 
@@ -73,11 +92,8 @@ export class ApiGatewayV1Adapter
    */
   public getRequest(event: APIGatewayProxyEvent): AdapterRequest {
     const method = event.httpMethod;
+    const headers = event.headers;
     const path = this.getPathFromEvent(event);
-
-    const headers = event.headers
-      ? event.headers
-      : getFlattenedHeadersMap(event.multiValueHeaders, ',', true);
 
     let body: Buffer | undefined;
 
@@ -91,12 +107,7 @@ export class ApiGatewayV1Adapter
       headers['content-length'] = String(contentLength);
     }
 
-    const remoteAddress =
-      (event &&
-        event.requestContext &&
-        event.requestContext.identity &&
-        event.requestContext.identity.sourceIp) ||
-      '';
+    const remoteAddress = event.requestContext.identity.sourceIp;
 
     return {
       method,
@@ -122,11 +133,20 @@ export class ApiGatewayV1Adapter
     const transferEncodingHeader: string[] =
       multiValueHeaders['transfer-encoding'];
 
-    if (
-      (transferEncodingHeader && transferEncodingHeader.includes('chunked')) ||
-      response?.chunkedEncoding
-    ) {
-      throw new Error('chunked encoding is not supported by API Gateway');
+    const hasTransferEncodingChunked =
+      transferEncodingHeader &&
+      transferEncodingHeader.some(value => value.includes('chunked'));
+
+    if (hasTransferEncodingChunked) {
+      throw new Error(
+        'chunked encoding in headers is not supported by API Gateway V1'
+      );
+    }
+
+    if (response?.chunkedEncoding) {
+      throw new Error(
+        'chunked encoding in response is not supported by API Gateway V1'
+      );
     }
 
     return {
@@ -170,15 +190,16 @@ export class ApiGatewayV1Adapter
    * @param event The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEvent): string {
-    // NOTE: Strip base path for custom domains
-    const replaceRegex = new RegExp(`^${this.stripBasePath}`);
+    const stripBasePath = getDefaultIfUndefined(
+      this.options?.stripBasePath,
+      ''
+    );
+    const replaceRegex = new RegExp(`^${stripBasePath}`);
     const path = event.path.replace(replaceRegex, '');
 
-    const queryParams = event.headers
-      ? event.queryStringParameters
-      : event.multiValueQueryStringParameters;
+    const queryParams = event.queryStringParameters || {};
 
-    return getPathWithQueryStringParams(path, queryParams || {});
+    return getPathWithQueryStringParams(path, queryParams);
   }
 
   //#endregion

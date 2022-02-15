@@ -29,21 +29,21 @@ describe(AlbAdapter.name, () => {
 
   describe('canHandle', () => {
     it('should return true when is valid alb event', () => {
-      const albEvents = allAWSEvents.filter(
+      const events = allAWSEvents.filter(
         ([adapterName]) => adapterName === adapter.getAdapterName()
       )!;
 
-      for (const [, albEvent] of albEvents) {
+      for (const [, albEvent] of events) {
         expect(adapter.canHandle(albEvent)).toBe(true);
       }
     });
 
     it('should return false when is not a valid alb event', () => {
-      const allEventsExceptAlb = allAWSEvents.filter(
+      const events = allAWSEvents.filter(
         ([adapterName]) => adapterName !== adapter.getAdapterName()
       );
 
-      for (const [, event] of allEventsExceptAlb) {
+      for (const [, event] of events) {
         expect(adapter.canHandle(event)).toBe(false);
       }
     });
@@ -171,14 +171,14 @@ describe(AlbAdapter.name, () => {
       const path = '/prod/events';
       const body = { name: 'H4ad Event' };
 
-      const adapter = new AlbAdapter({ stripBasePath });
+      const strippedAdapter = new AlbAdapter({ stripBasePath });
 
       const event = createAlbEvent(method, path, body);
 
       expect(event.headers).toHaveProperty('x-forwarded-for');
       expect(event.headers!['x-forwarded-for']).not.toBeInstanceOf(Array);
 
-      const result = adapter.getRequest(event);
+      const result = strippedAdapter.getRequest(event);
 
       const remoteAddress = event.headers!['x-forwarded-for'];
 
