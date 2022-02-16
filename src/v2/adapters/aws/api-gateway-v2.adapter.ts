@@ -130,11 +130,22 @@ export class ApiGatewayV2Adapter
   }: GetResponseAdapterProps<APIGatewayProxyEventV2>): APIGatewayProxyStructuredResultV2 {
     const headers = getFlattenedHeadersMap(responseHeaders);
 
-    if (
-      headers['transfer-encoding'] === 'chunked' ||
-      response?.chunkedEncoding
-    ) {
-      throw new Error('chunked encoding is not supported by API Gateway');
+    const transferEncodingHeader: string | undefined =
+      headers['transfer-encoding'];
+
+    const hasTransferEncodingChunked =
+      transferEncodingHeader && transferEncodingHeader.includes('chunked');
+
+    if (hasTransferEncodingChunked) {
+      throw new Error(
+        'chunked encoding in headers is not supported by API Gateway V1'
+      );
+    }
+
+    if (response?.chunkedEncoding) {
+      throw new Error(
+        'chunked encoding in response is not supported by API Gateway V1'
+      );
     }
 
     const cookies = headers['set-cookie'];

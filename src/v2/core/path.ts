@@ -14,16 +14,49 @@
  */
 export function getPathWithQueryStringParams(
   path: string,
-  queryParams: string | Record<string, string | string[] | undefined>
+  queryParams:
+    | string
+    | Record<string, string | string[] | undefined>
+    | undefined
+    | null
+): string {
+  if (typeof queryParams === 'string') return `${path}?${queryParams}`;
+
+  const queryParamsString = getQueryParamsStringFromRecord(queryParams);
+
+  if (!queryParamsString) {
+    return path;
+  }
+
+  return `${path}?${queryParamsString}`;
+}
+
+/**
+ * Map query params to a string with formatted query params
+ *
+ * @example```typescript
+ * const queryParams = { batata: undefined, petType: [ 'dog', 'fish' ] };
+ * const result = getQueryParamsStringFromRecord(queryParams);
+ * console.log(result);
+ * // batata=&petType=dog&petType=fish
+ * ```
+ *
+ * @param queryParamsRecord The query params record
+ */
+export function getQueryParamsStringFromRecord(
+  queryParamsRecord:
+    | Record<string, string | string[] | undefined>
+    | undefined
+    | null
 ): string {
   const searchParams = new URLSearchParams();
 
-  if (typeof queryParams === 'string') return `${path}?${queryParams}`;
-
   const multiValueHeadersEntries: [string, string | string[] | undefined][] =
-    Object.entries(queryParams || {});
+    Object.entries(queryParamsRecord || {});
 
-  if (multiValueHeadersEntries.length === 0) return path;
+  if (multiValueHeadersEntries.length === 0) {
+    return '';
+  }
 
   for (const [key, value] of multiValueHeadersEntries) {
     if (!Array.isArray(value)) {
@@ -36,5 +69,5 @@ export function getPathWithQueryStringParams(
     }
   }
 
-  return `${path}?${searchParams.toString()}`;
+  return searchParams.toString();
 }
