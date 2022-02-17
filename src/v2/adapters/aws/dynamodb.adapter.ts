@@ -70,7 +70,7 @@ export class DynamoDBAdapter
   public canHandle(event: unknown): event is DynamoDBStreamEvent {
     const dynamoDBevent = event as Partial<DynamoDBStreamEvent>;
 
-    if (!Array.isArray(dynamoDBevent.Records)) return false;
+    if (!Array.isArray(dynamoDBevent?.Records)) return false;
 
     const eventSource = dynamoDBevent.Records[0]?.eventSource;
 
@@ -89,8 +89,17 @@ export class DynamoDBAdapter
       this.options?.dynamoDBForwardMethod,
       'POST'
     );
-    const headers = { host: 'dynamodb.amazonaws.com' };
-    const [body] = getEventBodyAsBuffer(JSON.stringify(event), false);
+
+    const [body, contentLength] = getEventBodyAsBuffer(
+      JSON.stringify(event),
+      false
+    );
+
+    const headers = {
+      host: 'dynamodb.amazonaws.com',
+      'content-type': 'application/json',
+      'content-length': String(contentLength),
+    };
 
     return {
       method,

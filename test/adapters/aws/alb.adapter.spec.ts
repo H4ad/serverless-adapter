@@ -8,11 +8,11 @@ import {
   getPathWithQueryStringParams,
   ILogger,
 } from '../../../src/v2/core';
+import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
   createAlbEvent,
   createAlbEventWithMultiValueHeaders,
 } from './utils/alb-event';
-import { allAWSEvents } from './utils/events';
 
 describe(AlbAdapter.name, () => {
   let adapter!: AlbAdapter;
@@ -27,27 +27,7 @@ describe(AlbAdapter.name, () => {
     });
   });
 
-  describe('canHandle', () => {
-    it('should return true when is valid alb event', () => {
-      const events = allAWSEvents.filter(
-        ([adapterName]) => adapterName === adapter.getAdapterName()
-      )!;
-
-      for (const [, albEvent] of events) {
-        expect(adapter.canHandle(albEvent)).toBe(true);
-      }
-    });
-
-    it('should return false when is not a valid alb event', () => {
-      const events = allAWSEvents.filter(
-        ([adapterName]) => adapterName !== adapter.getAdapterName()
-      );
-
-      for (const [, event] of events) {
-        expect(adapter.canHandle(event)).toBe(false);
-      }
-    });
-  });
+  createCanHandleTestsForAdapter(() => new AlbAdapter(), undefined);
 
   describe('getRequest', () => {
     it('should return the correct mapping for the request', () => {
@@ -85,7 +65,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters!
+        event.queryStringParameters
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -125,7 +105,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.multiValueQueryStringParameters!
+        event.multiValueQueryStringParameters
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -159,7 +139,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters!
+        event.queryStringParameters
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -203,7 +183,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path.replace(stripBasePath, ''),
-        event.queryStringParameters!
+        event.queryStringParameters
       );
       expect(result).toHaveProperty('path', resultPath);
     });

@@ -10,8 +10,8 @@ import {
   ILogger,
 } from '../../../src/v2/core';
 import { ServerlessResponse } from '../../../src/v2/network';
+import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createApiGatewayV2 } from './utils/api-gateway-v2';
-import { allAWSEvents } from './utils/events';
 
 describe(ApiGatewayV2Adapter.name, () => {
   let adapter!: ApiGatewayV2Adapter;
@@ -26,27 +26,7 @@ describe(ApiGatewayV2Adapter.name, () => {
     });
   });
 
-  describe('canHandle', () => {
-    it('should return true when is valid event', () => {
-      const events = allAWSEvents.filter(
-        ([adapterName]) => adapterName === adapter.getAdapterName()
-      )!;
-
-      for (const [, event] of events) {
-        expect(adapter.canHandle(event)).toBe(true);
-      }
-    });
-
-    it('should return false when is not a valid event', () => {
-      const events = allAWSEvents.filter(
-        ([adapterName]) => adapterName !== adapter.getAdapterName()
-      );
-
-      for (const [, event] of events) {
-        expect(adapter.canHandle(event)).toBe(false);
-      }
-    });
-  });
+  createCanHandleTestsForAdapter(() => new ApiGatewayV2Adapter(), undefined);
 
   describe('getRequest', () => {
     it('should return the correct mapping for the request', () => {

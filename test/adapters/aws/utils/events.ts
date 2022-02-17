@@ -2,6 +2,7 @@ import {
   AlbAdapter,
   ApiGatewayV1Adapter,
   ApiGatewayV2Adapter,
+  DynamoDBAdapter,
 } from '../../../../src/v2/adapters/aws';
 import {
   createAlbEvent,
@@ -9,6 +10,7 @@ import {
 } from './alb-event';
 import { createApiGatewayV1 } from './api-gateway-v1';
 import { createApiGatewayV2 } from './api-gateway-v2';
+import { createDynamoDBEvent } from './dynamodb';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],
@@ -48,4 +50,5 @@ export const allAWSEvents: Array<[string, any]> = [
     createApiGatewayV2('GET', '/collaborators', undefined, {}, { page: '2' }),
   ],
   [ApiGatewayV2Adapter.name, createApiGatewayV2('collaborators', '/users')],
+  [DynamoDBAdapter.name, createDynamoDBEvent()],
 ];
