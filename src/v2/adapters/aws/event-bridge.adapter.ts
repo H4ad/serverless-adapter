@@ -77,6 +77,7 @@ export class EventBridgeAdapter
 
     // thanks to @cnuss in https://github.com/vendia/serverless-express/blob/b5da6070b8dd2fb674c1f7035dd7edfef1dc83a2/src/event-sources/utils.js#L87
     return !!(
+      eventBridgeEvent &&
       eventBridgeEvent.version &&
       eventBridgeEvent.version === '0' &&
       eventBridgeEvent.id &&
@@ -105,8 +106,17 @@ export class EventBridgeAdapter
       this.options?.eventBridgeForwardMethod,
       'POST'
     );
-    const headers = { host: 'events.amazonaws.com' };
-    const [body] = getEventBodyAsBuffer(JSON.stringify(event), false);
+
+    const [body, contentLength] = getEventBodyAsBuffer(
+      JSON.stringify(event),
+      false
+    );
+
+    const headers = {
+      host: 'events.amazonaws.com',
+      'content-type': 'application/json',
+      'content-length': String(contentLength),
+    };
 
     return {
       method,

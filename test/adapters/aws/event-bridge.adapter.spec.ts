@@ -1,5 +1,7 @@
-import { DynamoDBStreamEvent } from 'aws-lambda';
-import { DynamoDBAdapter } from '../../../src/v2/adapters/aws';
+import {
+  EventBridgeAdapter,
+  EventBridgeEventAll,
+} from '../../../src/v2/adapters/aws';
 import { Resolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
@@ -8,32 +10,35 @@ import {
   ILogger,
 } from '../../../src/v2/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
-import { createDynamoDBEvent } from './utils/dynamodb';
+import {
+  createEventBridgeEvent,
+  createEventBridgeEventSimple,
+} from './utils/event-bridge';
 
-describe(DynamoDBAdapter.name, () => {
-  let adapter!: DynamoDBAdapter;
+describe(EventBridgeAdapter.name, () => {
+  let adapter!: EventBridgeAdapter;
 
   beforeEach(() => {
-    adapter = new DynamoDBAdapter();
+    adapter = new EventBridgeAdapter();
   });
 
   describe('getAdapterName', () => {
     it('should be the same name of the class', () => {
-      expect(adapter.getAdapterName()).toBe(DynamoDBAdapter.name);
+      expect(adapter.getAdapterName()).toBe(EventBridgeAdapter.name);
     });
   });
 
-  createCanHandleTestsForAdapter(() => new DynamoDBAdapter(), undefined);
+  createCanHandleTestsForAdapter(() => new EventBridgeAdapter(), undefined);
 
   describe('getRequest', () => {
     it('should return the correct mapping for the request', () => {
-      const event = createDynamoDBEvent();
+      const event = createEventBridgeEvent();
 
       const result = adapter.getRequest(event);
 
       expect(result.method).toBe('POST');
-      expect(result.path).toBe('/dynamo');
-      expect(result.headers).toHaveProperty('host', 'dynamodb.amazonaws.com');
+      expect(result.path).toBe('/eventbridge');
+      expect(result.headers).toHaveProperty('host', 'events.amazonaws.com');
       expect(result.headers).toHaveProperty('content-type', 'application/json');
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
@@ -51,21 +56,21 @@ describe(DynamoDBAdapter.name, () => {
     });
 
     it('should return the correct mapping for the request with custom path and method', () => {
-      const event = createDynamoDBEvent();
-
       const method = 'PUT';
-      const path = '/custom/dynamo';
+      const path = '/prod/eventbridge';
 
-      const customAdapter = new DynamoDBAdapter({
-        dynamoDBForwardMethod: method,
-        dynamoDBForwardPath: path,
+      const customAdapter = new EventBridgeAdapter({
+        eventBridgeForwardMethod: method,
+        eventBridgeForwardPath: path,
       });
+
+      const event = createEventBridgeEvent();
 
       const result = customAdapter.getRequest(event);
 
       expect(result.method).toBe(method);
       expect(result.path).toBe(path);
-      expect(result.headers).toHaveProperty('host', 'dynamodb.amazonaws.com');
+      expect(result.headers).toHaveProperty('host', 'events.amazonaws.com');
       expect(result.headers).toHaveProperty('content-type', 'application/json');
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
@@ -93,10 +98,10 @@ describe(DynamoDBAdapter.name, () => {
 
   describe('onErrorWhileForwarding', () => {
     it('should resolver just call fail without get response', () => {
-      const event = createDynamoDBEvent();
+      const event = createEventBridgeEventSimple();
 
       const error = new Error('fail because I need to test.');
-      const resolver: Resolver<DynamoDBStreamEvent> = {
+      const resolver: Resolver<EventBridgeEventAll> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

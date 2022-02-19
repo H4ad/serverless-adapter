@@ -3,6 +3,7 @@ import {
   ApiGatewayV1Adapter,
   ApiGatewayV2Adapter,
   DynamoDBAdapter,
+  EventBridgeAdapter,
 } from '../../../../src/v2/adapters/aws';
 import {
   createAlbEvent,
@@ -11,6 +12,10 @@ import {
 import { createApiGatewayV1 } from './api-gateway-v1';
 import { createApiGatewayV2 } from './api-gateway-v2';
 import { createDynamoDBEvent } from './dynamodb';
+import {
+  createEventBridgeEvent,
+  createEventBridgeEventSimple,
+} from './event-bridge';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],
@@ -51,4 +56,6 @@ export const allAWSEvents: Array<[string, any]> = [
   ],
   [ApiGatewayV2Adapter.name, createApiGatewayV2('collaborators', '/users')],
   [DynamoDBAdapter.name, createDynamoDBEvent()],
+  [EventBridgeAdapter.name, createEventBridgeEvent()],
+  [EventBridgeAdapter.name, createEventBridgeEventSimple()],
 ];
