@@ -4,6 +4,7 @@ import {
   ApiGatewayV2Adapter,
   DynamoDBAdapter,
   EventBridgeAdapter,
+  SQSAdapter,
 } from '../../../../src/v2/adapters/aws';
 import {
   createAlbEvent,
@@ -16,9 +17,11 @@ import {
   createEventBridgeEvent,
   createEventBridgeEventSimple,
 } from './event-bridge';
+import { createSQSEvent } from './sqs';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],
+  ['fake-to-test-records-empty-event', { Records: [] }],
   [
     AlbAdapter.name,
     createAlbEvent('POST', '/users', { name: 'potato with banana' }),
@@ -58,4 +61,5 @@ export const allAWSEvents: Array<[string, any]> = [
   [DynamoDBAdapter.name, createDynamoDBEvent()],
   [EventBridgeAdapter.name, createEventBridgeEvent()],
   [EventBridgeAdapter.name, createEventBridgeEventSimple()],
+  [SQSAdapter.name, createSQSEvent()],
 ];

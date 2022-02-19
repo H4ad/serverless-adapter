@@ -70,7 +70,7 @@ export class SQSAdapter
   public canHandle(event: unknown): event is SQSEvent {
     const sqsEvent = event as Partial<SQSEvent>;
 
-    if (!Array.isArray(sqsEvent.Records)) return false;
+    if (!Array.isArray(sqsEvent?.Records)) return false;
 
     const eventSource = sqsEvent.Records[0]?.eventSource;
 
@@ -86,8 +86,17 @@ export class SQSAdapter
       this.options?.sqsForwardMethod,
       'POST'
     );
-    const headers = { host: 'sqs.amazonaws.com' };
-    const [body] = getEventBodyAsBuffer(JSON.stringify(event), false);
+
+    const [body, contentLength] = getEventBodyAsBuffer(
+      JSON.stringify(event),
+      false
+    );
+
+    const headers = {
+      host: 'sqs.amazonaws.com',
+      'content-type': 'application/json',
+      'content-length': String(contentLength),
+    };
 
     return {
       method,
