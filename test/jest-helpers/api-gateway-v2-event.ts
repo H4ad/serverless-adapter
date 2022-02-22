@@ -66,10 +66,10 @@ export function makeApiGatewayV2Event(values: any = {}) {
         qValues.forEach(qValue => {
           multiValueQueryStringParametersToArray.push([qKey, qValue]);
         });
-      }
+      },
     );
     const rawQueryString = new URLSearchParams(
-      multiValueQueryStringParametersToArray
+      multiValueQueryStringParametersToArray,
     );
     mergedEvent.rawQueryString = rawQueryString.toString();
   }
@@ -101,7 +101,7 @@ function convertMultiValueHeadersToHeaders({ multiValueHeaders }) {
 
 export function makeApiGatewayV2Response(
   values: any = {},
-  { shouldConvertContentLengthToInt = false } = {}
+  { shouldConvertContentLengthToInt = false } = {},
 ): any {
   const baseResponse = {
     body: '',
@@ -122,10 +122,11 @@ export function makeApiGatewayV2Response(
     // APIGWV2 returns content-length as a number instead of a string under certain conditions:
     // 404 missing route
     // image response
-    if (values.headers['content-length'])
+    if (values.headers['content-length']) {
       values.headers['content-length'] = parseInt(
-        values.headers['content-length']
+        values.headers['content-length'],
       );
+    }
   }
   const mergedResponse = mergeDeep(baseResponse, values);
 

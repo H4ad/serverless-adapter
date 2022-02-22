@@ -14,7 +14,7 @@
  */
 export function getEventBodyAsBuffer(
   body: string,
-  isBase64Encoded: boolean
+  isBase64Encoded: boolean,
 ): [body: Buffer, contentLength: number] {
   const encoding = isBase64Encoded ? 'base64' : 'utf8';
 

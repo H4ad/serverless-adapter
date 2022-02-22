@@ -1,12 +1,12 @@
 //#region Imports
 
-import { Context, DynamoDBStreamEvent } from 'aws-lambda';
+import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
 import {
   EmptyResponse,
+  IEmptyResponse,
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
-  IEmptyResponse,
 } from '../../core';
 
 //#endregion
@@ -85,16 +85,16 @@ export class DynamoDBAdapter
   public getRequest(event: DynamoDBStreamEvent): AdapterRequest {
     const path = getDefaultIfUndefined(
       this.options?.dynamoDBForwardPath,
-      '/dynamo'
+      '/dynamo',
     );
     const method = getDefaultIfUndefined(
       this.options?.dynamoDBForwardMethod,
-      'POST'
+      'POST',
     );
 
     const [body, contentLength] = getEventBodyAsBuffer(
       JSON.stringify(event),
-      false
+      false,
     );
 
     const headers = {

@@ -1,4 +1,4 @@
-import { SNSEvent } from 'aws-lambda';
+import type { SNSEvent } from 'aws-lambda';
 
 /**
  * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html}

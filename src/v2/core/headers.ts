@@ -20,7 +20,7 @@ import { BothValueHeaders } from '../@types';
 export function getFlattenedHeadersMap(
   headersMap: BothValueHeaders,
   separator: string = ',',
-  lowerCaseKey: boolean = false
+  lowerCaseKey: boolean = false,
 ): Record<string, string> {
   const commaDelimitedHeaders: Record<string, string> = {};
   const headersMapEntries = Object.entries(headersMap);
@@ -28,11 +28,9 @@ export function getFlattenedHeadersMap(
   for (const [headerKey, headerValue] of headersMapEntries) {
     const newKey = lowerCaseKey ? headerKey.toLowerCase() : headerKey;
 
-    if (Array.isArray(headerValue)) {
+    if (Array.isArray(headerValue))
       commaDelimitedHeaders[newKey] = headerValue.join(separator);
-    } else {
-      commaDelimitedHeaders[newKey] = headerValue || '';
-    }
+    else commaDelimitedHeaders[newKey] = headerValue || '';
   }
 
   return commaDelimitedHeaders;
@@ -50,7 +48,7 @@ export function getFlattenedHeadersMap(
  * @param headersMap The initial headers
  */
 export function getMultiValueHeadersMap(
-  headersMap: BothValueHeaders
+  headersMap: BothValueHeaders,
 ): Record<string, string[]> {
   const multiValueHeaders: Record<string, string[]> = {};
   const headersMapEntries = Object.entries(headersMap);

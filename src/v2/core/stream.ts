@@ -10,15 +10,12 @@ import { IncomingMessage, OutgoingMessage } from 'http';
  * @param stream The stream
  */
 export function waitForStreamComplete<
-  TStream extends IncomingMessage | OutgoingMessage
+  TStream extends IncomingMessage | OutgoingMessage,
 >(stream: TStream): Promise<TStream> {
-  if ('complete' in stream && stream.complete) {
-    return Promise.resolve(stream);
-  }
+  if ('complete' in stream && stream.complete) return Promise.resolve(stream);
 
-  if ('writableEnded' in stream && stream.writableEnded) {
+  if ('writableEnded' in stream && stream.writableEnded)
     return Promise.resolve(stream);
-  }
 
   return new Promise<TStream>((resolve, reject) => {
     stream.once('error', complete);
@@ -28,9 +25,7 @@ export function waitForStreamComplete<
     let isComplete = false;
 
     function complete(err) {
-      if (isComplete) {
-        return;
-      }
+      if (isComplete) return;
 
       isComplete = true;
 
@@ -38,11 +33,8 @@ export function waitForStreamComplete<
       stream.removeListener('end', complete);
       stream.removeListener('finish', complete);
 
-      if (err) {
-        reject(err);
-      } else {
-        resolve(stream);
-      }
+      if (err) reject(err);
+      else resolve(stream);
     }
   });
 }

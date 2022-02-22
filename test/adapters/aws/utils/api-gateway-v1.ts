@@ -1,4 +1,4 @@
-import {
+import type {
   APIGatewayProxyEvent,
   APIGatewayProxyEventQueryStringParameters,
 } from 'aws-lambda/trigger/api-gateway-proxy';
@@ -9,7 +9,7 @@ export function createApiGatewayV1(
   path: string,
   body?: Record<string, unknown>,
   headers?: Record<string, string>,
-  queryParams?: APIGatewayProxyEventQueryStringParameters
+  queryParams?: APIGatewayProxyEventQueryStringParameters,
 ): APIGatewayProxyEvent {
   return {
     resource: '/{proxy+}',

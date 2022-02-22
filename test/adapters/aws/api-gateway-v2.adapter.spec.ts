@@ -1,13 +1,13 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
+import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
 import { ApiGatewayV2Adapter } from '../../../src/v2/adapters/aws';
 import { GetResponseAdapterProps, Resolver } from '../../../src/v2/contracts';
 import {
+  ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
-  ILogger,
 } from '../../../src/v2/core';
 import { ServerlessResponse } from '../../../src/v2/network';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
@@ -42,7 +42,7 @@ describe(ApiGatewayV2Adapter.name, () => {
         body,
         {},
         queryParams,
-        cookies
+        cookies,
       );
       const result = adapter.getRequest(event);
 
@@ -56,7 +56,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(body),
-        false
+        false,
       );
       expect(result.body).toStrictEqual(bodyBuffer);
       expect(result.headers).toHaveProperty('content-length');
@@ -68,7 +68,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.rawQueryString
+        event.rawQueryString,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -95,7 +95,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -125,7 +125,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path.replace('/prod', ''),
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -150,7 +150,7 @@ describe(ApiGatewayV2Adapter.name, () => {
         requestBody,
         {},
         queryParams,
-        cookies
+        cookies,
       );
       const resultHeaders = getFlattenedHeadersMap(event.headers);
 
@@ -195,7 +195,7 @@ describe(ApiGatewayV2Adapter.name, () => {
           isBase64Encoded: resultIsBase64Encoded,
           statusCode: resultStatusCode,
           headers: resultHeaders,
-        })
+        }),
       ).toThrowError('is not supported');
 
       const resultMultiValueHeaders = getMultiValueHeadersMap(event.headers);
@@ -210,7 +210,7 @@ describe(ApiGatewayV2Adapter.name, () => {
           isBase64Encoded: resultIsBase64Encoded,
           statusCode: resultStatusCode,
           headers: resultMultiValueHeaders,
-        })
+        }),
       ).toThrowError('is not supported');
     });
 
@@ -239,7 +239,7 @@ describe(ApiGatewayV2Adapter.name, () => {
           statusCode: resultStatusCode,
           headers: resultHeaders,
           response: fakeChunkedResponse,
-        })
+        }),
       ).toThrowError('is not supported');
     });
   });
@@ -278,7 +278,7 @@ describe(ApiGatewayV2Adapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({
@@ -331,7 +331,7 @@ describe(ApiGatewayV2Adapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({

@@ -8,7 +8,7 @@ import {
   ResolverContract,
   ServerlessHandler,
 } from './contracts';
-import { createDefaultLogger, DEFAULT_BINARY_ENCODINGS, ILogger } from './core';
+import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
 
 //#endregion
 
@@ -33,7 +33,7 @@ export class ServerlessBuilder<
   TEvent = any,
   TContext = any,
   TCallback = any,
-  TResponse = any
+  TResponse = any,
 > {
   //#region Constructor
 
@@ -52,6 +52,10 @@ export class ServerlessBuilder<
    * The instance of the app (express, hapi, koa, etc...)
    */
   protected app: TApp;
+
+  //#endregion
+
+  //#region Protected Properties
 
   /**
    * Settings for whether the response should be treated as binary or not
@@ -125,7 +129,7 @@ export class ServerlessBuilder<
    * @param handler The implementation of the handler contract
    */
   public setHandler(
-    handler: HandlerContract<TApp, TEvent, TContext, TCallback, TResponse>
+    handler: HandlerContract<TApp, TEvent, TContext, TCallback, TResponse>,
   ): Omit<this, 'setHandler'> {
     this.handler = handler;
 
@@ -149,7 +153,7 @@ export class ServerlessBuilder<
    * @param framework The implementation of the framework contract
    */
   public setFramework(
-    framework: FrameworkContract<TApp>
+    framework: FrameworkContract<TApp>,
   ): Omit<this, 'setFramework'> {
     this.framework = framework;
 
@@ -173,7 +177,7 @@ export class ServerlessBuilder<
    * @param binarySettings The binary settings
    */
   public setBinarySettings(
-    binarySettings: BinarySettings
+    binarySettings: BinarySettings,
   ): Omit<this, 'setBinarySettings'> {
     this.binarySettings = binarySettings;
 
@@ -186,7 +190,7 @@ export class ServerlessBuilder<
    * @param respondWithErrors Should include or not the errors in response
    */
   public setRespondWithErrors(
-    respondWithErrors: boolean
+    respondWithErrors: boolean,
   ): Omit<this, 'setRespondWithErrors'> {
     this.respondWithErrors = respondWithErrors;
 
@@ -208,25 +212,29 @@ export class ServerlessBuilder<
    * The builder method that returns the handler function to be exported for serverless consumption
    */
   public build(): ServerlessHandler {
-    if (!this.resolver)
+    if (!this.resolver) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a resolver before build the handler.'
+        'SERVERLESS_ADAPTER: Is required to set a resolver before build the handler.',
       );
+    }
 
-    if (!this.framework)
+    if (!this.framework) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.'
+        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.',
       );
+    }
 
-    if (!this.handler)
+    if (!this.handler) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.'
+        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.',
       );
+    }
 
-    if (this.adapters.length === 0)
+    if (this.adapters.length === 0) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set at least one adapter.'
+        'SERVERLESS_ADAPTER: Is required to set at least one adapter.',
       );
+    }
 
     return this.handler.getHandler(
       this.app,
@@ -235,7 +243,7 @@ export class ServerlessBuilder<
       this.resolver,
       this.binarySettings,
       this.respondWithErrors,
-      this.log
+      this.log,
     );
   }
 

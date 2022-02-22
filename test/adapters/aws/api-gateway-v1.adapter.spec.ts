@@ -1,13 +1,13 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
+import type { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
 import { ApiGatewayV1Adapter } from '../../../src/v2/adapters/aws';
 import { GetResponseAdapterProps, Resolver } from '../../../src/v2/contracts';
 import {
+  ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
-  ILogger,
 } from '../../../src/v2/core';
 import { ServerlessResponse } from '../../../src/v2/network';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
@@ -47,7 +47,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(body),
-        false
+        false,
       );
       expect(result.body).toStrictEqual(bodyBuffer);
       expect(result.headers).toHaveProperty('content-length');
@@ -57,7 +57,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -83,7 +83,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -113,7 +113,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path.replace('/prod', ''),
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -172,7 +172,7 @@ describe(ApiGatewayV1Adapter.name, () => {
           isBase64Encoded: resultIsBase64Encoded,
           statusCode: resultStatusCode,
           headers: resultHeaders,
-        })
+        }),
       ).toThrowError('is not supported');
     });
 
@@ -201,7 +201,7 @@ describe(ApiGatewayV1Adapter.name, () => {
           statusCode: resultStatusCode,
           headers: resultHeaders,
           response: fakeChunkedResponse,
-        })
+        }),
       ).toThrowError('is not supported');
     });
   });
@@ -240,7 +240,7 @@ describe(ApiGatewayV1Adapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({
@@ -293,7 +293,7 @@ describe(ApiGatewayV1Adapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({

@@ -1,15 +1,12 @@
+import { makeAlbEvent, makeAlbResponse } from './alb-event';
 import {
   makeApiGatewayV1Event,
   makeApiGatewayV1Response,
 } from './api-gateway-v1-event';
-
 import {
   makeApiGatewayV2Event,
   makeApiGatewayV2Response,
 } from './api-gateway-v2-event';
-
-import { makeAlbEvent, makeAlbResponse } from './alb-event';
-
 const {
   makeLambdaEdgeEvent,
   makeLambdaEdgeResponse,
@@ -41,13 +38,13 @@ export const log = {
 };
 
 export class MockContext {
-  resolve: any;
-  reject: any;
-
   constructor(resolve, reject) {
     this.resolve = resolve;
     this.reject = reject;
   }
+
+  resolve: any;
+  reject: any;
 
   succeed(successResponse) {
     this.resolve(successResponse);
@@ -75,7 +72,7 @@ export function makeEvent({ eventSourceName, ...rest }) {
 
 export function makeResponse(
   { eventSourceName, ...rest }: any,
-  { shouldConvertContentLengthToInt = false }: any = {}
+  { shouldConvertContentLengthToInt = false }: any = {},
 ): any {
   switch (eventSourceName) {
     case 'alb':

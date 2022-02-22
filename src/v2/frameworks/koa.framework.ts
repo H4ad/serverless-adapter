@@ -16,7 +16,7 @@ export class KoaFramework implements FrameworkContract<Application> {
   public sendRequest(
     app: Application,
     request: ServerlessRequest,
-    response: ServerlessResponse
+    response: ServerlessResponse,
   ): void {
     app.callback()(request, response);
   }

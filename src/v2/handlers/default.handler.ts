@@ -17,7 +17,7 @@ import {
   waitForStreamComplete,
 } from '../core';
 import { ServerlessResponse } from '../network';
-import { BaseHandler } from './base/base.handler';
+import { BaseHandler } from './base';
 
 //#endregion
 
@@ -29,7 +29,7 @@ export class DefaultHandler<
   TEvent = any,
   TContext = any,
   TCallback = any,
-  TResponse = any
+  TResponse = any,
 > extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse> {
   //#region Public Methods
 
@@ -43,7 +43,7 @@ export class DefaultHandler<
     resolverFactory: ResolverContract<TEvent, TContext, TCallback, TResponse>,
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
-    log: ILogger
+    log: ILogger,
   ): ServerlessHandler {
     return (event: TEvent, context: TContext, callback?: TCallback) => {
       this.onReceiveRequest(
@@ -51,14 +51,14 @@ export class DefaultHandler<
         event,
         context,
         binarySettings,
-        respondWithErrors
+        respondWithErrors,
       );
 
       const adapter = this.getAdapterByEventAndContext(
         event,
         context,
         adapters,
-        log
+        log,
       );
 
       this.onResolveAdapter(log, adapter);
@@ -88,12 +88,12 @@ export class DefaultHandler<
               resolver,
               adapter,
               binarySettings,
-              log
+              log,
             );
           } catch (error) {
             log.error(
               'SERVERLESS_ADAPTER:RESPOND_TO_EVENT_SOURCE_WITH_ERROR',
-              error
+              error,
             );
 
             adapter.onErrorWhileForwarding({
@@ -129,7 +129,7 @@ export class DefaultHandler<
     event: TEvent,
     context: TContext,
     binarySettings: BinarySettings,
-    respondWithErrors: boolean
+    respondWithErrors: boolean,
   ): void {
     log.debug('SERVERLESS_ADAPTER:PROXY', {
       event: util.inspect(event, { depth: null }),
@@ -147,11 +147,11 @@ export class DefaultHandler<
    */
   protected onResolveAdapter(
     log: ILogger,
-    adapter: AdapterContract<TEvent, TContext, TResponse>
+    adapter: AdapterContract<TEvent, TContext, TResponse>,
   ): void {
     log.debug(
       'SERVERLESS_ADAPTER:RESOLVED_ADAPTER_NAME: ',
-      adapter.getAdapterName()
+      adapter.getAdapterName(),
     );
   }
 
@@ -163,7 +163,7 @@ export class DefaultHandler<
    */
   protected onResolveRequestValues(
     log: ILogger,
-    requestValues: AdapterRequest
+    requestValues: AdapterRequest,
   ): void {
     const body = requestValues.body?.toString();
 
@@ -174,7 +174,7 @@ export class DefaultHandler<
           ...requestValues,
           body,
         },
-      }
+      },
     );
   }
 
@@ -186,7 +186,7 @@ export class DefaultHandler<
    */
   protected onResolveForwardedResponseToFramework(
     log: ILogger,
-    response: ServerlessResponse
+    response: ServerlessResponse,
   ): void {
     log.debug('SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:RESPONSE', {
       response,
@@ -207,7 +207,7 @@ export class DefaultHandler<
     statusCode: number,
     body: string,
     headers: SingleValueHeaders,
-    isBase64Encoded: boolean
+    isBase64Encoded: boolean,
   ) {
     log.debug(
       'SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE_PARAMS',
@@ -216,7 +216,7 @@ export class DefaultHandler<
         body,
         headers,
         isBase64Encoded,
-      }
+      },
     );
   }
 
@@ -230,7 +230,7 @@ export class DefaultHandler<
   protected onForwardResponseAdapterResponse(
     log: ILogger,
     successResponse: TResponse,
-    body: string
+    body: string,
   ) {
     log.debug('SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE', {
       successResponse: util.inspect(successResponse, { depth: null }),
@@ -254,7 +254,7 @@ export class DefaultHandler<
    * @param log The instance of logger
    * @param binarySettings The binary settings
    */
-  public async forwardRequestToFramework(
+  protected async forwardRequestToFramework(
     app: TApp,
     framework: FrameworkContract<TApp>,
     event: TEvent,
@@ -262,7 +262,7 @@ export class DefaultHandler<
     resolver: Resolver<TResponse>,
     adapter: AdapterContract<TEvent, TContext, TResponse>,
     binarySettings: BinarySettings,
-    log: ILogger
+    log: ILogger,
   ) {
     const requestValues = adapter.getRequest(event, context, log);
 
@@ -283,7 +283,7 @@ export class DefaultHandler<
       resolver,
       adapter,
       binarySettings,
-      log
+      log,
     );
 
     return response;
@@ -305,7 +305,7 @@ export class DefaultHandler<
     resolver: Resolver<TResponse>,
     adapter: AdapterContract<TEvent, TContext, TResponse>,
     binarySettings: BinarySettings,
-    log: ILogger
+    log: ILogger,
   ): void {
     const statusCode = response.statusCode;
     const headers = ServerlessResponse.headers(response);

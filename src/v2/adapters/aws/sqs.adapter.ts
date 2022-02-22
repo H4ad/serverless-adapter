@@ -1,12 +1,12 @@
 //#region Imports
 
-import { Context, SQSEvent } from 'aws-lambda';
+import type { Context, SQSEvent } from 'aws-lambda';
 import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
 import {
   EmptyResponse,
+  IEmptyResponse,
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
-  IEmptyResponse,
 } from '../../core';
 
 //#endregion
@@ -86,12 +86,12 @@ export class SQSAdapter
     const path = getDefaultIfUndefined(this.options?.sqsForwardPath, '/sqs');
     const method = getDefaultIfUndefined(
       this.options?.sqsForwardMethod,
-      'POST'
+      'POST',
     );
 
     const [body, contentLength] = getEventBodyAsBuffer(
       JSON.stringify(event),
-      false
+      false,
     );
 
     const headers = {

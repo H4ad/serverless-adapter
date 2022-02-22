@@ -15,7 +15,7 @@ function getResponseToApiGateway({
   // chunked transfer not currently supported by API Gateway
   if (transferEncodingHeader && transferEncodingHeader.includes('chunked')) {
     multiValueHeaders['transfer-encoding'] = transferEncodingHeader.filter(
-      headerValue => headerValue !== 'chunked'
+      headerValue => headerValue !== 'chunked',
     );
   }
 

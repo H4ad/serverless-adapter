@@ -21,7 +21,7 @@ function getRequestValuesFromLambdaEdgeEvent({ event }) {
   Object.entries(headersMap).forEach(
     ([headerKey, headerValue]: [string, any[]]) => {
       headers[headerKey] = headerValue.map(header => header.value).join(',');
-    }
+    },
   );
 
   if (requestBodyObject.data) {
@@ -32,7 +32,7 @@ function getRequestValuesFromLambdaEdgeEvent({ event }) {
     });
     headers['content-length'] = Buffer.byteLength(
       body,
-      isBase64Encoded ? 'base64' : 'utf8'
+      isBase64Encoded ? 'base64' : 'utf8',
     );
   }
 

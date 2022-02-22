@@ -1,6 +1,6 @@
 //#region Imports
 
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import { Resolver, ResolverContract, ResolverProps } from '../contracts';
 
 //#endregion

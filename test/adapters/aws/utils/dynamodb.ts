@@ -1,4 +1,4 @@
-import { DynamoDBStreamEvent } from 'aws-lambda';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 
 /**
  * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html}

@@ -6,7 +6,7 @@
  */
 export function getDefaultIfUndefined<T>(
   value: T | undefined,
-  defaultValue: T
+  defaultValue: T,
 ): T {
   if (typeof value === 'undefined') return defaultValue;
 

@@ -14,7 +14,7 @@ import { BinarySettings, BothValueHeaders } from '../@types';
  */
 export function isContentEncodingBinary(
   headers: BothValueHeaders,
-  binaryEncodingTypes: string[]
+  binaryEncodingTypes: string[],
 ): boolean {
   const contentEncoding = Array.isArray(headers['content-encoding'])
     ? headers['content-encoding'][0]
@@ -25,7 +25,9 @@ export function isContentEncodingBinary(
   return contentEncoding
     .split(',')
     .some(value =>
-      binaryEncodingTypes.some(binaryEncoding => value.includes(binaryEncoding))
+      binaryEncodingTypes.some(binaryEncoding =>
+        value.includes(binaryEncoding),
+      ),
     );
 }
 
@@ -51,18 +53,18 @@ export function getContentType(headers: BothValueHeaders): string {
  */
 export function isContentTypeBinary(
   headers: BothValueHeaders,
-  binaryContentTypes: string[]
+  binaryContentTypes: string[],
 ) {
   const binaryContentTypesRegexes = binaryContentTypes.map(
     binaryContentType =>
-      new RegExp(`^${binaryContentType.replace(/\*/g, '.*')}$`)
+      new RegExp(`^${binaryContentType.replace(/\*/g, '.*')}$`),
   );
   const contentType = getContentType(headers);
 
   if (!contentType) return false;
 
   return binaryContentTypesRegexes.some(binaryContentType =>
-    binaryContentType.test(contentType)
+    binaryContentType.test(contentType),
   );
 }
 
@@ -74,15 +76,12 @@ export function isContentTypeBinary(
  */
 export function isBinary(
   headers: BothValueHeaders,
-  binarySettings: BinarySettings
+  binarySettings: BinarySettings,
 ): boolean {
-  if (binarySettings.isBinary === false) {
-    return false;
-  }
+  if (binarySettings.isBinary === false) return false;
 
-  if (typeof binarySettings.isBinary === 'function') {
+  if (typeof binarySettings.isBinary === 'function')
     return binarySettings.isBinary(headers);
-  }
 
   return (
     isContentEncodingBinary(headers, binarySettings.contentEncodings) ||

@@ -16,7 +16,7 @@ export class ExpressFramework implements FrameworkContract<Express> {
   public sendRequest(
     app: Express,
     request: ServerlessRequest,
-    response: ServerlessResponse
+    response: ServerlessResponse,
   ): void {
     app(request, response);
   }

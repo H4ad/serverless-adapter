@@ -107,10 +107,11 @@ const lambdaEdgeCf = {
 export function makeLambdaEdgeEvent(values: any = {}) {
   const baseEvent = clone(lambdaEdgeCf);
   if (!values.request) values.request = {};
-  if (!values.request.headers)
+  if (!values.request.headers) {
     values.request.headers = convertMultiValueHeaders({
       multiValueHeaders: values.multiValueHeaders,
     });
+  }
 
   const mergedEvent: any = mergeDeep(baseEvent, values);
 
@@ -127,10 +128,10 @@ export function makeLambdaEdgeEvent(values: any = {}) {
         qValues.forEach(qValue => {
           multiValueQueryStringParametersToArray.push([qKey, qValue]);
         });
-      }
+      },
     );
     const querystring = new URLSearchParams(
-      multiValueQueryStringParametersToArray
+      multiValueQueryStringParametersToArray,
     );
     mergedEvent.request.querystring = querystring.toString();
   }
@@ -203,9 +204,7 @@ export function makeLambdaEdgeResponse(values: any = {}) {
 
   const mergedResponse = mergeDeep(baseResponse, values);
 
-  if (values.body) {
-    mergedResponse.body = values.body;
-  }
+  if (values.body) mergedResponse.body = values.body;
 
   if (mergedResponse.statusCode) {
     mergedResponse.status = mergedResponse.statusCode;

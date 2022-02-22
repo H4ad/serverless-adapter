@@ -1,4 +1,4 @@
-import { EventBridgeEvent } from 'aws-lambda';
+import type { EventBridgeEvent } from 'aws-lambda';
 
 /**
  * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html}

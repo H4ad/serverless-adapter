@@ -18,6 +18,6 @@ export interface FrameworkContract<TApp> {
   sendRequest(
     app: TApp,
     request: ServerlessRequest,
-    response: ServerlessResponse
+    response: ServerlessResponse,
   ): void;
 }

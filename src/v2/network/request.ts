@@ -2,7 +2,7 @@
 import http from 'http';
 import { AddressInfo } from 'net';
 import { SingleValueHeaders } from '../@types';
-import { NO_OP } from '../core/no-op';
+import { NO_OP } from '../core';
 
 const HTTPS_PORT = 443;
 
@@ -15,8 +15,6 @@ export interface ServerlessRequestProps {
 }
 
 export class ServerlessRequest extends http.IncomingMessage {
-  body?: Buffer;
-
   constructor({
     method,
     url,
@@ -50,4 +48,6 @@ export class ServerlessRequest extends http.IncomingMessage {
       this.push(null);
     };
   }
+
+  body?: Buffer;
 }

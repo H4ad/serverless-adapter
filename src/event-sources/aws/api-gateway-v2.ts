@@ -15,9 +15,7 @@ function getRequestValuesFromApiGatewayEvent({ event }) {
 
   const headers: Record<any, any> = {};
 
-  if (cookies) {
-    headers.cookie = cookies.join('; ');
-  }
+  if (cookies) headers.cookie = cookies.join('; ');
 
   Object.entries(event.headers).forEach(([headerKey, headerValue]) => {
     headers[headerKey.toLowerCase()] = headerValue;
@@ -30,7 +28,7 @@ function getRequestValuesFromApiGatewayEvent({ event }) {
     const isBase64Encoded = event.isBase64Encoded;
     headers['content-length'] = Buffer.byteLength(
       body,
-      isBase64Encoded ? 'base64' : 'utf8'
+      isBase64Encoded ? 'base64' : 'utf8',
     );
   }
 
@@ -50,9 +48,8 @@ function getResponseToApiGateway({
   isBase64Encoded = false,
   response = {},
 }: any) {
-  if (headers['transfer-encoding'] === 'chunked' || response.chunkedEncoding) {
+  if (headers['transfer-encoding'] === 'chunked' || response.chunkedEncoding)
     throw new Error('chunked encoding is not supported by API Gateway');
-  }
 
   const responseToApiGateway: Record<any, any> = {
     statusCode,

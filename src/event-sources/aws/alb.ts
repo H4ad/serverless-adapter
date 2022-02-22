@@ -18,14 +18,14 @@ function getPathWithQueryStringUseUnescapeParams({
     for (const key in event.multiValueQueryStringParameters) {
       const formattedKey = decodeURIComponent(key);
       query[formattedKey] = event.multiValueQueryStringParameters[key].map(
-        value => decodeURIComponent(value)
+        value => decodeURIComponent(value),
       );
     }
   } else {
     for (const key in event.queryStringParameters) {
       const formattedKey = decodeURIComponent(key);
       query[formattedKey] = decodeURIComponent(
-        event.queryStringParameters[key]
+        event.queryStringParameters[key],
       );
     }
   }

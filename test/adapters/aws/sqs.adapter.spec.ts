@@ -1,11 +1,11 @@
-import { SQSEvent } from 'aws-lambda';
+import type { SQSEvent } from 'aws-lambda';
 import { SQSAdapter } from '../../../src/v2/adapters/aws';
 import { Resolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
-  getEventBodyAsBuffer,
   IEmptyResponse,
   ILogger,
+  getEventBodyAsBuffer,
 } from '../../../src/v2/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createSQSEvent } from './utils/sqs';
@@ -38,7 +38,7 @@ describe(SQSAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(event),
-        false
+        false,
       );
 
       expect(result.body).toBeInstanceOf(Buffer);
@@ -46,7 +46,7 @@ describe(SQSAdapter.name, () => {
 
       expect(result.headers).toHaveProperty(
         'content-length',
-        String(contentLength)
+        String(contentLength),
       );
     });
 
@@ -70,7 +70,7 @@ describe(SQSAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(event),
-        false
+        false,
       );
 
       expect(result.body).toBeInstanceOf(Buffer);
@@ -78,7 +78,7 @@ describe(SQSAdapter.name, () => {
 
       expect(result.headers).toHaveProperty(
         'content-length',
-        String(contentLength)
+        String(contentLength),
       );
     });
   });

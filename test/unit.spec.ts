@@ -8,7 +8,7 @@ import {
   respondToEventSourceWithError,
 } from '../src/network/transport';
 import { makeResolver } from '../src/utils/make-resolver';
-import { log, MockContext } from './jest-helpers';
+import { MockContext, log } from './jest-helpers';
 import DoneCallback = jest.DoneCallback;
 
 const apiGatewayEventSource = getEventSource({
@@ -43,7 +43,7 @@ test('getPathWithQueryStringParams: to be url-encoded param', () => {
   };
   const pathWithQueryStringParams = getPathWithQueryStringParams({ event });
   expect(pathWithQueryStringParams).toEqual(
-    '/foo/bar?redirect_uri=http%3A%2F%2Flvh.me%3A3000%2Fcb'
+    '/foo/bar?redirect_uri=http%3A%2F%2Flvh.me%3A3000%2Fcb',
   );
 });
 
@@ -107,7 +107,7 @@ test('getRequestResponse: without headers', async () => {
   expect(requestResponse.request).toBeInstanceOf(ServerlessRequest);
   expect(requestResponse.request.body).toBeInstanceOf(Buffer);
   expect(requestResponse.request.body.toString('utf-8')).toEqual(
-    'Hello serverless!'
+    'Hello serverless!',
   );
   delete requestResponse.request.body;
   expect(requestResponse.request.method).toEqual('GET');
@@ -139,7 +139,7 @@ describe('respondToEventSourceWithError', () => {
         body: '',
         multiValueHeaders: {},
         isBase64Encoded: false,
-      })
+      }),
     );
   });
   test('responds with 500 status and stack trace', () => {
@@ -165,7 +165,7 @@ describe('respondToEventSourceWithError', () => {
         isBase64Encoded: false,
       });
       expect(successResponse.body).toContain(
-        'Error: There was an error...\n    at '
+        'Error: There was an error...\n    at ',
       );
     });
   });
@@ -206,7 +206,7 @@ describe.skip('forwardResponse: content-type encoding', () => {
             body: 'Hello serverless!',
             multiValueHeaders,
             isBase64Encoded: false,
-          })
+          }),
         )
         .then(() => done());
     })();

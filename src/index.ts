@@ -10,12 +10,11 @@ export default configure;
 
 export function createServer(app, serverListenCallback, binaryMimeTypes) {
   console.warn(
-    "[DEPRECATION NOTICE] You're using the deprecated createServer method that will be removed in the next major version. See https://github.com/vendia/serverless-express/blob/mainline/UPGRADE.md to upgrade."
+    "[DEPRECATION NOTICE] You're using the deprecated createServer method that will be removed in the next major version. See https://github.com/vendia/serverless-express/blob/mainline/UPGRADE.md to upgrade.",
   );
 
-  if (serverListenCallback) {
+  if (serverListenCallback)
     throw new Error('serverListenCallback is no longer supported.');
-  }
 
   const configureOptions = {
     app,
@@ -32,10 +31,10 @@ export function proxy(
   event,
   context,
   resolutionMode,
-  callback
+  callback,
 ) {
   console.warn(
-    "[DEPRECATION NOTICE] You're using the deprecated proxy method that will be removed in the next major version. See https://github.com/vendia/serverless-express/blob/mainline/UPGRADE.md to upgrade."
+    "[DEPRECATION NOTICE] You're using the deprecated proxy method that will be removed in the next major version. See https://github.com/vendia/serverless-express/blob/mainline/UPGRADE.md to upgrade.",
   );
 
   const se = configure({

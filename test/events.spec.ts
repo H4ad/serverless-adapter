@@ -4,7 +4,6 @@ import {
   snsEvent,
   sqsEvent,
 } from './jest-helpers/events';
-
 const {
   getEventSourceNameBasedOnEvent,
 } = require('../src/event-sources/utils');
@@ -12,7 +11,7 @@ const {
 describe('getEventSourceNameBasedOnEvent', () => {
   test('throws error on empty event', () => {
     expect(() => getEventSourceNameBasedOnEvent({ event: {} })).toThrow(
-      'Unable to determine event source based on event.'
+      'Unable to determine event source based on event.',
     );
   });
 

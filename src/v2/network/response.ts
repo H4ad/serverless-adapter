@@ -9,21 +9,15 @@ const BODY = Symbol('Response body');
 const HEADERS = Symbol('Response headers');
 
 function getString(data: Buffer | string | unknown) {
-  if (Buffer.isBuffer(data)) {
-    return data.toString('utf8');
-  } else if (typeof data === 'string') {
-    return data;
-  } else {
-    throw new Error(`response.write() of unexpected type: ${typeof data}`);
-  }
+  if (Buffer.isBuffer(data)) return data.toString('utf8');
+  else if (typeof data === 'string') return data;
+  else throw new Error(`response.write() of unexpected type: ${typeof data}`);
 }
 
 function addData(stream: ServerlessResponse, data: Uint8Array | string) {
-  if (Buffer.isBuffer(data) || typeof data === 'string') {
+  if (Buffer.isBuffer(data) || typeof data === 'string')
     stream[BODY].push(Buffer.from(data));
-  } else {
-    throw new Error(`response.write() of unexpected type: ${typeof data}`);
-  }
+  else throw new Error(`response.write() of unexpected type: ${typeof data}`);
 }
 
 export interface ServerlessResponseProps {
@@ -31,13 +25,6 @@ export interface ServerlessResponseProps {
 }
 
 export class ServerlessResponse extends http.ServerResponse {
-  _header: string;
-  _headers?: Record<any, any>;
-  _wroteHeader?: boolean;
-
-  [BODY]: any[];
-  [HEADERS]: Record<any, any>;
-
   constructor({ method }: ServerlessResponseProps) {
     super({ method } as any);
 
@@ -59,37 +46,43 @@ export class ServerlessResponse extends http.ServerResponse {
       write: (
         data: Uint8Array | string,
         encoding?: string | null | (() => void),
-        cb?: () => void
+        cb?: () => void,
       ): any => {
         if (typeof encoding === 'function') {
           cb = encoding;
           encoding = null;
         }
 
-        if (this._header === '' || this._wroteHeader) {
-          addData(this, data);
-        } else {
+        if (this._header === '' || this._wroteHeader) addData(this, data);
+        else {
           const string = getString(data);
           const index = string.indexOf(headerEnd);
 
           if (index !== -1) {
             const remainder = string.slice(index + headerEnd.length);
 
-            if (remainder) {
-              addData(this, remainder);
-            }
+            if (remainder) addData(this, remainder);
 
             this._wroteHeader = true;
           }
         }
 
-        if (typeof cb === 'function') {
-          cb();
-        }
+        if (typeof cb === 'function') cb();
       },
     };
 
     this.assignSocket(socket as unknown as Socket);
+  }
+
+  _header: string;
+  _headers?: Record<any, any>;
+  _wroteHeader?: boolean;
+
+  [BODY]: any[];
+  [HEADERS]: Record<any, any>;
+
+  get headers(): Record<any, any> {
+    return this[HEADERS];
   }
 
   static from(res: IncomingMessage) {
@@ -114,22 +107,15 @@ export class ServerlessResponse extends http.ServerResponse {
     return Object.assign(headers, res[HEADERS]);
   }
 
-  get headers(): Record<any, any> {
-    return this[HEADERS];
-  }
-
   setHeader(key: string, value: number | string | readonly string[]): any {
-    if (this._wroteHeader) {
-      this[HEADERS][key] = value;
-    } else {
-      super.setHeader(key, value);
-    }
+    if (this._wroteHeader) this[HEADERS][key] = value;
+    else super.setHeader(key, value);
   }
 
   writeHead(
     statusCode: number,
     reason?: string | OutgoingHttpHeaders,
-    obj?: OutgoingHttpHeaders
+    obj?: OutgoingHttpHeaders,
   ): any {
     const headers = typeof reason === 'string' ? obj : reason;
 

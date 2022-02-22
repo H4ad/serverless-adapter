@@ -4,6 +4,7 @@ import {
   ApiGatewayV2Adapter,
   DynamoDBAdapter,
   EventBridgeAdapter,
+  LambdaEdgeAdapter,
   SNSAdapter,
   SQSAdapter,
 } from '../../../../src/v2/adapters/aws';
@@ -20,6 +21,10 @@ import {
 } from './event-bridge';
 import { createSQSEvent } from './sqs';
 import { createSNSEvent } from './sns';
+import {
+  createLambdaEdgeOriginEvent,
+  createLambdaEdgeViewerEvent,
+} from './lambda-edge';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],
@@ -65,4 +70,18 @@ export const allAWSEvents: Array<[string, any]> = [
   [EventBridgeAdapter.name, createEventBridgeEventSimple()],
   [SQSAdapter.name, createSQSEvent()],
   [SNSAdapter.name, createSNSEvent()],
+  [LambdaEdgeAdapter.name, createLambdaEdgeViewerEvent('GET', '/image.png')],
+  [
+    LambdaEdgeAdapter.name,
+    createLambdaEdgeViewerEvent('POST', '/image.png', {
+      base64: Buffer.from('batata', 'utf-8').toString('base64'),
+    }),
+  ],
+  [LambdaEdgeAdapter.name, createLambdaEdgeOriginEvent('GET', '/image.png')],
+  [
+    LambdaEdgeAdapter.name,
+    createLambdaEdgeOriginEvent('POST', '/image.png', {
+      base64: Buffer.from('batata', 'utf-8').toString('base64'),
+    }),
+  ],
 ];

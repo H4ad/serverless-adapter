@@ -5,9 +5,9 @@ import {
 import { Resolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
-  getEventBodyAsBuffer,
   IEmptyResponse,
   ILogger,
+  getEventBodyAsBuffer,
 } from '../../../src/v2/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
@@ -43,7 +43,7 @@ describe(EventBridgeAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(event),
-        false
+        false,
       );
 
       expect(result.body).toBeInstanceOf(Buffer);
@@ -51,7 +51,7 @@ describe(EventBridgeAdapter.name, () => {
 
       expect(result.headers).toHaveProperty(
         'content-length',
-        String(contentLength)
+        String(contentLength),
       );
     });
 
@@ -75,7 +75,7 @@ describe(EventBridgeAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(event),
-        false
+        false,
       );
 
       expect(result.body).toBeInstanceOf(Buffer);
@@ -83,7 +83,7 @@ describe(EventBridgeAdapter.name, () => {
 
       expect(result.headers).toHaveProperty(
         'content-length',
-        String(contentLength)
+        String(contentLength),
       );
     });
   });

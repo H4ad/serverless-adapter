@@ -1,5 +1,5 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { APIGatewayProxyEventQueryStringParameters } from 'aws-lambda/trigger/api-gateway-proxy';
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
+import type { APIGatewayProxyEventQueryStringParameters } from 'aws-lambda/trigger/api-gateway-proxy';
 import { getQueryParamsStringFromRecord } from '../../../../src/v2/core';
 
 export function createApiGatewayV2(
@@ -8,7 +8,7 @@ export function createApiGatewayV2(
   body?: Record<string, unknown>,
   headers?: Record<string, string>,
   queryParams?: APIGatewayProxyEventQueryStringParameters,
-  cookies?: APIGatewayProxyEventV2['cookies']
+  cookies?: APIGatewayProxyEventV2['cookies'],
 ): APIGatewayProxyEventV2 {
   return {
     version: '2.0',

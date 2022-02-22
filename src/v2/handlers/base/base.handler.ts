@@ -22,7 +22,7 @@ export abstract class BaseHandler<
   TEvent = any,
   TContext = any,
   TCallback = any,
-  TResponse = any
+  TResponse = any,
 > implements HandlerContract<TApp, TEvent, TContext, TCallback, TResponse>
 {
   //#region Public Methods
@@ -37,7 +37,7 @@ export abstract class BaseHandler<
     resolverFactory: ResolverContract<TEvent, TContext, TCallback, TResponse>,
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
-    log: ILogger
+    log: ILogger,
   ): ServerlessHandler;
 
   //#endregion
@@ -56,23 +56,23 @@ export abstract class BaseHandler<
     event: TEvent,
     context: TContext,
     adapters: AdapterContract<TEvent, TContext, TResponse>[],
-    log: ILogger
+    log: ILogger,
   ): AdapterContract<TEvent, TContext, TResponse> {
     const resolvedAdapters = adapters.filter(adapter =>
-      adapter.canHandle(event, context, log)
+      adapter.canHandle(event, context, log),
     );
 
     if (resolvedAdapters.length === 0) {
       throw new Error(
-        "SERVERLESS_ADAPTER: Couldn't find adapter to handle this event."
+        "SERVERLESS_ADAPTER: Couldn't find adapter to handle this event.",
       );
     }
 
     if (resolvedAdapters.length > 1) {
       log.error(
         `SERVERLESS_ADAPTER: Two or more adapters was resolved by the event, the adapters are: ${adapters.join(
-          ','
-        )}. Choosing the first one.`
+          ',',
+        )}. Choosing the first one.`,
       );
     }
 
@@ -85,7 +85,7 @@ export abstract class BaseHandler<
    * @param requestValues The request values from adapter
    */
   protected async getServerlessRequestResponseFromAdapterRequest(
-    requestValues: AdapterRequest
+    requestValues: AdapterRequest,
   ): Promise<[request: ServerlessRequest, response: ServerlessResponse]> {
     const request = new ServerlessRequest({
       method: requestValues.method,

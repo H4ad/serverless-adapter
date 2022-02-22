@@ -1,11 +1,10 @@
-import bodyParser from 'body-parser';
-import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import bodyParser from 'body-parser';
+import express from 'express';
+import { __express as ejs } from 'ejs';
 import serverlessExpress, { getCurrentInvoke } from '../src';
 import { EACH_MATRIX, makeEvent, makeResponse } from './jest-helpers';
-
-import { __express as ejs } from 'ejs';
 
 const jestHelpersPath = path.join(__dirname, './', 'jest-helpers');
 
@@ -132,7 +131,7 @@ describe.each(EACH_MATRIX)(
       void serverlessExpressInstanceWithCallbackResolutionMode(
         event,
         {},
-        callback
+        callback,
       );
     });
 
@@ -185,7 +184,7 @@ describe.each(EACH_MATRIX)(
           },
           statusCode: 404,
         },
-        { shouldConvertContentLengthToInt: true }
+        { shouldConvertContentLengthToInt: true },
       );
       delete response.body;
       delete expectedResponse.body;
@@ -241,7 +240,7 @@ describe.each(EACH_MATRIX)(
           },
           isBase64Encoded: true,
         },
-        { shouldConvertContentLengthToInt: true }
+        { shouldConvertContentLengthToInt: true },
       );
       const etagRegex = /^W\/.*$/;
       const lastModifiedRegex = /^.* GMT$/;
@@ -252,7 +251,7 @@ describe.each(EACH_MATRIX)(
           expect(response.multiValueHeaders.etag[0]).toMatch(etagRegex);
           expect(response.multiValueHeaders['last-modified'].length).toEqual(1);
           expect(response.multiValueHeaders['last-modified'][0]).toMatch(
-            lastModifiedRegex
+            lastModifiedRegex,
           );
           delete response.multiValueHeaders.etag;
           delete response.multiValueHeaders['last-modified'];
@@ -269,10 +268,10 @@ describe.each(EACH_MATRIX)(
           expect(response.headers.etag[0].value).toMatch(etagRegex);
           expect(response.headers['last-modified'].length).toEqual(1);
           expect(response.headers['last-modified'][0].key).toMatch(
-            'last-modified'
+            'last-modified',
           );
           expect(response.headers['last-modified'][0].value).toMatch(
-            lastModifiedRegex
+            lastModifiedRegex,
           );
           delete response.headers.etag;
           delete response.headers['last-modified'];
@@ -376,7 +375,7 @@ describe.each(EACH_MATRIX)(
         path: '/users/2',
         httpMethod: 'PUT',
         body: Buffer.from(JSON.stringify({ name }), 'binary').toString(
-          'base64'
+          'base64',
         ),
         isBase64Encoded: true,
         multiValueHeaders: {
@@ -467,5 +466,5 @@ describe.each(EACH_MATRIX)(
       // await serverlessExpressInstance(event)
       // expect(customLogger.debug.mock.calls.length).toBe(0)
     });
-  }
+  },
 );

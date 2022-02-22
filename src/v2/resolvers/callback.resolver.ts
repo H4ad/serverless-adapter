@@ -9,7 +9,7 @@ import { Resolver, ResolverContract, ResolverProps } from '../contracts';
  */
 export type ServerlessCallback<TResponse> = (
   error: Error | null,
-  success: TResponse | null
+  success: TResponse | null,
 ) => void;
 
 /**
@@ -25,8 +25,8 @@ export class CallbackResolver
     callback,
   }: ResolverProps<any, any, ServerlessCallback<any>, any>): Resolver<any> {
     return {
-      succeed: response => callback(null, response),
-      fail: error => callback(error, null),
+      succeed: response => callback!(null, response),
+      fail: error => callback!(error, null),
     };
   }
 }

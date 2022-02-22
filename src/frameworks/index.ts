@@ -85,6 +85,6 @@ export function getFramework({
   }
 
   throw new Error(
-    'Invalid app supplied. Valid frameworks include: Express, Koa, Hapi'
+    'Invalid app supplied. Valid frameworks include: Express, Koa, Hapi',
   );
 }

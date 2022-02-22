@@ -21,7 +21,7 @@ export interface HandlerContract<
   TEvent = any,
   TContext = any,
   TCallback = any,
-  TResponse = any
+  TResponse = any,
 > {
   /**
    * Get the handler that will handle serverless requests
@@ -33,6 +33,6 @@ export interface HandlerContract<
     resolverFactory: ResolverContract<TEvent, TContext, TCallback, TResponse>,
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
-    log: ILogger
+    log: ILogger,
   ): ServerlessHandler;
 }

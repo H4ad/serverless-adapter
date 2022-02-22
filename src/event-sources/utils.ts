@@ -42,9 +42,7 @@ export function getRequestValuesFromEvent({
       headersMap: event.multiValueHeaders,
       lowerCaseKey: true,
     });
-  } else if (event.headers) {
-    headers = event.headers;
-  }
+  } else if (event.headers) headers = event.headers;
 
   let body;
 
@@ -53,7 +51,7 @@ export function getRequestValuesFromEvent({
     const { isBase64Encoded } = event;
     headers['content-length'] = Buffer.byteLength(
       body,
-      isBase64Encoded ? 'base64' : 'utf8'
+      isBase64Encoded ? 'base64' : 'utf8',
     );
   }
 
@@ -93,15 +91,12 @@ export function getEventSourceNameBasedOnEvent({ event }) {
     const eventSource = event.Records[0]
       ? event.Records[0].EventSource || event.Records[0].eventSource
       : undefined;
-    if (eventSource === 'aws:sns') {
-      return 'AWS_SNS';
-    }
-    if (eventSource === 'aws:dynamodb') {
-      return 'AWS_DYNAMODB';
-    }
-    if (eventSource === 'aws:sqs') {
-      return 'AWS_SQS';
-    }
+    if (eventSource === 'aws:sns') return 'AWS_SNS';
+
+    if (eventSource === 'aws:dynamodb') return 'AWS_DYNAMODB';
+
+    if (eventSource === 'aws:sqs') return 'AWS_SQS';
+
     return 'AWS_LAMBDA_EDGE';
   }
   if (event.requestContext) {
@@ -122,14 +117,13 @@ export function getCommaDelimitedHeaders({
 
   Object.entries(headersMap).forEach(([headerKey, headerValue]) => {
     const newKey = lowerCaseKey ? headerKey.toLowerCase() : headerKey;
-    if (Array.isArray(headerValue)) {
+    if (Array.isArray(headerValue))
       commaDelimitedHeaders[newKey] = headerValue.join(separator);
-    } else {
-      commaDelimitedHeaders[newKey] = headerValue;
-    }
+    else commaDelimitedHeaders[newKey] = headerValue;
   });
 
   return commaDelimitedHeaders;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const emptyResponseMapper = () => {};

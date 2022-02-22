@@ -18,15 +18,13 @@ export function getPathWithQueryStringParams(
     | string
     | Record<string, string | string[] | undefined>
     | undefined
-    | null
+    | null,
 ): string {
   if (typeof queryParams === 'string') return `${path}?${queryParams}`;
 
   const queryParamsString = getQueryParamsStringFromRecord(queryParams);
 
-  if (!queryParamsString) {
-    return path;
-  }
+  if (!queryParamsString) return path;
 
   return `${path}?${queryParamsString}`;
 }
@@ -47,16 +45,14 @@ export function getQueryParamsStringFromRecord(
   queryParamsRecord:
     | Record<string, string | string[] | undefined>
     | undefined
-    | null
+    | null,
 ): string {
   const searchParams = new URLSearchParams();
 
   const multiValueHeadersEntries: [string, string | string[] | undefined][] =
     Object.entries(queryParamsRecord || {});
 
-  if (multiValueHeadersEntries.length === 0) {
-    return '';
-  }
+  if (multiValueHeadersEntries.length === 0) return '';
 
   for (const [key, value] of multiValueHeadersEntries) {
     if (!Array.isArray(value)) {
@@ -64,9 +60,7 @@ export function getQueryParamsStringFromRecord(
       continue;
     }
 
-    for (const arrayValue of value) {
-      searchParams.append(key, arrayValue);
-    }
+    for (const arrayValue of value) searchParams.append(key, arrayValue);
   }
 
   return searchParams.toString();

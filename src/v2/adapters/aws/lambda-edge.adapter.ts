@@ -1,11 +1,12 @@
 //#region Imports
 
-import { CloudFrontRequest, Context } from 'aws-lambda';
-import {
+import type { CloudFrontRequest, Context } from 'aws-lambda';
+import type {
+  CloudFrontEvent,
   CloudFrontHeaders,
   CloudFrontResultResponse,
 } from 'aws-lambda/common/cloudfront';
-import {
+import type {
   CloudFrontRequestEvent,
   CloudFrontRequestResult,
 } from 'aws-lambda/trigger/cloudfront-request';
@@ -96,7 +97,7 @@ export interface LambdaEdgeAdapterOptions {
    * @default undefined
    */
   onResponseSizeExceedLimit?: (
-    response: CloudFrontRequestResult
+    response: CloudFrontRequestResult,
   ) => CloudFrontRequestResult;
 
   /**
@@ -106,7 +107,7 @@ export interface LambdaEdgeAdapterOptions {
    * @default The value from {@link DefaultForwardPath}
    */
   getPathFromEvent?: (
-    event: CloudFrontRequestEvent['Records'][number]
+    event: CloudFrontRequestEvent['Records'][number],
   ) => string;
 
   /**
@@ -162,7 +163,7 @@ export class LambdaEdgeAdapter
   constructor(protected readonly options?: LambdaEdgeAdapterOptions) {
     const disallowedHeaders = getDefaultIfUndefined(
       this.options?.disallowedHeaders,
-      DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS
+      DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS,
     );
 
     this.cachedDisallowedHeaders = disallowedHeaders.map(disallowedHeader => {
@@ -198,12 +199,17 @@ export class LambdaEdgeAdapter
   public canHandle(event: unknown): event is CloudFrontRequestEvent {
     const lambdaEdgeEvent = event as Partial<CloudFrontRequestEvent>;
 
-    if (!Array.isArray(lambdaEdgeEvent.Records)) return false;
+    if (!Array.isArray(lambdaEdgeEvent?.Records)) return false;
 
-    const distributionId =
-      lambdaEdgeEvent.Records[0]?.cf?.config?.distributionId;
+    const eventType = lambdaEdgeEvent.Records[0]?.cf?.config?.eventType;
+    const validEventTypes: CloudFrontEvent['config']['eventType'][] = [
+      'origin-response',
+      'origin-request',
+      'viewer-response',
+      'viewer-request',
+    ];
 
-    return typeof distributionId !== 'undefined';
+    return validEventTypes.includes(eventType);
   }
 
   /**
@@ -220,7 +226,7 @@ export class LambdaEdgeAdapter
       : undefined;
     const defaultPath = getPathWithQueryStringParams(
       cloudFrontRequest.uri,
-      cloudFrontRequest.querystring
+      cloudFrontRequest.querystring,
     );
     const path = getDefaultIfUndefined(pathFromOptions, defaultPath);
 
@@ -234,7 +240,7 @@ export class LambdaEdgeAdapter
     if (cloudFrontRequest.body) {
       const [buffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(cloudFrontRequest.body),
-        false
+        false,
       );
 
       body = buffer;
@@ -258,35 +264,33 @@ export class LambdaEdgeAdapter
    * @inheritDoc
    */
   public getResponse(
-    props: GetResponseAdapterProps<CloudFrontRequestEvent>
+    props: GetResponseAdapterProps<CloudFrontRequestEvent>,
   ): CloudFrontRequestResult {
     const response = this.getResponseToLambdaEdge(props);
     const responseToServiceBytes = new TextEncoder().encode(
-      JSON.stringify(response)
+      JSON.stringify(response),
     ).length;
 
-    const isOrigiRequestOrResponse = this.isOriginRequestOrResponse(
-      props.event?.Records[0]?.cf.request || response
+    const isOrigiRequestOrResponse = this.isEventTypeOrigin(
+      props.event?.Records[0]?.cf.config,
     );
     const maxSizeInBytes = isOrigiRequestOrResponse
       ? getDefaultIfUndefined(
           this.options?.originMaxResponseSizeInBytes,
-          1024 * 1024
+          1024 * 1024,
         )
       : getDefaultIfUndefined(
           this.options?.viewerMaxResponseSizeInBytes,
-          1024 * 40
+          1024 * 40,
         );
 
-    if (responseToServiceBytes <= maxSizeInBytes) {
-      return response;
-    }
+    if (responseToServiceBytes <= maxSizeInBytes) return response;
 
-    if (this.options?.onResponseSizeExceedLimit) {
+    if (this.options?.onResponseSizeExceedLimit)
       this.options?.onResponseSizeExceedLimit(response);
-    } else {
+    else {
       props.log.error(
-        `SERVERLESS_ADAPTER:LAMBDA_EDGE_ADAPTER: Max response size exceeded: ${responseToServiceBytes} of the max of ${maxSizeInBytes}.`
+        `SERVERLESS_ADAPTER:LAMBDA_EDGE_ADAPTER: Max response size exceeded: ${responseToServiceBytes} of the max of ${maxSizeInBytes}.`,
       );
     }
 
@@ -324,14 +328,13 @@ export class LambdaEdgeAdapter
    * @param cloudFrontRequest The cloudfront request
    */
   protected getFlattenedHeadersFromCloudfrontRequest(
-    cloudFrontRequest: CloudFrontRequest
+    cloudFrontRequest: CloudFrontRequest,
   ): SingleValueHeaders {
     const headers: SingleValueHeaders = {};
     const headerValuePairs = Object.entries(cloudFrontRequest.headers);
 
-    for (const [headerKey, headerValue] of headerValuePairs) {
+    for (const [headerKey, headerValue] of headerValuePairs)
       headers[headerKey] = headerValue.map(header => header.value).join(',');
-    }
 
     return headers;
   }
@@ -348,15 +351,13 @@ export class LambdaEdgeAdapter
   }: GetResponseAdapterProps<CloudFrontRequestEvent>): CloudFrontRequestResult {
     const shouldUseHeadersFromFramework = getDefaultIfUndefined(
       this.options?.shouldUseHeadersFromFramework,
-      false
+      false,
     );
 
     const parsedBody: CloudFrontResultResponse | CloudFrontRequest =
       JSON.parse(body);
 
-    if (!shouldUseHeadersFromFramework) {
-      return parsedBody;
-    }
+    if (!shouldUseHeadersFromFramework) return parsedBody;
 
     parsedBody.headers = this.getHeadersForCloudfrontResponse(frameworkHeaders);
 
@@ -369,19 +370,15 @@ export class LambdaEdgeAdapter
    * @param originalHeaders The original version of the request sent by the framework
    */
   protected getHeadersForCloudfrontResponse(
-    originalHeaders: BothValueHeaders
+    originalHeaders: BothValueHeaders,
   ): CloudFrontHeaders {
     const originalHeadersEntries = Object.entries(originalHeaders);
     const headers: CloudFrontHeaders = {};
 
     for (const [headerKey, headerValue] of originalHeadersEntries) {
-      if (this.shouldStripHeader(headerKey)) {
-        continue;
-      }
+      if (this.shouldStripHeader(headerKey)) continue;
 
-      if (!headers[headerKey]) {
-        headers[headerKey] = [];
-      }
+      if (!headers[headerKey]) headers[headerKey] = [];
 
       if (!Array.isArray(headerValue)) {
         headers[headerKey].push({
@@ -412,9 +409,7 @@ export class LambdaEdgeAdapter
     const headerKeyLowerCase = headerKey.toLowerCase();
 
     for (const stripHeaderIf of this.cachedDisallowedHeaders) {
-      if (!stripHeaderIf.test(headerKeyLowerCase)) {
-        continue;
-      }
+      if (!stripHeaderIf.test(headerKeyLowerCase)) continue;
 
       return true;
     }
@@ -423,14 +418,12 @@ export class LambdaEdgeAdapter
   }
 
   /**
-   * Determines whether the event is from origin or is from viewer by looking the existence of `origin` property.
+   * Determines whether the event is from origin or is from viewer.
    *
    * @param content The event sent by AWS or the response sent by the framework
    */
-  protected isOriginRequestOrResponse(
-    content: CloudFrontRequest | CloudFrontResultResponse
-  ): boolean {
-    return 'origin' in content && content.origin !== undefined;
+  protected isEventTypeOrigin(content: CloudFrontEvent['config']): boolean {
+    return content.eventType.includes('origin');
   }
 
   //#endregion

@@ -1,5 +1,4 @@
 import { snsEvent } from './jest-helpers/events';
-
 const { getEventSource } = require('../src/event-sources');
 
 const snsEventSource = getEventSource({

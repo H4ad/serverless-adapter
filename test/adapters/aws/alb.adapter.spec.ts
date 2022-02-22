@@ -1,12 +1,12 @@
-import { ALBEvent, ALBResult } from 'aws-lambda';
+import type { ALBEvent, ALBResult } from 'aws-lambda';
 import { AlbAdapter } from '../../../src/v2/adapters/aws';
 import { GetResponseAdapterProps, Resolver } from '../../../src/v2/contracts';
 import {
+  ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
-  ILogger,
 } from '../../../src/v2/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
@@ -55,7 +55,7 @@ describe(AlbAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(body),
-        false
+        false,
       );
       expect(result.body).toStrictEqual(bodyBuffer);
       expect(result.headers).toHaveProperty('content-length');
@@ -65,7 +65,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -95,7 +95,7 @@ describe(AlbAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(body),
-        false
+        false,
       );
       expect(result.body).toStrictEqual(bodyBuffer);
       expect(result.headers).toHaveProperty('content-length');
@@ -105,7 +105,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.multiValueQueryStringParameters
+        event.multiValueQueryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -132,14 +132,14 @@ describe(AlbAdapter.name, () => {
 
       expect(result.headers).toHaveProperty('content-length');
       expect(result.headers['content-length']).toBe(
-        event.headers!['content-length']
+        event.headers!['content-length'],
       );
 
       expect(result).toHaveProperty('remoteAddress', remoteAddress);
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -173,7 +173,7 @@ describe(AlbAdapter.name, () => {
 
       const [bodyBuffer, contentLength] = getEventBodyAsBuffer(
         JSON.stringify(body),
-        false
+        false,
       );
       expect(result.body).toStrictEqual(bodyBuffer);
       expect(result.headers).toHaveProperty('content-length');
@@ -183,7 +183,7 @@ describe(AlbAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path.replace(stripBasePath, ''),
-        event.queryStringParameters
+        event.queryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -230,7 +230,7 @@ describe(AlbAdapter.name, () => {
       const event = createAlbEventWithMultiValueHeaders(
         method,
         path,
-        requestBody
+        requestBody,
       );
       const responseHeaders = getFlattenedHeadersMap(event.multiValueHeaders!);
       const responseMultiValueHeaders =
@@ -250,7 +250,7 @@ describe(AlbAdapter.name, () => {
       expect(result).toHaveProperty('headers', undefined);
       expect(result).toHaveProperty(
         'multiValueHeaders',
-        responseMultiValueHeaders
+        responseMultiValueHeaders,
       );
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });
@@ -265,7 +265,7 @@ describe(AlbAdapter.name, () => {
       const event = createAlbEventWithMultiValueHeaders(
         method,
         path,
-        requestBody
+        requestBody,
       );
 
       const log = {} as ILogger;
@@ -294,7 +294,7 @@ describe(AlbAdapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({
@@ -322,7 +322,7 @@ describe(AlbAdapter.name, () => {
       const event = createAlbEventWithMultiValueHeaders(
         method,
         path,
-        requestBody
+        requestBody,
       );
 
       const log = {} as ILogger;
@@ -352,7 +352,7 @@ describe(AlbAdapter.name, () => {
           getResponseResult = oldGetResponse(params);
 
           return getResponseResult;
-        }
+        },
       );
 
       adapter.onErrorWhileForwarding({

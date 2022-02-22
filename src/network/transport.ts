@@ -1,5 +1,4 @@
 import util from 'util';
-
 import { getEventSource } from '../event-sources';
 import { isBinary } from '../utils/is-binary';
 import { ServerlessRequest } from './request';
@@ -30,7 +29,7 @@ export function forwardResponse({
       body: logBody,
       headers,
       isBase64Encoded,
-    }
+    },
   );
 
   const successResponse = eventSource.getResponse({
@@ -105,9 +104,7 @@ export async function getRequestResponse({
 }
 
 export function waitForStreamComplete(stream) {
-  if (stream.complete || stream.writableEnded) {
-    return stream;
-  }
+  if (stream.complete || stream.writableEnded) return stream;
 
   return new Promise((resolve, reject) => {
     stream.once('error', complete);
@@ -117,9 +114,7 @@ export function waitForStreamComplete(stream) {
     let isComplete = false;
 
     function complete(err) {
-      if (isComplete) {
-        return;
-      }
+      if (isComplete) return;
 
       isComplete = true;
 
@@ -127,11 +122,8 @@ export function waitForStreamComplete(stream) {
       stream.removeListener('end', complete);
       stream.removeListener('finish', complete);
 
-      if (err) {
-        reject(err);
-      } else {
-        resolve(stream);
-      }
+      if (err) reject(err);
+      else resolve(stream);
     }
   });
 }
@@ -150,13 +142,12 @@ export async function forwardRequestToNodeServer({
 }: any) {
   const requestValues = eventSource.getRequest({ event, context, log });
 
-  if (!requestValues.path && eventSourceRoutes[eventSourceName]) {
+  if (!requestValues.path && eventSourceRoutes[eventSourceName])
     requestValues.path = eventSourceRoutes[eventSourceName];
-  }
 
   log.debug(
     'SERVERLESS_EXPRESS:FORWARD_REQUEST_TO_NODE_SERVER:REQUEST_VALUES',
-    { requestValues }
+    { requestValues },
   );
   const { request, response } = await getRequestResponse(requestValues);
   await framework.sendRequest({ app, request, response });

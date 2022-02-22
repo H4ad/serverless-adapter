@@ -1,6 +1,5 @@
 import util from 'util';
-import { makeResolver } from './utils/make-resolver';
-import { setCurrentInvoke } from './utils/current-invoke';
+import { ConfigureParams } from './@types/configure-params';
 import { getEventSource } from './event-sources';
 import { getEventSourceNameBasedOnEvent } from './event-sources/utils';
 import { getFramework } from './frameworks';
@@ -8,8 +7,9 @@ import {
   forwardRequestToNodeServer,
   respondToEventSourceWithError,
 } from './network/transport';
+import { setCurrentInvoke } from './utils/current-invoke';
 import { createDefaultLogger } from './utils/logger';
-
+import { makeResolver } from './utils/make-resolver';
 const {
   DEFAULT_BINARY_ENCODINGS,
   DEFAULT_BINARY_CONTENT_TYPES,
@@ -67,7 +67,7 @@ function configure({
 
     if (binaryMimeTypes) {
       console.warn(
-        '[DEPRECATION NOTICE] { binaryMimeTypes: [] } is deprecated. base64 encoding is now automatically determined based on response content-type and content-encoding. If you need to manually set binary content types, instead, use { binarySettings: { contentTypes: [] } }'
+        '[DEPRECATION NOTICE] { binaryMimeTypes: [] } is deprecated. base64 encoding is now automatically determined based on response content-type and content-encoding. If you need to manually set binary content types, instead, use { binarySettings: { contentTypes: [] } }',
       );
     }
 
@@ -120,14 +120,14 @@ function configure({
 
   handler.handler = (...params: [any, any, any?]) => {
     console.warn(
-      "[DEPRECATION NOTICE] You're using the deprecated `serverlessExpress({...}).handler({...})` method. This will be removed in a future version of @vendia/serverless-express. Instead, simply return `serverlessExpress({...})` as your handler."
+      "[DEPRECATION NOTICE] You're using the deprecated `serverlessExpress({...}).handler({...})` method. This will be removed in a future version of @vendia/serverless-express. Instead, simply return `serverlessExpress({...})` as your handler.",
     );
     return handler(...params);
   };
 
   handler.proxy = (...params) => {
     console.warn(
-      "[DEPRECATION NOTICE] You're using the deprecated `serverlessExpress({...}).proxy({...})` method. This will be removed in a future version of @vendia/serverless-express. Instead, simply return `serverlessExpress({...})` as your handler."
+      "[DEPRECATION NOTICE] You're using the deprecated `serverlessExpress({...}).proxy({...})` method. This will be removed in a future version of @vendia/serverless-express. Instead, simply return `serverlessExpress({...})` as your handler.",
     );
     // @ts-ignore
     return proxy(...params);

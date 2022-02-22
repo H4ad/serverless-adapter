@@ -1,5 +1,5 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import { BinarySettings } from '../interfaces/binary-settings';
+import { BinarySettings } from '../@types/binary-settings';
 import {
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
@@ -21,7 +21,9 @@ function isContentEncodingBinary({
   return contentEncoding
     .split(',')
     .some(value =>
-      binaryEncodingTypes.some(binaryEncoding => value.includes(binaryEncoding))
+      binaryEncodingTypes.some(binaryEncoding =>
+        value.includes(binaryEncoding),
+      ),
     );
 }
 
@@ -49,14 +51,14 @@ function isContentTypeBinary({
 
   const binaryContentTypesRegexes = binaryContentTypes.map(
     binaryContentType =>
-      new RegExp(`^${binaryContentType.replace(/\*/g, '.*')}$`)
+      new RegExp(`^${binaryContentType.replace(/\*/g, '.*')}$`),
   );
   const contentType = getContentType({ headers });
 
   if (!contentType) return false;
 
   return binaryContentTypesRegexes.some(binaryContentType =>
-    binaryContentType.test(contentType)
+    binaryContentType.test(contentType),
   );
 }
 
@@ -66,13 +68,10 @@ export interface IsBinaryProps {
 }
 
 export function isBinary({ headers, binarySettings }: IsBinaryProps) {
-  if (binarySettings.isBinary === false) {
-    return false;
-  }
+  if (binarySettings.isBinary === false) return false;
 
-  if (typeof binarySettings.isBinary === 'function') {
+  if (typeof binarySettings.isBinary === 'function')
     return binarySettings.isBinary({ headers });
-  }
 
   const binaryEncodingTypes =
     binarySettings.contentEncodings || DEFAULT_BINARY_ENCODINGS;

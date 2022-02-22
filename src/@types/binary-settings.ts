@@ -1,5 +1,5 @@
 export interface BinarySettings {
-  isBinary?: Function | boolean;
+  isBinary?: (({ headers: any }) => boolean) | boolean;
   contentTypes?: string[];
   contentEncodings?: string[];
 }

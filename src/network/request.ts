@@ -14,8 +14,6 @@ export interface ServerlessRequestProps {
 }
 
 export class ServerlessRequest extends http.IncomingMessage {
-  body: any;
-
   constructor({
     method,
     url,
@@ -49,4 +47,6 @@ export class ServerlessRequest extends http.IncomingMessage {
       this.push(null);
     };
   }
+
+  body: any;
 }

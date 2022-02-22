@@ -1,6 +1,6 @@
 //#region Imports
 
-import { ALBEvent, ALBResult, Context } from 'aws-lambda';
+import type { ALBEvent, ALBResult, Context } from 'aws-lambda';
 import {
   AdapterContract,
   AdapterRequest,
@@ -87,7 +87,7 @@ export class AlbAdapter
     if (event.body) {
       const [bufferBody, contentLength] = getEventBodyAsBuffer(
         event.body,
-        event.isBase64Encoded
+        event.isBase64Encoded,
       );
 
       body = bufferBody;
@@ -97,9 +97,7 @@ export class AlbAdapter
     let remoteAddress = '';
 
     // ref: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html#x-forwarded-for
-    if (headers['x-forwarded-for']) {
-      remoteAddress = headers['x-forwarded-for'];
-    }
+    if (headers['x-forwarded-for']) remoteAddress = headers['x-forwarded-for'];
 
     return {
       method,
@@ -172,7 +170,7 @@ export class AlbAdapter
   protected getPathFromEvent(event: ALBEvent): string {
     const stripBasePath = getDefaultIfUndefined(
       this.options?.stripBasePath,
-      ''
+      '',
     );
     const replaceRegex = new RegExp(`^${stripBasePath}`);
     const path = event.path.replace(replaceRegex, '');

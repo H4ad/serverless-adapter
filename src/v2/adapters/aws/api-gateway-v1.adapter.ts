@@ -1,7 +1,7 @@
 //#region Imports
 
-import { APIGatewayProxyResult, Context } from 'aws-lambda';
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
+import type { APIGatewayProxyResult, Context } from 'aws-lambda';
+import type { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
 import {
   AdapterContract,
   AdapterRequest,
@@ -100,7 +100,7 @@ export class ApiGatewayV1Adapter
     if (event.body) {
       const [bufferBody, contentLength] = getEventBodyAsBuffer(
         event.body,
-        event.isBase64Encoded
+        event.isBase64Encoded,
       );
 
       body = bufferBody;
@@ -139,13 +139,13 @@ export class ApiGatewayV1Adapter
 
     if (hasTransferEncodingChunked) {
       throw new Error(
-        'chunked encoding in headers is not supported by API Gateway V1'
+        'chunked encoding in headers is not supported by API Gateway V1',
       );
     }
 
     if (response?.chunkedEncoding) {
       throw new Error(
-        'chunked encoding in response is not supported by API Gateway V1'
+        'chunked encoding in response is not supported by API Gateway V1',
       );
     }
 
@@ -192,7 +192,7 @@ export class ApiGatewayV1Adapter
   protected getPathFromEvent(event: APIGatewayProxyEvent): string {
     const stripBasePath = getDefaultIfUndefined(
       this.options?.stripBasePath,
-      ''
+      '',
     );
     const replaceRegex = new RegExp(`^${stripBasePath}`);
     const path = event.path.replace(replaceRegex, '');

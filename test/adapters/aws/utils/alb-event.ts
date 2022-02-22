@@ -1,4 +1,4 @@
-import { ALBEvent } from 'aws-lambda';
+import type { ALBEvent } from 'aws-lambda';
 
 /**
  * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html}
@@ -7,7 +7,7 @@ export function createAlbEvent(
   httpMethod: string,
   path: string,
   body?: Record<string, unknown>,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
 ): ALBEvent {
   return {
     requestContext: {
@@ -52,7 +52,7 @@ export function createAlbEventWithMultiValueHeaders(
   httpMethod: string,
   path: string,
   body?: Record<string, unknown>,
-  headers?: Record<string, string[]>
+  headers?: Record<string, string[]>,
 ): ALBEvent {
   return {
     requestContext: {

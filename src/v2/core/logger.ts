@@ -4,7 +4,7 @@ export type LoggerFN = (message: any, ...additional: any[]) => void;
 export type ILogger = Record<LogLevels, LoggerFN>;
 
 export function createDefaultLogger(
-  { level }: LoggerOptions = { level: 'error' }
+  { level }: LoggerOptions = { level: 'error' },
 ): ILogger {
   const errorLogLevel = ['debug', 'verbose', 'info', 'warn', 'error'];
   const warnLogLevel = ['debug', 'verbose', 'info', 'warn'];

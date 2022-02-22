@@ -68,7 +68,7 @@ export interface ResolverContract<
   TEvent = any,
   TContext = any,
   TCallback = any,
-  TResponse = any
+  TResponse = any,
 > {
   /**
    * Create the resolver based on the context, callback or promise
@@ -76,6 +76,6 @@ export interface ResolverContract<
    * @param props The props used to create the resolver
    */
   createResolver(
-    props: ResolverProps<TEvent, TContext, TCallback, TResponse>
+    props: ResolverProps<TEvent, TContext, TCallback, TResponse>,
   ): Resolver<TResponse>;
 }
