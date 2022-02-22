@@ -4,6 +4,7 @@ import {
   ApiGatewayV2Adapter,
   DynamoDBAdapter,
   EventBridgeAdapter,
+  SNSAdapter,
   SQSAdapter,
 } from '../../../../src/v2/adapters/aws';
 import {
@@ -18,6 +19,7 @@ import {
   createEventBridgeEventSimple,
 } from './event-bridge';
 import { createSQSEvent } from './sqs';
+import { createSNSEvent } from './sns';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],
@@ -62,4 +64,5 @@ export const allAWSEvents: Array<[string, any]> = [
   [EventBridgeAdapter.name, createEventBridgeEvent()],
   [EventBridgeAdapter.name, createEventBridgeEventSimple()],
   [SQSAdapter.name, createSQSEvent()],
+  [SNSAdapter.name, createSNSEvent()],
 ];

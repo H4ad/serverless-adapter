@@ -1,5 +1,8 @@
 import { EventBridgeEvent } from 'aws-lambda';
 
+/**
+ * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html}
+ */
 export function createEventBridgeEvent(): EventBridgeEvent<any, any> {
   return {
     version: '0',
@@ -21,6 +24,9 @@ export function createEventBridgeEvent(): EventBridgeEvent<any, any> {
   };
 }
 
+/**
+ * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html}
+ */
 export function createEventBridgeEventSimple(): EventBridgeEvent<any, any> {
   return {
     version: '0',

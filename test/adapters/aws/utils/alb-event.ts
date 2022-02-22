@@ -1,5 +1,8 @@
 import { ALBEvent } from 'aws-lambda';
 
+/**
+ * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html}
+ */
 export function createAlbEvent(
   httpMethod: string,
   path: string,

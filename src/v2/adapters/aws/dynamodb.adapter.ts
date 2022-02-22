@@ -33,6 +33,8 @@ export interface DynamoDBAdapterOptions {
 /**
  * The adapter to handle requests from AWS DynamoDB.
  *
+ * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
+ *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html Event Reference}
  *
  * @example```typescript

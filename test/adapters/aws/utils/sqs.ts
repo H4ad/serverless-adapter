@@ -1,5 +1,8 @@
 import { SQSEvent } from 'aws-lambda';
 
+/**
+ * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html}
+ */
 export function createSQSEvent(): SQSEvent {
   return {
     Records: [

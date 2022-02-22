@@ -38,6 +38,8 @@ export type EventBridgeEventAll = EventBridgeEvent<any, any>;
 /**
  * The adapter to handle requests from AWS EventBridge (Cloudwatch Events).
  *
+ * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
+ *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html Event Reference}
  *
  * @example```typescript

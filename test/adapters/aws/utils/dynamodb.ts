@@ -1,5 +1,8 @@
 import { DynamoDBStreamEvent } from 'aws-lambda';
 
+/**
+ * Sample event from {@link https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html}
+ */
 export function createDynamoDBEvent(): DynamoDBStreamEvent {
   return {
     Records: [
