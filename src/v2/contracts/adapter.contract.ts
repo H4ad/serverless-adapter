@@ -1,4 +1,4 @@
-import { SingleValueHeaders } from '../@types';
+import { BothValueHeaders, SingleValueHeaders } from '../@types';
 import { ILogger } from '../core';
 import { ServerlessResponse } from '../network';
 import { Resolver } from './resolver.contract';
@@ -92,7 +92,7 @@ export interface GetResponseAdapterProps<TEvent> {
   /**
    * The framework response headers
    */
-  headers: Record<string, string | string[]>;
+  headers: BothValueHeaders;
 
   /**
    * Indicates whether the response is base64 encoded or not

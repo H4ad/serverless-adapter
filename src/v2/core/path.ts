@@ -20,6 +20,8 @@ export function getPathWithQueryStringParams(
     | undefined
     | null,
 ): string {
+  if (String(queryParams || '').length === 0) return path;
+
   if (typeof queryParams === 'string') return `${path}?${queryParams}`;
 
   const queryParamsString = getQueryParamsStringFromRecord(queryParams);

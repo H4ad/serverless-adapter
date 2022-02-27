@@ -27,6 +27,12 @@ import {
 //#endregion
 
 /**
+ * The type alias to indicate where we get the default value of query string to create the request.
+ */
+export type DefaultQueryString =
+  CloudFrontRequestEvent['Records'][number]['cf']['request']['querystring'];
+
+/**
  * The type alias to indicate where we get the default value of path to create the request.
  */
 export type DefaultForwardPath =
@@ -69,6 +75,24 @@ export const DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS: (string | RegExp)[] = [
 ];
 
 /**
+ * The default max response size in bytes of viewer request and viewer response.
+ *
+ * @default 1024 * 40 = 40960 = 40KB
+ *
+ * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html Reference}
+ */
+export const DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 40;
+
+/**
+ * The default max response size in bytes of origin request and origin response.
+ *
+ * @default 1024 * 1024 = 1048576 = 1MB
+ *
+ * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html Reference}
+ */
+export const DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 1024;
+
+/**
  * The options to customize the {@link LambdaEdgeAdapter}.
  */
 export interface LambdaEdgeAdapterOptions {
@@ -77,7 +101,7 @@ export interface LambdaEdgeAdapterOptions {
    *
    * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html Reference}
    *
-   * @default 1024 * 40 = 1048576 = 1MB
+   * @default {@link DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES}
    */
   viewerMaxResponseSizeInBytes?: number;
 
@@ -86,7 +110,7 @@ export interface LambdaEdgeAdapterOptions {
    *
    * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html Reference}
    *
-   * @default 1024 * 1024 = 40960 = 40KB
+   * @default {@link DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES}
    */
   originMaxResponseSizeInBytes?: number;
 
@@ -102,6 +126,8 @@ export interface LambdaEdgeAdapterOptions {
 
   /**
    * Return the path to be used to create a request to the framework
+   *
+   * @note You MUST append the query params from {@link DefaultQueryString}, you can use the helper {@link getPathWithQueryStringParams}.
    *
    * @param event The event sent by the serverless
    * @default The value from {@link DefaultForwardPath}
@@ -142,6 +168,7 @@ export interface LambdaEdgeAdapterOptions {
  *
  * This adapter is not fully compatible with Lambda@edge supported by @vendia/serverless-express, the request body was modified to return {@link NewLambdaEdgeBody} instead {@link OldLambdaEdgeBody}.
  * Also, the response has been modified to return entire body sent by the framework, in this form you MUST return the body from the framework in the format of {@link CloudFrontRequestResult}.
+ * And when we get an error during the forwarding to the framework, we call `resolver.fail` instead of trying to return status 500 like the old implementation was.
  *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html Lambda edge docs}
  * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-event-structure.html Event Reference}
@@ -271,23 +298,23 @@ export class LambdaEdgeAdapter
       JSON.stringify(response),
     ).length;
 
-    const isOrigiRequestOrResponse = this.isEventTypeOrigin(
-      props.event?.Records[0]?.cf.config,
+    const isOriginRequestOrResponse = this.isEventTypeOrigin(
+      props.event.Records[0].cf.config,
     );
-    const maxSizeInBytes = isOrigiRequestOrResponse
+    const maxSizeInBytes = isOriginRequestOrResponse
       ? getDefaultIfUndefined(
           this.options?.originMaxResponseSizeInBytes,
-          1024 * 1024,
+          DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES,
         )
       : getDefaultIfUndefined(
           this.options?.viewerMaxResponseSizeInBytes,
-          1024 * 40,
+          DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES,
         );
 
     if (responseToServiceBytes <= maxSizeInBytes) return response;
 
     if (this.options?.onResponseSizeExceedLimit)
-      this.options?.onResponseSizeExceedLimit(response);
+      this.options.onResponseSizeExceedLimit(response);
     else {
       props.log.error(
         `SERVERLESS_ADAPTER:LAMBDA_EDGE_ADAPTER: Max response size exceeded: ${responseToServiceBytes} of the max of ${maxSizeInBytes}.`,
@@ -303,19 +330,8 @@ export class LambdaEdgeAdapter
   public onErrorWhileForwarding({
     error,
     resolver,
-    respondWithErrors,
   }: OnErrorProps<CloudFrontRequestEvent, CloudFrontRequestResult>): void {
-    const body = respondWithErrors ? error.stack : undefined;
-
-    const errorResponse: CloudFrontResultResponse = {
-      status: '500',
-      body: JSON.stringify(body),
-      headers: {},
-      bodyEncoding: 'text',
-      statusDescription: 'Internal Server Error',
-    };
-
-    resolver.succeed(errorResponse);
+    resolver.fail(error);
   }
 
   //#endregion
@@ -356,6 +372,19 @@ export class LambdaEdgeAdapter
 
     const parsedBody: CloudFrontResultResponse | CloudFrontRequest =
       JSON.parse(body);
+
+    if (parsedBody.headers) {
+      parsedBody.headers = Object.keys(parsedBody.headers).reduce(
+        (acc, header) => {
+          if (this.shouldStripHeader(header)) return acc;
+
+          acc[header] = parsedBody.headers![header];
+
+          return acc;
+        },
+        {} as CloudFrontHeaders,
+      );
+    }
 
     if (!shouldUseHeadersFromFramework) return parsedBody;
 
@@ -406,6 +435,9 @@ export class LambdaEdgeAdapter
    * @param headerKey The header that will be tested
    */
   protected shouldStripHeader(headerKey: string): boolean {
+    if (this.options?.shouldStripHeader)
+      return this.options.shouldStripHeader(headerKey);
+
     const headerKeyLowerCase = headerKey.toLowerCase();
 
     for (const stripHeaderIf of this.cachedDisallowedHeaders) {
