@@ -9,6 +9,11 @@ import { AdapterContract } from './adapter.contract';
  * The type that represents a resolver used to send the response, error or success, to the client
  */
 export type Resolver<TResponse, TReturn> = {
+  /**
+   * The method that will perform the task of forwarding the request to the framework and waiting for the promise to be resolved with the response
+   *
+   * @param task The task to be executed
+   */
   run(task: () => Promise<TResponse>): TReturn;
 };
 
