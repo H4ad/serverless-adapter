@@ -11,9 +11,11 @@ import {
 //#endregion
 
 /**
- * The class that implements the resolver by using the AWS Context object
+ * The class that implements the resolver by using the AWS Context object.
  *
- * @note```md
+ * @note To use this resolver, you MUST leave `{@link https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html callbackWaitsForEmptyEventLoop}` as true, otherwise, AWS will not wait for this resolver to resolve.
+ *
+ * ```md
  * From the AWS Documentation, describing the functions used in this resolver:
  * // Functions for compatibility with earlier Node.js Runtime v0.10.42
  * // No longer documented, so they are deprecated, but they still work

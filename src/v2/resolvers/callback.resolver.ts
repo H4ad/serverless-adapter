@@ -19,6 +19,8 @@ export type ServerlessCallback<TResponse> = (
 
 /**
  * The class that implements the resolver using the callback function sent by serverless
+ *
+ * @note To use this resolver on AWS, you MUST leave `{@link https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html callbackWaitsForEmptyEventLoop}` as true, otherwise, AWS will not wait for this resolver to resolve.
  */
 export class CallbackResolver
   implements ResolverContract<any, any, ServerlessCallback<any>, any>
