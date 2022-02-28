@@ -1,6 +1,6 @@
 import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { DynamoDBAdapter } from '../../../src/v2/adapters/aws';
-import { Resolver } from '../../../src/v2/contracts';
+import { DelegatedResolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
   IEmptyResponse,
@@ -96,7 +96,7 @@ describe(DynamoDBAdapter.name, () => {
       const event = createDynamoDBEvent();
 
       const error = new Error('fail because I need to test.');
-      const resolver: Resolver<DynamoDBStreamEvent> = {
+      const resolver: DelegatedResolver<DynamoDBStreamEvent> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

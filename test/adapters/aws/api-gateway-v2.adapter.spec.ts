@@ -1,7 +1,10 @@
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
 import { ApiGatewayV2Adapter } from '../../../src/v2/adapters/aws';
-import { GetResponseAdapterProps, Resolver } from '../../../src/v2/contracts';
+import {
+  DelegatedResolver,
+  GetResponseAdapterProps,
+} from '../../../src/v2/contracts';
 import {
   ILogger,
   getEventBodyAsBuffer,
@@ -254,7 +257,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const log = {} as ILogger;
 
-      const resolver: Resolver<APIGatewayProxyStructuredResultV2> = {
+      const resolver: DelegatedResolver<APIGatewayProxyStructuredResultV2> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };
@@ -307,7 +310,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       const log = {} as ILogger;
 
-      const resolver: Resolver<APIGatewayProxyStructuredResultV2> = {
+      const resolver: DelegatedResolver<APIGatewayProxyStructuredResultV2> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

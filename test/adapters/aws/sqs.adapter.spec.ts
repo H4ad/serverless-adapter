@@ -1,6 +1,6 @@
 import type { SQSEvent } from 'aws-lambda';
 import { SQSAdapter } from '../../../src/v2/adapters/aws';
-import { Resolver } from '../../../src/v2/contracts';
+import { DelegatedResolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
   IEmptyResponse,
@@ -96,7 +96,7 @@ describe(SQSAdapter.name, () => {
       const event = createSQSEvent();
 
       const error = new Error('fail because I need to test.');
-      const resolver: Resolver<SQSEvent> = {
+      const resolver: DelegatedResolver<SQSEvent> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

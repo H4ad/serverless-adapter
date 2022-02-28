@@ -1,6 +1,9 @@
 import type { ALBEvent, ALBResult } from 'aws-lambda';
 import { AlbAdapter } from '../../../src/v2/adapters/aws';
-import { GetResponseAdapterProps, Resolver } from '../../../src/v2/contracts';
+import {
+  DelegatedResolver,
+  GetResponseAdapterProps,
+} from '../../../src/v2/contracts';
 import {
   ILogger,
   getEventBodyAsBuffer,
@@ -270,7 +273,7 @@ describe(AlbAdapter.name, () => {
 
       const log = {} as ILogger;
 
-      const resolver: Resolver<ALBResult> = {
+      const resolver: DelegatedResolver<ALBResult> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };
@@ -327,7 +330,7 @@ describe(AlbAdapter.name, () => {
 
       const log = {} as ILogger;
 
-      const resolver: Resolver<ALBResult> = {
+      const resolver: DelegatedResolver<ALBResult> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

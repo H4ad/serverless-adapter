@@ -2,7 +2,7 @@ import {
   EventBridgeAdapter,
   EventBridgeEventAll,
 } from '../../../src/v2/adapters/aws';
-import { Resolver } from '../../../src/v2/contracts';
+import { DelegatedResolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
   IEmptyResponse,
@@ -101,7 +101,7 @@ describe(EventBridgeAdapter.name, () => {
       const event = createEventBridgeEventSimple();
 
       const error = new Error('fail because I need to test.');
-      const resolver: Resolver<EventBridgeEventAll> = {
+      const resolver: DelegatedResolver<EventBridgeEventAll> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };

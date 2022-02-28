@@ -15,7 +15,7 @@ import {
   DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES,
   LambdaEdgeAdapter,
 } from '../../../src/v2/adapters/aws';
-import { Resolver } from '../../../src/v2/contracts';
+import { DelegatedResolver } from '../../../src/v2/contracts';
 import { ILogger } from '../../../src/v2/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
@@ -487,7 +487,7 @@ describe(LambdaEdgeAdapter.name, () => {
       for (const [event, respondWithErrors] of options) {
         const log = {} as ILogger;
 
-        const resolver: Resolver<CloudFrontRequestResult> = {
+        const resolver: DelegatedResolver<CloudFrontRequestResult> = {
           fail: jest.fn(),
           succeed: jest.fn(),
         };

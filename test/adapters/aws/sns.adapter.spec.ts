@@ -1,6 +1,6 @@
 import type { SNSEvent } from 'aws-lambda';
 import { SNSAdapter } from '../../../src/v2/adapters/aws';
-import { Resolver } from '../../../src/v2/contracts';
+import { DelegatedResolver } from '../../../src/v2/contracts';
 import {
   EmptyResponse,
   IEmptyResponse,
@@ -96,7 +96,7 @@ describe(SNSAdapter.name, () => {
       const event = createSNSEvent();
 
       const error = new Error('fail because I need to test.');
-      const resolver: Resolver<SNSEvent> = {
+      const resolver: DelegatedResolver<SNSEvent> = {
         fail: jest.fn(),
         succeed: jest.fn(),
       };
