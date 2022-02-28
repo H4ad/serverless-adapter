@@ -284,7 +284,7 @@ describe(ApiGatewayV2Adapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });
@@ -337,7 +337,7 @@ describe(ApiGatewayV2Adapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });

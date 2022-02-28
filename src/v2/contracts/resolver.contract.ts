@@ -1,7 +1,21 @@
+//#region Imports
+
+import { ILogger } from '../core';
+import { AdapterContract } from './adapter.contract';
+
+//#endregion
+
 /**
  * The type that represents a resolver used to send the response, error or success, to the client
  */
-export type Resolver<TResponse> = {
+export type Resolver<TResponse, TReturn> = {
+  run(task: () => Promise<TResponse>): TReturn;
+};
+
+/**
+ * The type that represents a delegate resolver that is passed to the adapter to handle what to do when an error occurs during forwarding.
+ */
+export type DelegatedResolver<TResponse> = {
   /**
    * Send the success response to the client
    *
@@ -18,25 +32,6 @@ export type Resolver<TResponse> = {
 };
 
 /**
- * The object that represents the promise resolver instanciated
- */
-export type PromiseResolver<TResponse> = {
-  /**
-   * Send the success response to the client
-   *
-   * @param success The serverless response
-   */
-  resolve: (success: TResponse) => void;
-
-  /**
-   * Send the error response to the client
-   *
-   * @param error The error object
-   */
-  reject: (error: Error) => void;
-};
-
-/**
  * The createResolver contract props
  */
 export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
@@ -46,19 +41,29 @@ export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
   event: TEvent;
 
   /**
+   * Indicates whether to forward the (error.stack) or not to the client
+   */
+  respondWithErrors: boolean;
+
+  /**
+   * The instance of the logger
+   */
+  log: ILogger;
+
+  /**
+   * The instance of the adapter
+   */
+  adapter: AdapterContract<TEvent, TContext, TResponse>;
+
+  /**
    * The context sent by serverless
    */
-  context: TContext;
+  context?: TContext;
 
   /**
    * The callback sent by serverless
    */
   callback?: TCallback;
-
-  /**
-   * An object created by the library to have a default resolver reliable from cloud to cloud
-   */
-  promise: PromiseResolver<TResponse>;
 };
 
 /**
@@ -69,6 +74,7 @@ export interface ResolverContract<
   TContext = any,
   TCallback = any,
   TResponse = any,
+  TReturn = any,
 > {
   /**
    * Create the resolver based on the context, callback or promise
@@ -77,5 +83,5 @@ export interface ResolverContract<
    */
   createResolver(
     props: ResolverProps<TEvent, TContext, TCallback, TResponse>,
-  ): Resolver<TResponse>;
+  ): Resolver<TResponse, TReturn>;
 }

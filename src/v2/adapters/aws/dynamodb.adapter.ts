@@ -123,9 +123,9 @@ export class DynamoDBAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
   }: OnErrorProps<DynamoDBStreamEvent, IEmptyResponse>): void {
-    resolver.fail(error);
+    delegatedResolver.fail(error);
   }
 
   //#endregion

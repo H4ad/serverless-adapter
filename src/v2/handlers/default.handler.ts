@@ -6,7 +6,6 @@ import {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
-  Resolver,
   ResolverContract,
   ServerlessHandler,
 } from '../contracts';
@@ -65,49 +64,26 @@ export class DefaultHandler<
 
       setCurrentInvoke({ event, context });
 
-      return new Promise((resolve, reject) => {
-        const promise = {
-          resolve,
-          reject,
-        };
+      const resolver = resolverFactory.createResolver({
+        event,
+        context,
+        callback,
+        log,
+        respondWithErrors,
+        adapter,
+      });
 
-        const resolver = resolverFactory.createResolver({
+      return resolver.run(() =>
+        this.forwardRequestToFramework(
+          app,
+          framework,
           event,
           context,
-          callback,
-          promise,
-        });
-
-        const forwardRequest = async () => {
-          try {
-            await this.forwardRequestToFramework(
-              app,
-              framework,
-              event,
-              context,
-              resolver,
-              adapter,
-              binarySettings,
-              log,
-            );
-          } catch (error) {
-            log.error(
-              'SERVERLESS_ADAPTER:RESPOND_TO_EVENT_SOURCE_WITH_ERROR',
-              error,
-            );
-
-            adapter.onErrorWhileForwarding({
-              resolver,
-              respondWithErrors,
-              error,
-              event,
-              log,
-            });
-          }
-        };
-
-        forwardRequest();
-      });
+          adapter,
+          binarySettings,
+          log,
+        ),
+      );
     };
   }
 
@@ -249,7 +225,6 @@ export class DefaultHandler<
    * @param framework The framework that will process requests
    * @param event The event sent by serverless
    * @param context The context sent by serverless
-   * @param resolver The resolver
    * @param adapter The adapter resolved to this event
    * @param log The instance of logger
    * @param binarySettings The binary settings
@@ -259,11 +234,10 @@ export class DefaultHandler<
     framework: FrameworkContract<TApp>,
     event: TEvent,
     context: TContext,
-    resolver: Resolver<TResponse>,
     adapter: AdapterContract<TEvent, TContext, TResponse>,
     binarySettings: BinarySettings,
     log: ILogger,
-  ) {
+  ): Promise<TResponse> {
     const requestValues = adapter.getRequest(event, context, log);
 
     this.onResolveRequestValues(log, requestValues);
@@ -277,16 +251,7 @@ export class DefaultHandler<
 
     this.onResolveForwardedResponseToFramework(log, response);
 
-    this.forwardResponse(
-      event,
-      response,
-      resolver,
-      adapter,
-      binarySettings,
-      log,
-    );
-
-    return response;
+    return this.forwardResponse(event, response, adapter, binarySettings, log);
   }
 
   /**
@@ -302,11 +267,10 @@ export class DefaultHandler<
   protected forwardResponse(
     event: TEvent,
     response: ServerlessResponse,
-    resolver: Resolver<TResponse>,
     adapter: AdapterContract<TEvent, TContext, TResponse>,
     binarySettings: BinarySettings,
     log: ILogger,
-  ): void {
+  ): TResponse {
     const statusCode = response.statusCode;
     const headers = ServerlessResponse.headers(response);
     const isBase64Encoded = isBinary(headers, binarySettings);
@@ -328,7 +292,7 @@ export class DefaultHandler<
 
     this.onForwardResponseAdapterResponse(log, successResponse, logBody);
 
-    resolver.succeed(successResponse);
+    return successResponse;
   }
 
   //#endregion

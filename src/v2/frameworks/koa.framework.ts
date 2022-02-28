@@ -1,6 +1,6 @@
 //#region Imports
 
-import Application from 'koa';
+import type Application from 'koa';
 import { FrameworkContract } from '../contracts';
 import { ServerlessRequest, ServerlessResponse } from '../network';
 

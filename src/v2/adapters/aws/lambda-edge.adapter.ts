@@ -329,9 +329,9 @@ export class LambdaEdgeAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
   }: OnErrorProps<CloudFrontRequestEvent, CloudFrontRequestResult>): void {
-    resolver.fail(error);
+    delegatedResolver.fail(error);
   }
 
   //#endregion

@@ -120,9 +120,9 @@ export class SNSAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
   }: OnErrorProps<SNSEvent, IEmptyResponse>): void {
-    resolver.fail(error);
+    delegatedResolver.fail(error);
   }
 
   //#endregion

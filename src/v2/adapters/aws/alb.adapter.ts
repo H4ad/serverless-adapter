@@ -140,7 +140,7 @@ export class AlbAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
     respondWithErrors,
     event,
     log,
@@ -155,7 +155,7 @@ export class AlbAdapter
       log,
     });
 
-    resolver.succeed(errorResponse);
+    delegatedResolver.succeed(errorResponse);
   }
 
   //#endregion

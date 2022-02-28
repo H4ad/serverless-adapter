@@ -114,7 +114,7 @@ describe(SQSAdapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         error,
-        resolver,
+        delegatedResolver: resolver,
         log: {} as ILogger,
         respondWithErrors: false,
       });

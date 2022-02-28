@@ -497,7 +497,7 @@ describe(LambdaEdgeAdapter.name, () => {
         adapter.onErrorWhileForwarding({
           event,
           log,
-          resolver,
+          delegatedResolver: resolver,
           respondWithErrors,
           error,
         });

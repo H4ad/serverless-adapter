@@ -162,7 +162,7 @@ export class ApiGatewayV1Adapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
     respondWithErrors,
     event,
     log,
@@ -177,7 +177,7 @@ export class ApiGatewayV1Adapter
       log,
     });
 
-    resolver.succeed(errorResponse);
+    delegatedResolver.succeed(errorResponse);
   }
 
   //#endregion

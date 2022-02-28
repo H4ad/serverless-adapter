@@ -120,9 +120,9 @@ export class SQSAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
   }: OnErrorProps<SQSEvent, IEmptyResponse>): void {
-    resolver.fail(error);
+    delegatedResolver.fail(error);
   }
 
   //#endregion

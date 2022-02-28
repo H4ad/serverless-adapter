@@ -1,6 +1,6 @@
 //#region
 
-import { Express } from 'express';
+import type { Express } from 'express';
 import { FrameworkContract } from '../contracts';
 import { ServerlessRequest, ServerlessResponse } from '../network';
 

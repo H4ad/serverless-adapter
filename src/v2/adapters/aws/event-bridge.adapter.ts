@@ -140,9 +140,9 @@ export class EventBridgeAdapter
    */
   public onErrorWhileForwarding({
     error,
-    resolver,
+    delegatedResolver,
   }: OnErrorProps<EventBridgeEventAll, IEmptyResponse>): void {
-    resolver.fail(error);
+    delegatedResolver.fail(error);
   }
 
   //#endregion

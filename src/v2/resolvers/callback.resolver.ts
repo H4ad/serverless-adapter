@@ -1,6 +1,11 @@
 //#region Imports
 
-import { Resolver, ResolverContract, ResolverProps } from '../contracts';
+import {
+  DelegatedResolver,
+  Resolver,
+  ResolverContract,
+  ResolverProps,
+} from '../contracts';
 
 //#endregion
 
@@ -23,10 +28,44 @@ export class CallbackResolver
    */
   public createResolver({
     callback,
-  }: ResolverProps<any, any, ServerlessCallback<any>, any>): Resolver<any> {
+    event,
+    log,
+    respondWithErrors,
+    adapter,
+  }: ResolverProps<any, any, ServerlessCallback<any>, any>): Resolver<
+    any,
+    void
+  > {
+    if (!callback) {
+      throw new Error(
+        'Could not figure out how to create the resolver because the "callback" argument was not sent.',
+      );
+    }
+
+    const delegatedResolver: DelegatedResolver<any> = {
+      succeed: response => callback(null, response),
+      fail: error => callback(error, null),
+    };
+
     return {
-      succeed: response => callback!(null, response),
-      fail: error => callback!(error, null),
+      run: task => {
+        task()
+          .then(response => delegatedResolver.succeed(response))
+          .catch(error => {
+            log.error(
+              'SERVERLESS_ADAPTER:RESPOND_TO_EVENT_SOURCE_WITH_ERROR',
+              error,
+            );
+
+            adapter.onErrorWhileForwarding({
+              delegatedResolver,
+              error,
+              log,
+              event,
+              respondWithErrors,
+            });
+          });
+      },
     };
   }
 }

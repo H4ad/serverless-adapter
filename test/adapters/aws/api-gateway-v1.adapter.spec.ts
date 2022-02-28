@@ -246,7 +246,7 @@ describe(ApiGatewayV1Adapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });
@@ -299,7 +299,7 @@ describe(ApiGatewayV1Adapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });

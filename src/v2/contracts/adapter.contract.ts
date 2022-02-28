@@ -1,7 +1,7 @@
 import { BothValueHeaders, SingleValueHeaders } from '../@types';
 import { ILogger } from '../core';
 import { ServerlessResponse } from '../network';
-import { Resolver } from './resolver.contract';
+import { DelegatedResolver } from './resolver.contract';
 
 /**
  * The props of the method that verify if this handler should handle the event.
@@ -122,7 +122,7 @@ export interface OnErrorProps<TEvent, TResponse> {
   /**
    * The instance of the resolver
    */
-  resolver: Resolver<TResponse>;
+  delegatedResolver: DelegatedResolver<TResponse>;
 
   /**
    * Indicates whether to forward the (error.stack) or not to the client

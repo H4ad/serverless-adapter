@@ -300,7 +300,7 @@ describe(AlbAdapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });
@@ -358,7 +358,7 @@ describe(AlbAdapter.name, () => {
       adapter.onErrorWhileForwarding({
         event,
         log,
-        resolver,
+        delegatedResolver: resolver,
         respondWithErrors,
         error,
       });
