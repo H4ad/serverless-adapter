@@ -13,7 +13,7 @@ describe(AwsContextResolver.name, () => {
   let mockedLogger!: ILogger;
   let mockedAdapter!: AdapterContract<any, any>;
 
-  function onCallbackResolve(task: () => void): void {
+  function onContextResolve(task: () => void): void {
     setTimeout(task, 200);
   }
 
@@ -66,7 +66,7 @@ describe(AwsContextResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onCallbackResolve(() => {
+    onContextResolve(() => {
       expect(resolverProps.context.succeed).toHaveBeenCalledWith(true);
 
       done();
@@ -89,7 +89,7 @@ describe(AwsContextResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onCallbackResolve(() => {
+    onContextResolve(() => {
       expect(resolverProps.log.error).toHaveBeenCalled();
 
       // eslint-disable-next-line @typescript-eslint/unbound-method

@@ -23,7 +23,7 @@ export class PromiseResolver implements ResolverContract<any, any, any, any> {
     adapter,
   }: ResolverProps<any, any, any, any>): Resolver<any, Promise<any>> {
     return {
-      run: ({ task }) => {
+      run: task => {
         return new Promise((resolve, reject) => {
           const delegatedResolver: DelegatedResolver<any> = {
             succeed: response => resolve(response),
