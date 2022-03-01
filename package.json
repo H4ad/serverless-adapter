@@ -9,7 +9,7 @@
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "prepare": "husky install",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
     "coverage": "codecov",
