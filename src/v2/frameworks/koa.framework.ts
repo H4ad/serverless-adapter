@@ -1,8 +1,8 @@
 //#region Imports
 
+import { IncomingMessage, ServerResponse } from 'http';
 import type Application from 'koa';
 import { FrameworkContract } from '../contracts';
-import { ServerlessRequest, ServerlessResponse } from '../network';
 
 //#endregion
 
@@ -15,8 +15,8 @@ export class KoaFramework implements FrameworkContract<Application> {
    */
   public sendRequest(
     app: Application,
-    request: ServerlessRequest,
-    response: ServerlessResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     app.callback()(request, response);
   }

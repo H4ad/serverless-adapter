@@ -1,6 +1,6 @@
 //#region Imports
 
-import { ServerlessRequest, ServerlessResponse } from '../network';
+import { IncomingMessage, ServerResponse } from 'http';
 
 //#endregion
 
@@ -17,7 +17,7 @@ export interface FrameworkContract<TApp> {
    */
   sendRequest(
     app: TApp,
-    request: ServerlessRequest,
-    response: ServerlessResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void;
 }

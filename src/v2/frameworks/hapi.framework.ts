@@ -1,8 +1,8 @@
 //#region Imports
 
+import { IncomingMessage, ServerResponse } from 'http';
 import type { Server } from 'hapi';
 import { FrameworkContract } from '../contracts';
-import { ServerlessRequest, ServerlessResponse } from '../network';
 
 //#endregion
 
@@ -15,8 +15,8 @@ export class HapiFramework implements FrameworkContract<Server> {
    */
   public sendRequest(
     app: Server,
-    request: ServerlessRequest,
-    response: ServerlessResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     const httpServer = app.listener || app.connections[0]?.server;
 

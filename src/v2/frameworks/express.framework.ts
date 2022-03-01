@@ -1,8 +1,8 @@
 //#region
 
+import { IncomingMessage, ServerResponse } from 'http';
 import type { Express } from 'express';
 import { FrameworkContract } from '../contracts';
-import { ServerlessRequest, ServerlessResponse } from '../network';
 
 //#endregion
 
@@ -15,8 +15,8 @@ export class ExpressFramework implements FrameworkContract<Express> {
    */
   public sendRequest(
     app: Express,
-    request: ServerlessRequest,
-    response: ServerlessResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     app(request, response);
   }
