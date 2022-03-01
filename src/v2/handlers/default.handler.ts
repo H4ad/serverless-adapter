@@ -259,7 +259,6 @@ export class DefaultHandler<
    *
    * @param event The event sent by serverless
    * @param response The response of the framework
-   * @param resolver The resolver
    * @param adapter The adapter resolved to this event
    * @param binarySettings The binary settings
    * @param log The instance of logger
