@@ -17,7 +17,8 @@ describe('ServerlessRequest', () => {
       body,
     });
 
-    expect(request).toHaveProperty('method', method);
+    expect(request).toHaveProperty('statusCode', 200);
+    expect(request).toHaveProperty('statusMessage', 'OK');
     expect(request).toHaveProperty('url', url);
     expect(request).toHaveProperty('headers', headers);
     expect(request).toHaveProperty('ip', remoteAddress);
@@ -25,8 +26,8 @@ describe('ServerlessRequest', () => {
     expect(request).toHaveProperty('complete', true);
     expect(request.readableEnded).toBe(true);
     expect(request).toHaveProperty('httpVersion', '1.1');
-    expect(request).toHaveProperty('httpVersionMajor', '1');
-    expect(request).toHaveProperty('httpVersionMinor', '1');
+    expect(request).toHaveProperty('httpVersionMajor', 1);
+    expect(request).toHaveProperty('httpVersionMinor', 1);
     expect(request.socket).toHaveProperty('encrypted', true);
     expect(request.socket).toHaveProperty('readable', false);
     expect(request.socket).toHaveProperty('remoteAddress', remoteAddress);

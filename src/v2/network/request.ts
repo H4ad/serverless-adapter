@@ -31,17 +31,17 @@ export class ServerlessRequest extends http.IncomingMessage {
       destroy: NO_OP,
     } as any);
 
-    Object.assign(this, {
-      ip: remoteAddress,
-      complete: true,
-      httpVersion: '1.1',
-      httpVersionMajor: '1',
-      httpVersionMinor: '1',
-      method,
-      headers,
-      body,
-      url,
-    });
+    this.statusCode = 200;
+    this.statusMessage = 'OK';
+    this.complete = true;
+    this.httpVersion = '1.1';
+    this.httpVersionMajor = 1;
+    this.httpVersionMinor = 1;
+    this.method = method;
+    this.headers = headers;
+    this.body = body;
+    this.url = url;
+    this.ip = remoteAddress;
 
     // ref: https://github.com/nodejs/node/blob/master/lib/internal/streams/readable.js#L1278
     (this as any)._readableState.endEmitted = true;
@@ -52,5 +52,6 @@ export class ServerlessRequest extends http.IncomingMessage {
     };
   }
 
+  ip?: string;
   body?: Buffer;
 }
