@@ -90,7 +90,7 @@ export class ServerlessResponse extends http.ServerResponse {
 
     response.statusCode = res.statusCode || 0;
     response[HEADERS] = res.headers;
-    response[BODY] = [Buffer.from((res as any).body)];
+    response[BODY] = (res as any).body ? [Buffer.from((res as any).body)] : [];
     response.end();
 
     return response;
