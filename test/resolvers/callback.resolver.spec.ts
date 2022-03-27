@@ -7,9 +7,9 @@ import { ILogger } from '../../src/v2/core';
 import { CallbackResolver, ServerlessCallback } from '../../src/v2/resolvers';
 
 describe(CallbackResolver.name, () => {
-  let resolverFactory!: CallbackResolver;
+  let resolverFactory!: CallbackResolver<unknown, unknown, unknown>;
   let mockedLogger!: ILogger;
-  let mockedAdapter!: AdapterContract<any, any>;
+  let mockedAdapter!: AdapterContract<unknown, unknown, unknown>;
 
   function onCallbackResolve(task: () => void): void {
     setTimeout(task, 200);

@@ -9,7 +9,7 @@ import {
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
-import { ILogger, waitForStreamComplete } from '../../core';
+import { ILogger } from '../../core';
 import { ServerlessRequest, ServerlessResponse } from '../../network';
 
 //#endregion
@@ -18,12 +18,14 @@ import { ServerlessRequest, ServerlessResponse } from '../../network';
  * The abstract class that represents the base class for a handler
  */
 export abstract class BaseHandler<
-  TApp = any,
-  TEvent = any,
-  TContext = any,
-  TCallback = any,
-  TResponse = any,
-> implements HandlerContract<TApp, TEvent, TContext, TCallback, TResponse>
+  TApp,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
+> implements
+    HandlerContract<TApp, TEvent, TContext, TCallback, TResponse, TReturn>
 {
   //#region Public Methods
 
@@ -34,11 +36,17 @@ export abstract class BaseHandler<
     app: TApp,
     framework: FrameworkContract<TApp>,
     adapters: AdapterContract<TEvent, TContext, TResponse>[],
-    resolverFactory: ResolverContract<TEvent, TContext, TCallback, TResponse>,
+    resolverFactory: ResolverContract<
+      TEvent,
+      TContext,
+      TCallback,
+      TResponse,
+      TReturn
+    >,
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
-  ): ServerlessHandler;
+  ): ServerlessHandler<TReturn>;
 
   //#endregion
 
@@ -69,10 +77,10 @@ export abstract class BaseHandler<
     }
 
     if (resolvedAdapters.length > 1) {
-      log.error(
-        `SERVERLESS_ADAPTER: Two or more adapters was resolved by the event, the adapters are: ${adapters.join(
-          ',',
-        )}. Choosing the first one.`,
+      throw new Error(
+        `SERVERLESS_ADAPTER: Two or more adapters was resolved by the event, the adapters are: ${adapters
+          .map(adapter => adapter.getAdapterName())
+          .join(', ')}.`,
       );
     }
 
@@ -84,9 +92,9 @@ export abstract class BaseHandler<
    *
    * @param requestValues The request values from adapter
    */
-  protected async getServerlessRequestResponseFromAdapterRequest(
+  protected getServerlessRequestResponseFromAdapterRequest(
     requestValues: AdapterRequest,
-  ): Promise<[request: ServerlessRequest, response: ServerlessResponse]> {
+  ): [request: ServerlessRequest, response: ServerlessResponse] {
     const request = new ServerlessRequest({
       method: requestValues.method,
       headers: requestValues.headers,
@@ -94,7 +102,6 @@ export abstract class BaseHandler<
       remoteAddress: requestValues.remoteAddress,
       url: requestValues.path,
     });
-    await waitForStreamComplete(request);
 
     const response = new ServerlessResponse({
       method: requestValues.method,

@@ -138,11 +138,7 @@ export interface OnErrorProps<TEvent, TResponse> {
 /**
  * The interface that represents a contract between the adapter and the actual implementation of the adapter.
  */
-export interface AdapterContract<
-  TEvent = any,
-  TContext = any,
-  TResponse = any,
-> {
+export interface AdapterContract<TEvent, TContext, TResponse> {
   /**
    * Get the adapter name
    */

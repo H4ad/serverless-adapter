@@ -75,11 +75,11 @@ export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
  * The interface that represents the contract used to send the response to the client
  */
 export interface ResolverContract<
-  TEvent = any,
-  TContext = any,
-  TCallback = any,
-  TResponse = any,
-  TReturn = any,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
 > {
   /**
    * Create the resolver based on the context, callback or promise

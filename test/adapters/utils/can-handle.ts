@@ -2,12 +2,16 @@ import { AdapterContract } from '../../../src/v2/contracts';
 import { ILogger } from '../../../src/v2/core';
 import { allEvents } from './events';
 
-export function createCanHandleTestsForAdapter<T, TContext = any>(
-  adapterFactory: () => AdapterContract<T, TContext>,
+export function createCanHandleTestsForAdapter<
+  T,
+  TContext = any,
+  TResponse = any,
+>(
+  adapterFactory: () => AdapterContract<T, TContext, TResponse>,
   context: TContext,
   logger: ILogger = {} as ILogger,
 ): void {
-  let adapter!: AdapterContract<T, TContext>;
+  let adapter!: AdapterContract<T, TContext, TResponse>;
 
   beforeEach(() => {
     adapter = adapterFactory();

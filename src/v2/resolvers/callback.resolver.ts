@@ -22,8 +22,15 @@ export type ServerlessCallback<TResponse> = (
  *
  * @note To use this resolver on AWS, you MUST leave `{@link https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html callbackWaitsForEmptyEventLoop}` as true, otherwise, AWS will not wait for this resolver to resolve.
  */
-export class CallbackResolver
-  implements ResolverContract<any, any, ServerlessCallback<any>, any>
+export class CallbackResolver<TEvent, TContext, TResponse>
+  implements
+    ResolverContract<
+      TEvent,
+      TContext,
+      ServerlessCallback<any>,
+      TResponse,
+      void
+    >
 {
   /**
    * @inheritDoc
@@ -34,10 +41,12 @@ export class CallbackResolver
     log,
     respondWithErrors,
     adapter,
-  }: ResolverProps<any, any, ServerlessCallback<any>, any>): Resolver<
-    any,
-    void
-  > {
+  }: ResolverProps<
+    TEvent,
+    TContext,
+    ServerlessCallback<any>,
+    TResponse
+  >): Resolver<any, void> {
     if (!callback) {
       throw new Error(
         'Could not figure out how to create the resolver because the "callback" argument was not sent.',

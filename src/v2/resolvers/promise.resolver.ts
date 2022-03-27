@@ -12,7 +12,10 @@ import {
 /**
  * The class that implements the resolver using the promise object sent by this library
  */
-export class PromiseResolver implements ResolverContract<any, any, any, any> {
+export class PromiseResolver<TEvent, TContext, TCallback, TResponse, TReturn>
+  implements
+    ResolverContract<TEvent, TContext, TCallback, TResponse, Promise<any>>
+{
   /**
    * @inheritDoc
    */
@@ -21,7 +24,10 @@ export class PromiseResolver implements ResolverContract<any, any, any, any> {
     log,
     respondWithErrors,
     adapter,
-  }: ResolverProps<any, any, any, any>): Resolver<any, Promise<any>> {
+  }: ResolverProps<TEvent, TContext, TCallback, TResponse>): Resolver<
+    TResponse,
+    Promise<TReturn>
+  > {
     return {
       run: task => {
         return new Promise((resolve, reject) => {

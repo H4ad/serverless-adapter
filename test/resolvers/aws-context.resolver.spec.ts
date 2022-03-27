@@ -8,10 +8,10 @@ import { ILogger } from '../../src/v2/core';
 import { AwsContextResolver } from '../../src/v2/resolvers';
 
 describe(AwsContextResolver.name, () => {
-  let resolverFactory!: AwsContextResolver;
+  let resolverFactory!: AwsContextResolver<unknown, unknown, unknown>;
   let mockedContext!: Context;
   let mockedLogger!: ILogger;
-  let mockedAdapter!: AdapterContract<any, any>;
+  let mockedAdapter!: AdapterContract<unknown, unknown, unknown>;
 
   function onContextResolve(task: () => void): void {
     setTimeout(task, 200);

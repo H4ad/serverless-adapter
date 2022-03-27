@@ -23,8 +23,8 @@ import {
  * ```
  * @deprecated
  */
-export class AwsContextResolver
-  implements ResolverContract<any, Context, any, any>
+export class AwsContextResolver<TEvent, TCallback, TResponse>
+  implements ResolverContract<TEvent, Context, TCallback, TResponse, void>
 {
   /**
    * @inheritDoc

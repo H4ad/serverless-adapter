@@ -8,10 +8,16 @@ import { ILogger } from '../../src/v2/core';
 import { PromiseResolver } from '../../src/v2/resolvers';
 
 describe(PromiseResolver.name, () => {
-  let resolverFactory!: PromiseResolver;
+  let resolverFactory!: PromiseResolver<
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  >;
   let mockedContext!: Context;
   let mockedLogger!: ILogger;
-  let mockedAdapter!: AdapterContract<any, any>;
+  let mockedAdapter!: AdapterContract<unknown, unknown, unknown>;
 
   beforeEach(() => {
     resolverFactory = new PromiseResolver();

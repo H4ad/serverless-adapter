@@ -24,12 +24,13 @@ import { BaseHandler } from './base';
  * The class that implements a default serverless handler consisting of a function with event, context and callback parameters respectively
  */
 export class DefaultHandler<
-  TApp = any,
-  TEvent = any,
-  TContext = any,
-  TCallback = any,
-  TResponse = any,
-> extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse> {
+  TApp,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
+> extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
   //#region Public Methods
 
   /**
@@ -39,11 +40,17 @@ export class DefaultHandler<
     app: TApp,
     framework: FrameworkContract<TApp>,
     adapters: AdapterContract<TEvent, TContext, TResponse>[],
-    resolverFactory: ResolverContract<TEvent, TContext, TCallback, TResponse>,
+    resolverFactory: ResolverContract<
+      TEvent,
+      TContext,
+      TCallback,
+      TResponse,
+      TReturn
+    >,
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
-  ): ServerlessHandler {
+  ): ServerlessHandler<TReturn> {
     return (event: TEvent, context: TContext, callback?: TCallback) => {
       this.onReceiveRequest(
         log,
@@ -243,7 +250,7 @@ export class DefaultHandler<
     this.onResolveRequestValues(log, requestValues);
 
     const [request, response] =
-      await this.getServerlessRequestResponseFromAdapterRequest(requestValues);
+      this.getServerlessRequestResponseFromAdapterRequest(requestValues);
 
     framework.sendRequest(app, request, response);
 
