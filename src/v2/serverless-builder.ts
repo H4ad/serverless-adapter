@@ -29,11 +29,12 @@ import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
  * ```
  */
 export class ServerlessBuilder<
-  TApp = any,
-  TEvent = any,
-  TContext = any,
-  TCallback = any,
-  TResponse = any,
+  TApp,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
 > {
   //#region Constructor
 
@@ -83,7 +84,7 @@ export class ServerlessBuilder<
   /**
    * The list of adapters used to handle an event's request and response
    */
-  protected adapters: AdapterContract<TEvent, TContext>[] = [];
+  protected adapters: AdapterContract<TEvent, TContext, TResponse>[] = [];
 
   /**
    * The framework that will process requests
@@ -93,7 +94,13 @@ export class ServerlessBuilder<
   /**
    * The resolver that aims to resolve the response to serverless and stop its execution when the request ends
    */
-  protected resolver?: ResolverContract;
+  protected resolver?: ResolverContract<
+    TEvent,
+    TContext,
+    TCallback,
+    TResponse,
+    TReturn
+  >;
 
   /**
    * The handler that will get the event, context and callback and pass it to the adapter and framework
@@ -103,7 +110,8 @@ export class ServerlessBuilder<
     TEvent,
     TContext,
     TCallback,
-    TResponse
+    TResponse,
+    TReturn
   >;
 
   //#endregion
@@ -115,7 +123,9 @@ export class ServerlessBuilder<
    *
    * @param app The instance of the app
    */
-  public static new<TApp>(app: TApp): Omit<ServerlessBuilder, 'new'> {
+  public static new<TApp, TEvent, TContext, TCallback, TResponse, TReturn>(
+    app: TApp,
+  ): ServerlessBuilder<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
     return new ServerlessBuilder(app);
   }
 
@@ -129,8 +139,18 @@ export class ServerlessBuilder<
    * @param handler The implementation of the handler contract
    */
   public setHandler(
-    handler: HandlerContract<TApp, TEvent, TContext, TCallback, TResponse>,
+    handler: HandlerContract<
+      TApp,
+      TEvent,
+      TContext,
+      TCallback,
+      TResponse,
+      TReturn
+    >,
   ): Omit<this, 'setHandler'> {
+    if (this.handler)
+      throw new Error('SERVERLESS_ADAPTER: The handler should not set twice.');
+
     this.handler = handler;
 
     return this;
@@ -141,7 +161,12 @@ export class ServerlessBuilder<
    *
    * @param resolver The implementation of the resolver contract
    */
-  public setResolver(resolver: ResolverContract): Omit<this, 'setResolver'> {
+  public setResolver(
+    resolver: ResolverContract<TEvent, TContext, TCallback, TResponse, TReturn>,
+  ): Omit<this, 'setResolver'> {
+    if (this.resolver)
+      throw new Error('SERVERLESS_ADAPTER: The resolver should not set twice.');
+
     this.resolver = resolver;
 
     return this;
@@ -155,6 +180,12 @@ export class ServerlessBuilder<
   public setFramework(
     framework: FrameworkContract<TApp>,
   ): Omit<this, 'setFramework'> {
+    if (this.framework) {
+      throw new Error(
+        'SERVERLESS_ADAPTER: The framework should not set twice.',
+      );
+    }
+
     this.framework = framework;
 
     return this;
@@ -202,7 +233,9 @@ export class ServerlessBuilder<
    *
    * @param adapter The implementation of the adapter contract
    */
-  public addAdapter(adapter: AdapterContract<TEvent, TContext>): this {
+  public addAdapter(
+    adapter: AdapterContract<TEvent, TContext, TResponse>,
+  ): Pick<this, 'addAdapter' | 'build'> {
     this.adapters.push(adapter);
 
     return this;
@@ -211,22 +244,22 @@ export class ServerlessBuilder<
   /**
    * The builder method that returns the handler function to be exported for serverless consumption
    */
-  public build(): ServerlessHandler {
+  public build(): ServerlessHandler<TReturn> {
     if (!this.resolver) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a resolver before build the handler.',
+        'SERVERLESS_ADAPTER: Is required to set a resolver before build.',
       );
     }
 
     if (!this.framework) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.',
+        'SERVERLESS_ADAPTER: Is required to set a framework before build.',
       );
     }
 
     if (!this.handler) {
       throw new Error(
-        'SERVERLESS_ADAPTER: Is required to set a framework before build the handler.',
+        'SERVERLESS_ADAPTER: Is required to set a handler before build.',
       );
     }
 
