@@ -1,4 +1,4 @@
-import { getDefaultIfUndefined } from '../../src/v2/core';
+import { getDefaultIfUndefined } from '../../src/core';
 
 describe('getDefaultIfUndefined', () => {
   it('should return the value when value is not undefined', () => {

@@ -1,6 +1,6 @@
 import { ObjectReadableMock } from 'stream-mock';
-import { waitForStreamComplete } from '../../src/v2/core';
-import { ServerlessRequest, ServerlessResponse } from '../../src/v2/network';
+import { waitForStreamComplete } from '../../src/core';
+import { ServerlessRequest, ServerlessResponse } from '../../src/network';
 
 describe('ServerlessResponse', () => {
   it('should can create serverless response from parameters of constructor', () => {
@@ -67,8 +67,8 @@ describe('ServerlessResponse', () => {
       hasBody: boolean,
     ][] = [
       [request, 0, true],
-      [requestWithBody, requestWithBody.body!.length, true],
-      [requestWithBodyString, requestWithBodyString.body!.length, true],
+      [requestWithBody, requestWithBody.body.length, true],
+      [requestWithBodyString, requestWithBodyString.body.length, true],
       [requestHead, 0, false],
     ];
 

@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
-import { FastifyFramework } from '../../src/v2/frameworks';
+import { FastifyFramework } from '../../src/frameworks';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(

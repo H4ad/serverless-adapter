@@ -7,7 +7,7 @@ import {
   LambdaEdgeAdapter,
   SNSAdapter,
   SQSAdapter,
-} from '../../../../src/v2/adapters/aws';
+} from '../../../../src/adapters/aws';
 import {
   createAlbEvent,
   createAlbEventWithMultiValueHeaders,

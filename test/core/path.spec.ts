@@ -1,7 +1,7 @@
 import {
   getPathWithQueryStringParams,
   getQueryParamsStringFromRecord,
-} from '../../src/v2/core';
+} from '../../src/core';
 
 describe('getPathWithQueryStringParams', () => {
   it('should correctly return path and query string concaneted', () => {

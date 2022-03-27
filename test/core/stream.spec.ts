@@ -1,5 +1,5 @@
 import { ObjectReadableMock, ObjectWritableMock } from 'stream-mock';
-import { NO_OP, waitForStreamComplete } from '../../src/v2/core';
+import { NO_OP, waitForStreamComplete } from '../../src/core';
 import ErrorReadableMock from './utils/stream';
 
 describe('waitForStreamComplete', () => {

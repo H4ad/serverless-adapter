@@ -1,5 +1,5 @@
-import { NO_OP } from '../../src/v2/core';
-import { ServerlessRequest } from '../../src/v2/network';
+import { NO_OP } from '../../src/core';
+import { ServerlessRequest } from '../../src/network';
 
 describe('ServerlessRequest', () => {
   it('should can create serverless request from parameters of constructor', () => {

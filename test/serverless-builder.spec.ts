@@ -1,10 +1,10 @@
-import { ServerlessBuilder } from '../src/v2';
-import { BinarySettings } from '../src/v2/@types';
-import { ApiGatewayV2Adapter } from '../src/v2/adapters/aws';
-import { HandlerContract } from '../src/v2/contracts';
-import { NO_OP, createDefaultLogger } from '../src/v2/core';
-import { DefaultHandler } from '../src/v2/handlers';
-import { PromiseResolver } from '../src/v2/resolvers';
+import { ServerlessBuilder } from '../src';
+import { BinarySettings } from '../src/@types';
+import { ApiGatewayV2Adapter } from '../src/adapters/aws';
+import { HandlerContract } from '../src/contracts';
+import { NO_OP, createDefaultLogger } from '../src/core';
+import { DefaultHandler } from '../src/handlers';
+import { PromiseResolver } from '../src/resolvers';
 import { FrameworkMock } from './mocks/framework.mock';
 
 describe('ServerlessBuilder', () => {

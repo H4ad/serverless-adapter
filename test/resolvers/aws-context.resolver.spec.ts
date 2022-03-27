@@ -3,9 +3,9 @@ import {
   AdapterContract,
   OnErrorProps,
   ResolverProps,
-} from '../../src/v2/contracts';
-import { ILogger } from '../../src/v2/core';
-import { AwsContextResolver } from '../../src/v2/resolvers';
+} from '../../src/contracts';
+import { ILogger } from '../../src/core';
+import { AwsContextResolver } from '../../src/resolvers';
 
 describe(AwsContextResolver.name, () => {
   let resolverFactory!: AwsContextResolver<unknown, unknown, unknown>;

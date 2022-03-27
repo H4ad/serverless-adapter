@@ -8,15 +8,15 @@ import {
   BothValueHeaders,
   MultiValueHeaders,
   SingleValueHeaders,
-} from '../../../src/v2/@types';
+} from '../../../src/@types';
 import {
   DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS,
   DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES,
   DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES,
   LambdaEdgeAdapter,
-} from '../../../src/v2/adapters/aws';
-import { DelegatedResolver } from '../../../src/v2/contracts';
-import { ILogger } from '../../../src/v2/core';
+} from '../../../src/adapters/aws';
+import { DelegatedResolver } from '../../../src/contracts';
+import { ILogger } from '../../../src/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
   createLambdaEdgeOriginEvent,

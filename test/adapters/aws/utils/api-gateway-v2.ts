@@ -1,6 +1,6 @@
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import type { APIGatewayProxyEventQueryStringParameters } from 'aws-lambda/trigger/api-gateway-proxy';
-import { getQueryParamsStringFromRecord } from '../../../../src/v2/core';
+import { getQueryParamsStringFromRecord } from '../../../../src/core';
 
 export function createApiGatewayV2(
   method: string,

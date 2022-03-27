@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
-import { createDefaultLogger } from '../../src/v2/core';
+import { createDefaultLogger } from '../../src/core';
 import FunctionPropertyNames = jest.FunctionPropertyNames;
 import SpyInstance = jest.SpyInstance;
 

@@ -1,12 +1,12 @@
 import type { SNSEvent } from 'aws-lambda';
-import { SNSAdapter } from '../../../src/v2/adapters/aws';
-import { DelegatedResolver } from '../../../src/v2/contracts';
+import { SNSAdapter } from '../../../src/adapters/aws';
+import { DelegatedResolver } from '../../../src/contracts';
 import {
   EmptyResponse,
   IEmptyResponse,
   ILogger,
   getEventBodyAsBuffer,
-} from '../../../src/v2/core';
+} from '../../../src/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createSNSEvent } from './utils/sns';
 

@@ -2,7 +2,7 @@ import type {
   APIGatewayProxyEvent,
   APIGatewayProxyEventQueryStringParameters,
 } from 'aws-lambda/trigger/api-gateway-proxy';
-import { getMultiValueHeadersMap } from '../../../../src/v2/core';
+import { getMultiValueHeadersMap } from '../../../../src/core';
 
 export function createApiGatewayV1(
   httpMethod: string,

@@ -1,15 +1,16 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
 import http from 'http';
 import { AddressInfo } from 'net';
-import { NO_OP } from '../utils/no-op';
+import { SingleValueHeaders } from '../@types';
+import { NO_OP } from '../core';
 
 const HTTPS_PORT = 443;
 
 export interface ServerlessRequestProps {
   method: string;
   url: string;
-  headers: unknown;
-  body: unknown;
+  headers: SingleValueHeaders;
+  body?: Buffer;
   remoteAddress?: string;
 }
 
@@ -30,17 +31,20 @@ export class ServerlessRequest extends http.IncomingMessage {
       destroy: NO_OP,
     } as any);
 
-    Object.assign(this, {
-      ip: remoteAddress,
-      complete: true,
-      httpVersion: '1.1',
-      httpVersionMajor: '1',
-      httpVersionMinor: '1',
-      method,
-      headers,
-      body,
-      url,
-    });
+    this.statusCode = 200;
+    this.statusMessage = 'OK';
+    this.complete = true;
+    this.httpVersion = '1.1';
+    this.httpVersionMajor = 1;
+    this.httpVersionMinor = 1;
+    this.method = method;
+    this.headers = headers;
+    this.body = body;
+    this.url = url;
+    this.ip = remoteAddress;
+
+    // ref: https://github.com/nodejs/node/blob/master/lib/internal/streams/readable.js#L1278
+    (this as any)._readableState.endEmitted = true;
 
     this._read = () => {
       this.push(body);
@@ -48,5 +52,6 @@ export class ServerlessRequest extends http.IncomingMessage {
     };
   }
 
-  body: any;
+  ip?: string;
+  body?: Buffer;
 }

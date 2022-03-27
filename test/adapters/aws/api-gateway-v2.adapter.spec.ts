@@ -1,18 +1,18 @@
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
-import { ApiGatewayV2Adapter } from '../../../src/v2/adapters/aws';
+import { ApiGatewayV2Adapter } from '../../../src/adapters/aws';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
-} from '../../../src/v2/contracts';
+} from '../../../src/contracts';
 import {
   ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
-} from '../../../src/v2/core';
-import { ServerlessResponse } from '../../../src/v2/network';
+} from '../../../src/core';
+import { ServerlessResponse } from '../../../src/network';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createApiGatewayV2 } from './utils/api-gateway-v2';
 

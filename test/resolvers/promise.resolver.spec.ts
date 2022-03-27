@@ -3,9 +3,9 @@ import {
   AdapterContract,
   OnErrorProps,
   ResolverProps,
-} from '../../src/v2/contracts';
-import { ILogger } from '../../src/v2/core';
-import { PromiseResolver } from '../../src/v2/resolvers';
+} from '../../src/contracts';
+import { ILogger } from '../../src/core';
+import { PromiseResolver } from '../../src/resolvers';
 
 describe(PromiseResolver.name, () => {
   let resolverFactory!: PromiseResolver<

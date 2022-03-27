@@ -1,4 +1,4 @@
-import { NO_OP } from '../../src/v2/core';
+import { NO_OP } from '../../src/core';
 
 describe('NO_OP', () => {
   it('should be a function', () => {

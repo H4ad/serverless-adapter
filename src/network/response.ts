@@ -1,7 +1,7 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
 import http, { IncomingMessage, OutgoingHttpHeaders } from 'http';
 import { Socket } from 'net';
-import { NO_OP } from '../utils/no-op';
+import { NO_OP } from '../core';
 
 const headerEnd = '\r\n\r\n';
 
@@ -90,7 +90,7 @@ export class ServerlessResponse extends http.ServerResponse {
 
     response.statusCode = res.statusCode || 0;
     response[HEADERS] = res.headers;
-    response[BODY] = [Buffer.from((res as any).body)];
+    response[BODY] = (res as any).body ? [Buffer.from((res as any).body)] : [];
     response.end();
 
     return response;

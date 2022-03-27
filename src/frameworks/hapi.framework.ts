@@ -18,7 +18,7 @@ export class HapiFramework implements FrameworkContract<Server> {
     request: IncomingMessage,
     response: ServerResponse,
   ): void {
-    const httpServer: any = app.listener || (app as any).connections[0]?.server;
+    const httpServer: any = app.listener;
 
     httpServer._events.request(request, response);
   }
