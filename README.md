@@ -181,11 +181,11 @@ Honestly, I just refactored all the code that the @vendia team and many other co
 
 [downloads-img]:https://img.shields.io/npm/dt/serverless-adapter
 
-[downloads-url]:https://www.npmtrends.com/serverless-adapter
+[downloads-url]:https://www.npmtrends.com/@h4ad/serverless-adapter
 
-[npm-img]:https://img.shields.io/npm/v/serverless-adapter
+[npm-img]:https://img.shields.io/npm/v/@h4ad/serverless-adapter
 
-[npm-url]:https://www.npmjs.com/package/serverless-adapter
+[npm-url]:https://www.npmjs.com/package/@h4ad/serverless-adapter
 
 [issues-img]:https://img.shields.io/github/issues/H4ad/serverless-adapter
 
