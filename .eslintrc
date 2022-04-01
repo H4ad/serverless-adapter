@@ -1,0 +1,168 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json"
+    ]
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "prettier/prettier": "warn",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "node/no-missing-import": "off",
+    "node/no-empty-function": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "node/no-missing-require": "off",
+    "node/shebang": "off",
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "never"
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "@typescript-eslint/no-use-before-define": "off",
+    "quotes": [
+      "warn",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "curly": [
+      "error",
+      "multi-or-nest"
+    ],
+    "max-len": [
+      "warn",
+      {
+        "code": 140,
+        "tabWidth": 2,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreUrls": true,
+        "ignoreComments": true,
+        "ignorePattern": "^import\\s.+\\sfrom\\s.+;$"
+      }
+    ],
+    "no-case-declarations": "warn",
+    "no-control-regex": "off",
+    "node/no-unpublished-import": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/member-ordering": [
+      "error",
+      {
+        "default": [
+          // Constructors
+          "public-constructor",
+          "protected-constructor",
+          "private-constructor",
+          // Index signature
+          "signature",
+          // Fields
+          "protected-abstract-field",
+          "public-abstract-field",
+          "private-abstract-field",
+          "protected-static-field",
+          "public-static-field",
+          "private-static-field",
+          "protected-decorated-field",
+          "public-decorated-field",
+          "private-decorated-field",
+          "protected-instance-field",
+          "public-instance-field",
+          "private-instance-field",
+          // Getters
+          "protected-decorated-get",
+          "public-decorated-get",
+          "private-decorated-get",
+          "protected-static-get",
+          "public-static-get",
+          "private-static-get",
+          "protected-instance-get",
+          "public-instance-get",
+          "private-instance-get",
+          "protected-abstract-get",
+          "public-abstract-get",
+          "private-abstract-get",
+          "decorated-get",
+          "abstract-get",
+          "protected-get",
+          "public-get",
+          "private-get",
+          "static-get",
+          "instance-get",
+          "get",
+          // Setters
+          "protected-abstract-set",
+          "public-abstract-set",
+          "private-abstract-set",
+          "abstract-set",
+          "protected-decorated-set",
+          "public-decorated-set",
+          "private-decorated-set",
+          "protected-static-set",
+          "public-static-set",
+          "private-static-set",
+          "protected-instance-set",
+          "public-instance-set",
+          "private-instance-set",
+          "protected-set",
+          "public-set",
+          "private-set",
+          "decorated-set",
+          "static-set",
+          "instance-set",
+          "set",
+          // Methods
+          "public-static-method",
+          "protected-static-method",
+          "private-static-method",
+          "public-decorated-method",
+          "protected-decorated-method",
+          "private-decorated-method",
+          "public-abstract-method",
+          "protected-abstract-method",
+          "private-abstract-method",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
+    ]
+  }
+}

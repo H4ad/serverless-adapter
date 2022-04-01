@@ -1,59 +1,14 @@
-# typescript-npm-package-template
+<h1 align="center">
+  🚀 Serverless Adapter
+</h1>
 
-> Template to kickstart creating a Node.js module using TypeScript and VSCode
-
-Inspired by [node-module-boilerplate](https://github.com/sindresorhus/node-module-boilerplate)
-
-## Features
-
-- [Semantic Release](https://github.com/semantic-release/semantic-release)
-- [Issue Templates](https://github.com/ryansonshine/typescript-npm-package-template/tree/main/.github/ISSUE_TEMPLATE)
-- [GitHub Actions](https://github.com/ryansonshine/typescript-npm-package-template/tree/main/.github/workflows)
-- [Codecov](https://about.codecov.io/)
-- [VSCode Launch Configurations](https://github.com/ryansonshine/typescript-npm-package-template/blob/main/.vscode/launch.json)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Husky](https://github.com/typicode/husky)
-- [Lint Staged](https://github.com/okonet/lint-staged)
-- [Commitizen](https://github.com/search?q=commitizen)
-- [Jest](https://jestjs.io/)
-- [ESLint](https://eslint.org/)
-- [Prettier](https://prettier.io/)
-
-## Getting started
-
-### Set up your repository
-
-**Click the "Use this template" button.**
-
-Alternatively, create a new directory and then run:
-
-```bash
-curl -fsSL https://github.com/ryansonshine/typescript-npm-package-template/archive/main.tar.gz | tar -xz --strip-components=1
-```
-
-Replace `FULL_NAME`, `GITHUB_USER`, and `REPO_NAME` in the script below with your own details to personalize your new package:
-
-```bash
-FULL_NAME="John Smith"
-GITHUB_USER="johnsmith"
-REPO_NAME="my-cool-package"
-sed -i.mybak "s/ryansonshine/$GITHUB_USER/g; s/typescript-npm-package-template\|my-package-name/$REPO_NAME/g; s/Ryan Sonshine/$FULL_NAME/g" package.json package-lock.json README.md
-rm *.mybak
-```
-
-### Add NPM Token
-
-Add your npm token to your GitHub repository secrets as `NPM_TOKEN`.
-
-### Add Codecov integration
-
-Enable the Codecov GitHub App [here](https://github.com/apps/codecov).
-
-**Remove everything from here and above**
-
----
-
-# my-package-name
+<p align="center">
+  <a href="#install">Install</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#usage">Usage</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#support">Support</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#architecture">Architecture</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#credits">Credits</a>
+</p>
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -63,55 +18,187 @@ Enable the Codecov GitHub App [here](https://github.com/apps/codecov).
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-> My awesome module
+Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and Fastify)
+, on top of AWS Lambda, Amazon API Gateway and many other event sources.
 
-## Install
+This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I created a new way to interact and extend event sources by creating contracts to abstract the integrations between each library layer.
+
+Why you would use this libray instead of [@vendia/serverless-express](https://github.com/vendia/serverless-express)?
+
+- Better APIs to extend library functionality.
+  - You don't need me to release a new version to integrate with the new event source, you can create an adapter and just call the `addAdapter` method when building your handler.
+- All code can be extended, if you want to modify the current behavior you can.
+  - This is important because if you find a bug, you can quickly resolve it by extending the class, _and then you can submit a PR to fix the bug_.
+- All code was written in Typescript.
+- We have >99% coverage.
+
+# Install
+
+Using NPM:
 
 ```bash
-npm install my-package-name
+npm install --save @h4ad/serverless-adapter
 ```
 
-## Usage
+Using Yarn:
+
+```bash
+yarn add @h4ad/serverless-adapter
+```
+
+# Usage
+
+You can quickly use this library as follows:
 
 ```ts
-import { myPackage } from 'my-package-name';
+import app from './app';
 
-myPackage('hello');
-//=> 'hello from my package'
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new AlbAdapter())
+  .addAdapter(new SQSAdapter())
+  .addAdapter(new SNSAdapter())
+  .build();
+
+export { handler };
 ```
 
-## API
+Too fast? Ok, I can explain.
 
-### myPackage(input, options?)
+First, you need to create an instance of the builder with `ServerlessAdapter.new(app)`.
+The variable `app` is the instance of your framework (Express, Fastify, Koa, etc).
 
-#### input
+So you need to specify for this library which `framework` you will use to handle the `request` with `setFramework`, you can only use one.
+If you use express in our backend, use [ExpressFramework](./src/frameworks/express.framework.ts), see more in [support](#support).
 
-Type: `string`
+Then you specify which `handler` you will use to interact with the serverless cloud with `setHandler`, currently we only have one, the [DefaultHandler](./src/handlers/default.handler.ts).
+In the next releases, maybe we will add support for Azure, Huawei and others, for now, you can use this default.
 
-Lorem ipsum.
+Then you specify with `setResolver` which `resolver` you will use to wait for the library to forward the request to your `framework`, and then get the `response` back to your cloud.
+I recommend you use [PromiseResolver](./src/resolvers/promise.resolver.ts), it's the most cloud-agnostic `resolver`.
 
-#### options
+By now, you've already added the basic abstractions of this library, now, you can add the `adapters` that will add support for receiving and processing different sources of `addAdapter` events.
+In the example I added [AlbAdapter](./src/adapters/aws/alb.adapter.ts), [SQSAdapter](./src/adapters/aws/sqs.adapter.ts) and [SNSAdapter](./src/adapters/aws/sns.adapter.ts).
+With these adapters you can connect your lambda to three different event sources and you can add more if you wish.
 
-Type: `object`
+Finally, we call `build` which will assemble your handler that you can expose directly to your cloud.
 
-##### postfix
+Final thoughts:
 
-Type: `string`
-Default: `rainbows`
+- You can set the `framework` only once.
+- You can set the `handler` only once.
+- You can set the `resolver` only once.
+- You can have as many `adapters` as you like, use and extend as you wish.
 
-Lorem ipsum.
+# Support
 
-[build-img]:https://github.com/ryansonshine/typescript-npm-package-template/actions/workflows/release.yml/badge.svg
-[build-url]:https://github.com/ryansonshine/typescript-npm-package-template/actions/workflows/release.yml
-[downloads-img]:https://img.shields.io/npm/dt/typescript-npm-package-template
-[downloads-url]:https://www.npmtrends.com/typescript-npm-package-template
-[npm-img]:https://img.shields.io/npm/v/typescript-npm-package-template
-[npm-url]:https://www.npmjs.com/package/typescript-npm-package-template
-[issues-img]:https://img.shields.io/github/issues/ryansonshine/typescript-npm-package-template
-[issues-url]:https://github.com/ryansonshine/typescript-npm-package-template/issues
-[codecov-img]:https://codecov.io/gh/ryansonshine/typescript-npm-package-template/branch/main/graph/badge.svg
-[codecov-url]:https://codecov.io/gh/ryansonshine/typescript-npm-package-template
+> We are in beta, so some adapters may not work as expected, feel free to create an issue or provide feedback on current behavior.
+
+By design we have these contracts that define the layers of the library: Frameworks, Adapters, Resolvers and Handlers.
+
+> If you don't know what each thing means, see [Architecture](#architecture).
+
+Currently, we support these frameworks:
+
+- [Express](https://expressjs.com/) by using ([ExpressFramework](./src/frameworks/express.framework.ts))
+- [Fastify](https://www.fastify.io/) by using ([FastifyFramework](./src/frameworks/fastify.framework.ts))
+- [Hapi](https://hapi.dev/) by using ([HapiFramework](./src/frameworks/hapi.framework.ts))
+- [Koa](https://koajs.com/) by using ([KoaFramework](./src/frameworks/koa.framework.ts))
+
+We support these event sources:
+
+- AWS
+  - [AWS Load Balancer](https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html) by
+    using ([AlbAdapter](./src/adapters/aws/alb.adapter.ts))
+  - [AWS Api Gateway V1](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+    by using ([ApiGatewayV1Adapter](./src/adapters/aws/api-gateway-v1.adapter.ts))
+  - [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+    by using ([ApiGatewayV2Adapter](./src/adapters/aws/api-gateway-v2.adapter.ts))
+  - [AWS DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) by
+    using ([DynamoDBAdapter](./src/adapters/aws/dynamodb.adapter.ts))
+  - [AWS Event Bridge / CloudWatch Events](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html)
+    by using ([EventBridgeAdapter](./src/adapters/aws/event-bridge.adapter.ts))
+  - [AWS Lambda Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) by
+    using ([LambdaEdgeAdapter](./src/adapters/aws/lambda-edge.adapter.ts))
+  - [AWS SNS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html) by
+    using ([SNSAdapter](./src/adapters/aws/sns.adapter.ts))
+  - [AWS SQS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html) by
+    using ([SQSAdapter](./src/adapters/aws/sqs.adapter.ts))
+- Azure
+  - The support is cooming soon.
+- Huawei
+  - The support is cooming soon.
+
+We support these resolvers:
+
+- Promise by using ([PromiseResolver](./src/resolvers/promise.resolver.ts))
+- Callback by using ([CallbackResolver](./src/resolvers/callback.resolver.ts))
+- AWS Context by using ([AwsContextResolver](./src/resolvers/aws-context.resolver.ts))
+
+We support these handlers:
+
+- Default by using ([DefaultHandler](./src/handlers/default.handler.ts))
+
+# Architecture
+
+The main purpose of this library is to allow the developer to add support for any cloud and as many event sources as he wants, without having to create an issue to request the feature or copy the library code because the library doesn't expose good APIs for you to extend its functionality
+
+So I refactored [@vendia/serverless-express](https://github.com/vendia/serverless-express) with 4 layers of abstraction: Framework, Handler, Resolver and Adapter.
+
+The [FrameworkContract](./src/contracts/framework.contract.ts) is responsible for forwarding to [IncomingMessage](https://nodejs.org/api/http.html#class-httpincomingmessage) and [ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse) for your application instance.
+With this abstraction you can implement any framework you want, they just need to accept both parameters and call [end](https://nodejs.org/api/http.html#class-httpserverresponse) in [ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse), so the library knows when to continue and return the response.
+
+The [HandlerContract](./src/contracts/handler.contract.ts) is responsible to get the input from the serverless and then manage to call each layer of abstraction to return a response.
+With this abstraction, you can implement different ways to receive input from your serverless environment.
+They usually have the same structure, but if you need to deal with a very different cloud, you can use this abstraction to add support for that cloud.
+
+> Handler is a good choice for implementing (~~monsters~~) ways to receive input.
+> For example, we can create an http server as its handler to test our serverless code without having to launch the framework. Because? I don't know, but you can.
+
+The [ResolverContract](./src/contracts/resolver.contract.ts) is responsible for waiting for the framework to handle the request and then returning the response to the cloud.
+Using AWS for example, you have three ways to wait for the response: returning a promise, calling the callback, and ~~using in-context methods~~, each option has its own benefits, but generally the promise option will be the better because any good cloud provider will support promises.
+
+Finally, the masterpiece of this library, the [AdapterContract](./src/contracts/adapter.contract.ts) is responsible for handling the received event, transforming the request in a way that your application can understand and then transforming the response in a way your cloud can understand.
+
+Well, with these four contracts, you'll be able to add support to any cloud that exists (no more excuses not to use cloud X with NodeJS).
+
+## Why you create this library?
+
+The real reason I created this library was because I wanted to add API Gateway and SQS support at the same time to save some money.
+But, [@vendia/serverless-express](https://github.com/vendia/serverless-express) was not supported, so I [created a PR](https://github.com/vendia/serverless-express/pull/483), but until I finished this library, that PR was never accepted.
+
+So I build my own library based on that library with better APIs so I never have to wait for the maintainer to accept my PR just to extend the library's functionality :)
+
+# Credits
+
+Honestly, I just refactored all the code that the @vendia team and many other contributors wrote, thanks so much to them for existing and giving us a brilliant library that is the core of my current company.
+
+[build-img]:https://github.com/H4ad/serverless-adapter/actions/workflows/release.yml/badge.svg
+
+[build-url]:https://github.com/H4ad/serverless-adapter/actions/workflows/release.yml
+
+[downloads-img]:https://img.shields.io/npm/dt/serverless-adapter
+
+[downloads-url]:https://www.npmtrends.com/serverless-adapter
+
+[npm-img]:https://img.shields.io/npm/v/serverless-adapter
+
+[npm-url]:https://www.npmjs.com/package/serverless-adapter
+
+[issues-img]:https://img.shields.io/github/issues/H4ad/serverless-adapter
+
+[issues-url]:https://github.com/H4ad/serverless-adapter/issues
+
+[codecov-img]:https://codecov.io/gh/H4ad/serverless-adapter/branch/main/graph/badge.svg
+
+[codecov-url]:https://codecov.io/gh/H4ad/serverless-adapter
+
 [semantic-release-img]:https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
+
 [semantic-release-url]:https://github.com/semantic-release/semantic-release
+
 [commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
+
 [commitizen-url]:http://commitizen.github.io/cz-cli/
