@@ -17,7 +17,7 @@ import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
  *
  * @example```typescript
  * const app = express();
- * export const handler = ServerlessBuilder.new(app)
+ * export const handler = ServerlessAdapter.new(app)
  *   .setFramework(new ExpressFramework())
  *   .setHandler(new DefaultHandler())
  *   .setResolver(new PromiseResolver())
@@ -28,7 +28,7 @@ import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
  *   .build();
  * ```
  */
-export class ServerlessBuilder<
+export class ServerlessAdapter<
   TApp,
   TEvent,
   TContext,
@@ -123,10 +123,17 @@ export class ServerlessBuilder<
    *
    * @param app The instance of the app
    */
-  public static new<TApp, TEvent, TContext, TCallback, TResponse, TReturn>(
+  public static new<
+    TApp,
+    TEvent,
+    TContext = any,
+    TCallback = any,
+    TResponse = any,
+    TReturn = any,
+  >(
     app: TApp,
-  ): ServerlessBuilder<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
-    return new ServerlessBuilder(app);
+  ): ServerlessAdapter<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
+    return new ServerlessAdapter(app);
   }
 
   //#endregion

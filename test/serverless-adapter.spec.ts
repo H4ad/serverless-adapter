@@ -1,4 +1,4 @@
-import { ServerlessBuilder } from '../src';
+import { ServerlessAdapter } from '../src';
 import { BinarySettings } from '../src/@types';
 import { ApiGatewayV2Adapter } from '../src/adapters/aws';
 import { HandlerContract } from '../src/contracts';
@@ -7,7 +7,7 @@ import { DefaultHandler } from '../src/handlers';
 import { PromiseResolver } from '../src/resolvers';
 import { FrameworkMock } from './mocks/framework.mock';
 
-describe('ServerlessBuilder', () => {
+describe('ServerlessAdapter', () => {
   it('should can create a pipeline of handlers', () => {
     const statusCode = 200;
     const response = { body: true };
@@ -24,7 +24,7 @@ describe('ServerlessBuilder', () => {
     const framework = new FrameworkMock(statusCode, response);
     const binarySettings: BinarySettings = { isBinary: () => true };
 
-    const handler = ServerlessBuilder.new(app)
+    const handler = ServerlessAdapter.new(app)
       .setHandler(mockedHandler)
       .setLogger(logger)
       .setRespondWithErrors(respondWithErrors)
@@ -51,7 +51,7 @@ describe('ServerlessBuilder', () => {
     const handler = new DefaultHandler();
 
     expect(() =>
-      ServerlessBuilder.new(null)
+      ServerlessAdapter.new(null)
         .setHandler(handler)
         .setRespondWithErrors(true)
         .setHandler(handler),
@@ -62,7 +62,7 @@ describe('ServerlessBuilder', () => {
     const framework = new FrameworkMock(200, {});
 
     expect(() =>
-      ServerlessBuilder.new(null)
+      ServerlessAdapter.new(null)
         .setFramework(framework)
         .setRespondWithErrors(true)
         .setFramework(framework),
@@ -73,7 +73,7 @@ describe('ServerlessBuilder', () => {
     const resolver = new PromiseResolver();
 
     expect(() =>
-      ServerlessBuilder.new(null)
+      ServerlessAdapter.new(null)
         .setResolver(resolver)
         .setRespondWithErrors(true)
         .setResolver(resolver),
@@ -81,18 +81,18 @@ describe('ServerlessBuilder', () => {
   });
 
   it('should CANNOT build without set resolver', () => {
-    expect(() => ServerlessBuilder.new(null).build()).toThrow('set a resolver');
+    expect(() => ServerlessAdapter.new(null).build()).toThrow('set a resolver');
   });
 
   it('should CANNOT build without set framework', () => {
     expect(() =>
-      ServerlessBuilder.new(null).setResolver(new PromiseResolver()).build(),
+      ServerlessAdapter.new(null).setResolver(new PromiseResolver()).build(),
     ).toThrow('set a framework');
   });
 
   it('should CANNOT build without set handler', () => {
     expect(() =>
-      ServerlessBuilder.new(null)
+      ServerlessAdapter.new(null)
         .setResolver(new PromiseResolver())
         .setFramework(new FrameworkMock(200, {}))
         .build(),
@@ -101,7 +101,7 @@ describe('ServerlessBuilder', () => {
 
   it('should CANNOT build without set at least one adapter', () => {
     expect(() =>
-      ServerlessBuilder.new(null)
+      ServerlessAdapter.new(null)
         .setResolver(new PromiseResolver())
         .setFramework(new FrameworkMock(200, {}))
         .setHandler(new DefaultHandler())
