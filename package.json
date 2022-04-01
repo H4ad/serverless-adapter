@@ -2,12 +2,12 @@
   "name": "@h4ad/serverless-adapter",
   "version": "0.0.0-development",
   "description": "This library enables you to utilize any Cloud or Event Source to respond to web and API requests using your existing Node.js application framework.",
-  "main": "./lib/src/index.js",
+  "main": "./lib/index.js",
   "files": [
     "lib/**/*"
   ],
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
+    "install:peers": "npx npm-install-peers",
     "prepare": "husky install",
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./lib/",
@@ -36,6 +36,10 @@
     "aws",
     "serverless",
     "api gateway",
+    "sqs",
+    "sns",
+    "lambda-edge",
+    "alb",
     "lambda",
     "express",
     "koa",
@@ -66,7 +70,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^6.0.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "lint-staged": "^10.5.4",
     "prettier": "^2.5.1",
     "semantic-release": "^19.0.2",
@@ -108,7 +112,8 @@
     }
   },
   "resolutions": {
-    "ansi-regex": "5.0.1"
+    "ansi-regex": "5.0.1",
+    "minimist": "1.2.6"
   },
   "config": {
     "commitizen": {
