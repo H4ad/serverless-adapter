@@ -23,7 +23,6 @@ describe('ServerlessRequest', () => {
     expect(request).toHaveProperty('ip', remoteAddress);
     expect(request).toHaveProperty('body', body);
     expect(request).toHaveProperty('complete', true);
-    expect(request.readableEnded).toBe(true);
     expect(request).toHaveProperty('httpVersion', '1.1');
     expect(request).toHaveProperty('httpVersionMajor', 1);
     expect(request).toHaveProperty('httpVersionMinor', 1);
@@ -32,7 +31,6 @@ describe('ServerlessRequest', () => {
     expect(request.socket).toHaveProperty('remoteAddress', remoteAddress);
     expect(request.socket).toHaveProperty('end', NO_OP);
     expect(request.socket).toHaveProperty('destroy', NO_OP);
-    expect((request as any)._readableState).toHaveProperty('endEmitted', true);
     expect(request.socket.address()).toHaveProperty('port', 443);
   });
 
