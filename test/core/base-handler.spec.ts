@@ -127,7 +127,6 @@ describe(BaseHandler.name, () => {
       adapterRequest.remoteAddress,
     );
 
-    expect(request.readableEnded).toBe(true);
     expect(response).toBeInstanceOf(ServerlessResponse);
   });
 });

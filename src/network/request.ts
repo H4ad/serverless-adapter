@@ -43,9 +43,6 @@ export class ServerlessRequest extends IncomingMessage {
     this.url = url;
     this.ip = remoteAddress;
 
-    // ref: https://github.com/nodejs/node/blob/master/lib/internal/streams/readable.js#L1278
-    (this as any)._readableState.endEmitted = true;
-
     this._read = () => {
       this.push(body);
       this.push(null);
