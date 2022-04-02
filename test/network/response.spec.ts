@@ -1,6 +1,9 @@
 import { ObjectReadableMock } from 'stream-mock';
-import { waitForStreamComplete } from '../../src/core';
-import { ServerlessRequest, ServerlessResponse } from '../../src/network';
+import {
+  ServerlessRequest,
+  ServerlessResponse,
+  waitForStreamComplete,
+} from '../../src';
 
 describe('ServerlessResponse', () => {
   it('should can create serverless response from parameters of constructor', () => {
@@ -67,8 +70,8 @@ describe('ServerlessResponse', () => {
       hasBody: boolean,
     ][] = [
       [request, 0, true],
-      [requestWithBody, requestWithBody.body.length, true],
-      [requestWithBodyString, requestWithBodyString.body.length, true],
+      [requestWithBody, requestWithBody.body!.length, true],
+      [requestWithBodyString, requestWithBodyString.body!.length, true],
       [requestHead, 0, false],
     ];
 
@@ -180,23 +183,41 @@ describe('ServerlessResponse', () => {
   });
 
   it('should write headers correctly in object when call writeHead', () => {
-    const response = new ServerlessResponse({
+    class MockServerlessResponse extends ServerlessResponse {
+      public callNativeWriteHead(
+        statusCode: number,
+        statusMessage?: string | any | any[],
+        obj?: any | any[],
+      ): this {
+        return super.callNativeWriteHead(statusCode, statusMessage, obj);
+      }
+    }
+
+    const response = new MockServerlessResponse({
       method: 'GET',
     });
 
+    response.callNativeWriteHead = jest.fn();
     response.setHeader = jest.fn();
 
-    expect(() => response.writeHead(200, { test: 'true' })).not.toThrowError();
+    expect(() => response.writeHead(200, { test1: 'true' })).not.toThrowError();
     expect(() =>
-      response.writeHead(200, 'test', { test: 'true' }),
+      response.writeHead(200, [{ test2: 'true' }, { test3: 'true' }]),
+    ).not.toThrowError();
+    expect(() =>
+      response.writeHead(200, 'test', { test4: 'true' }),
     ).not.toThrowError();
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(response.setHeader).toHaveBeenCalledTimes(2);
+    expect(response.setHeader).toHaveBeenCalledTimes(4);
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(response.setHeader).toHaveBeenNthCalledWith(1, 'test', 'true');
+    expect(response.setHeader).toHaveBeenNthCalledWith(1, 'test1', 'true');
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'test', 'true');
+    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'test2', 'true');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(response.setHeader).toHaveBeenNthCalledWith(3, 'test3', 'true');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(response.setHeader).toHaveBeenNthCalledWith(4, 'test4', 'true');
   });
 
   it('should write headers correctly in object when call setHeader', () => {
@@ -214,5 +235,19 @@ describe('ServerlessResponse', () => {
 
     expect(response.getHeaders()).not.toHaveProperty('test2', 'value');
     expect(response.headers).toHaveProperty('test2', 'value');
+  });
+
+  it('should received error when statusCode is falsy', () => {
+    const request = new ServerlessRequest({
+      method: 'GET',
+      url: '/users',
+      headers: {},
+    });
+
+    request.statusCode = undefined;
+
+    expect(() => ServerlessResponse.from(request)).toThrowError(
+      'Invalid status code',
+    );
   });
 });

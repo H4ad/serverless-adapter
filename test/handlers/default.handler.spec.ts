@@ -1,7 +1,7 @@
+import { ILogger, NO_OP, getCurrentInvoke } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
-import { ILogger, NO_OP, getCurrentInvoke } from '../../src/core';
-import { DefaultHandler } from '../../src/handlers';
-import { PromiseResolver } from '../../src/resolvers';
+import { DefaultHandler } from '../../src/handlers/default';
+import { PromiseResolver } from '../../src/resolvers/promise';
 import { createApiGatewayV2 } from '../adapters/aws/utils/api-gateway-v2';
 import { FrameworkMock } from '../mocks/framework.mock';
 
@@ -104,6 +104,35 @@ describe('DefaultHandler', () => {
     );
 
     const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
+    const context = { test: Symbol('unique') };
+
+    const result = await handler(event, context, NO_OP);
+
+    expect(result).toHaveProperty('headers', {});
+    expect(result).toHaveProperty('isBase64Encoded', true);
+    expect(result).toHaveProperty('statusCode', 200);
+    expect(result).toHaveProperty(
+      'body',
+      Buffer.from(JSON.stringify(response)).toString('base64'),
+    );
+  });
+
+  it('should forward and return the response from a request with empty body', async () => {
+    const framework = new FrameworkMock(200, response);
+
+    const handler = defaultHandler.getHandler(
+      app,
+      framework,
+      adapters,
+      resolver,
+      { isBinary: () => true },
+      respondWithErrors,
+      logger,
+    );
+
+    const event = createApiGatewayV2('GET', '/users', undefined, {
+      test: 'true',
+    });
     const context = { test: Symbol('unique') };
 
     const result = await handler(event, context, NO_OP);

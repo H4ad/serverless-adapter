@@ -2,7 +2,7 @@
 
 import { IncomingMessage, ServerResponse } from 'http';
 import { ObjectReadableMock } from 'stream-mock';
-import { FrameworkContract } from '../../src/contracts';
+import { FrameworkContract } from '../../src';
 
 //#endregion
 

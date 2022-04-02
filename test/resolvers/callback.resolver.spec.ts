@@ -1,10 +1,13 @@
 import {
   AdapterContract,
+  ILogger,
   OnErrorProps,
   ResolverProps,
-} from '../../src/contracts';
-import { ILogger } from '../../src/core';
-import { CallbackResolver, ServerlessCallback } from '../../src/resolvers';
+} from '../../src';
+import {
+  CallbackResolver,
+  ServerlessCallback,
+} from '../../src/resolvers/callback';
 
 describe(CallbackResolver.name, () => {
   let resolverFactory!: CallbackResolver<unknown, unknown, unknown>;

@@ -1,8 +1,13 @@
+import {
+  AdapterContract,
+  AdapterRequest,
+  BaseHandler,
+  ILogger,
+  ServerlessRequest,
+  ServerlessResponse,
+  createDefaultLogger,
+} from '../../src';
 import { AlbAdapter, SQSAdapter } from '../../src/adapters/aws';
-import { AdapterContract, AdapterRequest } from '../../src/contracts';
-import { ILogger, createDefaultLogger } from '../../src/core';
-import { BaseHandler } from '../../src/handlers';
-import { ServerlessRequest, ServerlessResponse } from '../../src/network';
 import { createSQSEvent } from '../adapters/aws/utils/sqs';
 
 class TestHandler<

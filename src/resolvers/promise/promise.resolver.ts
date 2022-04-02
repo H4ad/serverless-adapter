@@ -5,7 +5,7 @@ import {
   Resolver,
   ResolverContract,
   ResolverProps,
-} from '../contracts';
+} from '../../contracts';
 
 //#endregion
 

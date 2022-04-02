@@ -1,3 +1,4 @@
+export * from './base-handler';
 export * from './constants';
 export * from './current-invoke';
 export * from './event-body';

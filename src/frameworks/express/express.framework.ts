@@ -2,7 +2,7 @@
 
 import { IncomingMessage, ServerResponse } from 'http';
 import type { Express } from 'express';
-import { FrameworkContract } from '../contracts';
+import { FrameworkContract } from '../../contracts';
 
 //#endregion
 

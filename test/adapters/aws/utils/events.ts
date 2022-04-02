@@ -19,12 +19,12 @@ import {
   createEventBridgeEvent,
   createEventBridgeEventSimple,
 } from './event-bridge';
-import { createSQSEvent } from './sqs';
-import { createSNSEvent } from './sns';
 import {
   createLambdaEdgeOriginEvent,
   createLambdaEdgeViewerEvent,
 } from './lambda-edge';
+import { createSNSEvent } from './sns';
+import { createSQSEvent } from './sqs';
 
 export const allAWSEvents: Array<[string, any]> = [
   ['fake-to-test-undefined-event', undefined],

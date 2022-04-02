@@ -1,11 +1,11 @@
 import type { Context } from 'aws-lambda';
 import {
   AdapterContract,
+  ILogger,
   OnErrorProps,
   ResolverProps,
-} from '../../src/contracts';
-import { ILogger } from '../../src/core';
-import { AwsContextResolver } from '../../src/resolvers';
+} from '../../src';
+import { AwsContextResolver } from '../../src/resolvers/aws-context';
 
 describe(AwsContextResolver.name, () => {
   let resolverFactory!: AwsContextResolver<unknown, unknown, unknown>;

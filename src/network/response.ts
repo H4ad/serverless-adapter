@@ -1,5 +1,5 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import http, { IncomingMessage, OutgoingHttpHeaders } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
 import { NO_OP } from '../core';
 
@@ -24,7 +24,7 @@ export interface ServerlessResponseProps {
   method?: string;
 }
 
-export class ServerlessResponse extends http.ServerResponse {
+export class ServerlessResponse extends ServerResponse {
   constructor({ method }: ServerlessResponseProps) {
     super({ method } as any);
 
@@ -101,8 +101,7 @@ export class ServerlessResponse extends http.ServerResponse {
   }
 
   static headers(res: ServerlessResponse) {
-    const headers =
-      typeof res.getHeaders === 'function' ? res.getHeaders() : res._headers;
+    const headers = res.getHeaders();
 
     return Object.assign(headers, res[HEADERS]);
   }
@@ -114,22 +113,43 @@ export class ServerlessResponse extends http.ServerResponse {
 
   writeHead(
     statusCode: number,
-    reason?: string | OutgoingHttpHeaders,
-    obj?: OutgoingHttpHeaders,
+    statusMessage?: string | any | any[],
+    obj?: any | any[],
   ): any {
-    const headers = typeof reason === 'string' ? obj : reason;
+    const headersObjOrArray =
+      typeof statusMessage === 'string' ? obj : statusMessage;
 
-    for (const name in headers) {
-      this.setHeader(name, headers[name]!);
+    const arrayHeaders = Array.isArray(headersObjOrArray)
+      ? headersObjOrArray
+      : [headersObjOrArray || {}];
 
-      if (!this._wroteHeader) {
-        // we only need to initiate super.headers once
-        // writeHead will add the other headers itself
-        break;
+    for (const headers of arrayHeaders) {
+      for (const name in headers) {
+        this.setHeader(name, headers[name]!);
+
+        if (!this._wroteHeader) {
+          // we only need to initiate super.headers once
+          // writeHead will add the other headers itself
+          break;
+        }
       }
     }
 
-    // @ts-ignore
-    super.writeHead(statusCode, reason, obj);
+    return this.callNativeWriteHead(statusCode, statusMessage, obj);
+  }
+
+  /**
+   * I use ignore here because in nodejs 12.x, statusMessage can be string | OutgoingHttpHeaders
+   * But in nodejs >=14.x, statusMessage can also be OutgoingHttpHeaders[]
+   * I take care of these cases above, but here I can't handle it well, so I give up
+   * nodejs 12.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v12/http.d.ts#L229
+   * nodejs 14.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v14/http.d.ts#L263
+   */
+  protected callNativeWriteHead(
+    statusCode: number,
+    statusMessage?: string | any | any[],
+    obj?: any | any[],
+  ): this {
+    return super.writeHead(statusCode, statusMessage, obj);
   }
 }

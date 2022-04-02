@@ -1,16 +1,14 @@
 import type { ALBEvent, ALBResult } from 'aws-lambda';
-import { AlbAdapter } from '../../../src/adapters/aws';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
-} from '../../../src/contracts';
-import {
   ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
-} from '../../../src/core';
+} from '../../../src';
+import { AlbAdapter } from '../../../src/adapters/aws';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
   createAlbEvent,
