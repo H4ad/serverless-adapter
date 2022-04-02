@@ -1,5 +1,5 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import http from 'http';
+import { IncomingMessage } from 'http';
 import { AddressInfo } from 'net';
 import { SingleValueHeaders } from '../@types';
 import { NO_OP } from '../core';
@@ -14,7 +14,7 @@ export interface ServerlessRequestProps {
   remoteAddress?: string;
 }
 
-export class ServerlessRequest extends http.IncomingMessage {
+export class ServerlessRequest extends IncomingMessage {
   constructor({
     method,
     url,
