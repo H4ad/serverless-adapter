@@ -19,8 +19,7 @@
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
 Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and
-Fastify)
-, on top of AWS Lambda, Amazon API Gateway and many other event sources.
+Fastify), on top of AWS Lambda, Amazon API Gateway and many other event sources.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
 created a new way to interact and extend event sources by creating contracts to abstract the integrations between each
@@ -142,9 +141,9 @@ We support these event sources:
   - [AWS SQS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html) by
     using ([SQSAdapter](./src/adapters/aws/sqs.adapter.ts))
 - Azure
-  - The support is cooming soon.
+  - The support is coming soon.
 - Huawei
-  - The support is cooming soon.
+  - The support is coming soon.
 
 We support these resolvers:
 
