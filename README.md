@@ -56,6 +56,11 @@ yarn add @h4ad/serverless-adapter
 You can quickly use this library as follows:
 
 ```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)
