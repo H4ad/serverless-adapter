@@ -101,8 +101,7 @@ export class ServerlessResponse extends ServerResponse {
   }
 
   static headers(res: ServerlessResponse) {
-    const headers =
-      typeof res.getHeaders === 'function' ? res.getHeaders() : res._headers;
+    const headers = res.getHeaders();
 
     return Object.assign(headers, res[HEADERS]);
   }
@@ -136,12 +135,21 @@ export class ServerlessResponse extends ServerResponse {
       }
     }
 
-    // I use ignore here because in nodejs 12.x, statusMessage can be string | OutgoingHttpHeaders
-    // But in nodejs >=14.x, statusMessage can also be OutgoingHttpHeaders[]
-    // I take care of these cases above, but here I can't handle it well, so I give up
-    // nodejs 12.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v12/http.d.ts#L229
-    // nodejs 14.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v14/http.d.ts#L263
-    // @ts-ignore
+    return this.callNativeWriteHead(statusCode, statusMessage, obj);
+  }
+
+  /**
+   * I use ignore here because in nodejs 12.x, statusMessage can be string | OutgoingHttpHeaders
+   * But in nodejs >=14.x, statusMessage can also be OutgoingHttpHeaders[]
+   * I take care of these cases above, but here I can't handle it well, so I give up
+   * nodejs 12.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v12/http.d.ts#L229
+   * nodejs 14.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v14/http.d.ts#L263
+   */
+  protected callNativeWriteHead(
+    statusCode: number,
+    statusMessage?: string | any | any[],
+    obj?: any | any[],
+  ): this {
     return super.writeHead(statusCode, statusMessage, obj);
   }
 }

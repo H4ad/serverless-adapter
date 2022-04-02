@@ -116,4 +116,33 @@ describe('DefaultHandler', () => {
       Buffer.from(JSON.stringify(response)).toString('base64'),
     );
   });
+
+  it('should forward and return the response from a request with empty body', async () => {
+    const framework = new FrameworkMock(200, response);
+
+    const handler = defaultHandler.getHandler(
+      app,
+      framework,
+      adapters,
+      resolver,
+      { isBinary: () => true },
+      respondWithErrors,
+      logger,
+    );
+
+    const event = createApiGatewayV2('GET', '/users', undefined, {
+      test: 'true',
+    });
+    const context = { test: Symbol('unique') };
+
+    const result = await handler(event, context, NO_OP);
+
+    expect(result).toHaveProperty('headers', {});
+    expect(result).toHaveProperty('isBase64Encoded', true);
+    expect(result).toHaveProperty('statusCode', 200);
+    expect(result).toHaveProperty(
+      'body',
+      Buffer.from(JSON.stringify(response)).toString('base64'),
+    );
+  });
 });
