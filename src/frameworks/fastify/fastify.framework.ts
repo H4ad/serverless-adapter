@@ -2,7 +2,7 @@
 
 import { IncomingMessage, ServerResponse } from 'http';
 import type { FastifyInstance } from 'fastify';
-import { FrameworkContract } from '../contracts';
+import { FrameworkContract } from '../../contracts';
 
 //#endregion
 

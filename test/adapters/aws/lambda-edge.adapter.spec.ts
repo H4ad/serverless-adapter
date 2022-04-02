@@ -6,17 +6,17 @@ import type {
 } from 'aws-lambda/trigger/cloudfront-request';
 import {
   BothValueHeaders,
+  DelegatedResolver,
+  ILogger,
   MultiValueHeaders,
   SingleValueHeaders,
-} from '../../../src/@types';
+} from '../../../src';
 import {
   DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS,
   DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES,
   DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES,
   LambdaEdgeAdapter,
 } from '../../../src/adapters/aws';
-import { DelegatedResolver } from '../../../src/contracts';
-import { ILogger } from '../../../src/core';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
   createLambdaEdgeOriginEvent,

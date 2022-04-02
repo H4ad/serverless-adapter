@@ -1,22 +1,22 @@
 //#region Imports
 
 import util from 'util';
-import { BinarySettings, SingleValueHeaders } from '../@types';
+import { BinarySettings, SingleValueHeaders } from '../../@types';
 import {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
   ResolverContract,
   ServerlessHandler,
-} from '../contracts';
+} from '../../contracts';
 import {
   ILogger,
   isBinary,
   setCurrentInvoke,
   waitForStreamComplete,
-} from '../core';
-import { ServerlessResponse } from '../network';
-import { BaseHandler } from './base';
+} from '../../core';
+import { BaseHandler } from '../../core/base-handler';
+import { ServerlessResponse } from '../../network';
 
 //#endregion
 

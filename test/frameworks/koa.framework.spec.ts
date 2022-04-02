@@ -1,5 +1,5 @@
 import Application, { Context } from 'koa';
-import { KoaFramework } from '../../src/frameworks';
+import { KoaFramework } from '../../src/frameworks/koa';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(): TestRouteBuilderHandler<Application> {

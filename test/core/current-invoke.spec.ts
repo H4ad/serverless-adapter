@@ -1,4 +1,4 @@
-import { getCurrentInvoke, setCurrentInvoke } from '../../src/core';
+import { getCurrentInvoke, setCurrentInvoke } from '../../src';
 
 describe('CurrentInvoke', () => {
   it('should initial values of getCurrentInvoke be null', () => {

@@ -1,6 +1,9 @@
-import { FrameworkContract } from '../../src/contracts';
-import { waitForStreamComplete } from '../../src/core';
-import { ServerlessRequest, ServerlessResponse } from '../../src/network';
+import {
+  FrameworkContract,
+  ServerlessRequest,
+  ServerlessResponse,
+  waitForStreamComplete,
+} from '../../src';
 
 export type TestRouteBuilderHandler<TApp> = (
   app: TApp,

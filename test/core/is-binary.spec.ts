@@ -1,12 +1,12 @@
-import { BothValueHeaders } from '../../src/@types';
 import {
+  BothValueHeaders,
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
   getContentType,
   isBinary,
   isContentEncodingBinary,
   isContentTypeBinary,
-} from '../../src/core';
+} from '../../src';
 
 type HeaderListJest = [headers: BothValueHeaders, expectedValue: boolean][];
 

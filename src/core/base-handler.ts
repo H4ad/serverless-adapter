@@ -1,6 +1,6 @@
 //#region Imports
 
-import { BinarySettings } from '../../@types';
+import { BinarySettings } from '../@types';
 import {
   AdapterContract,
   AdapterRequest,
@@ -8,9 +8,9 @@ import {
   HandlerContract,
   ResolverContract,
   ServerlessHandler,
-} from '../../contracts';
-import { ILogger } from '../../core';
-import { ServerlessRequest, ServerlessResponse } from '../../network';
+} from '../contracts';
+import { ServerlessRequest, ServerlessResponse } from '../network';
+import { ILogger } from './index';
 
 //#endregion
 

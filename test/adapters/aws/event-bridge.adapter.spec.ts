@@ -1,14 +1,14 @@
 import {
-  EventBridgeAdapter,
-  EventBridgeEventAll,
-} from '../../../src/adapters/aws';
-import { DelegatedResolver } from '../../../src/contracts';
-import {
+  DelegatedResolver,
   EmptyResponse,
   IEmptyResponse,
   ILogger,
   getEventBodyAsBuffer,
-} from '../../../src/core';
+} from '../../../src';
+import {
+  EventBridgeAdapter,
+  EventBridgeEventAll,
+} from '../../../src/adapters/aws';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import {
   createEventBridgeEvent,

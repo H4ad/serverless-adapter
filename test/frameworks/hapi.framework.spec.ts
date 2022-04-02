@@ -1,6 +1,6 @@
 import { Server } from '@hapi/hapi';
 import type { Server as HapiServer } from 'hapi';
-import { HapiFramework } from '../../src/frameworks';
+import { HapiFramework } from '../../src/frameworks/hapi';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(

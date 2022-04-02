@@ -1,12 +1,12 @@
 import type { DynamoDBStreamEvent } from 'aws-lambda';
-import { DynamoDBAdapter } from '../../../src/adapters/aws';
-import { DelegatedResolver } from '../../../src/contracts';
 import {
+  DelegatedResolver,
   EmptyResponse,
   IEmptyResponse,
   ILogger,
   getEventBodyAsBuffer,
-} from '../../../src/core';
+} from '../../../src';
+import { DynamoDBAdapter } from '../../../src/adapters/aws';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createDynamoDBEvent } from './utils/dynamodb';
 

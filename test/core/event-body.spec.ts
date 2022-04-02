@@ -1,4 +1,4 @@
-import { getEventBodyAsBuffer } from '../../src/core';
+import { getEventBodyAsBuffer } from '../../src';
 
 describe('getEventBodyAsBuffer', () => {
   it('should return correctly the body in utf-8 as buffer', () => {

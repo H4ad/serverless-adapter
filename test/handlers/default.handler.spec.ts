@@ -1,7 +1,7 @@
+import { ILogger, NO_OP, getCurrentInvoke } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
-import { ILogger, NO_OP, getCurrentInvoke } from '../../src/core';
-import { DefaultHandler } from '../../src/handlers';
-import { PromiseResolver } from '../../src/resolvers';
+import { DefaultHandler } from '../../src/handlers/default';
+import { PromiseResolver } from '../../src/resolvers/promise';
 import { createApiGatewayV2 } from '../adapters/aws/utils/api-gateway-v2';
 import { FrameworkMock } from '../mocks/framework.mock';
 

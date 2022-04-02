@@ -1,5 +1,4 @@
-import { AdapterContract } from '../../../src/contracts';
-import { ILogger } from '../../../src/core';
+import { AdapterContract, ILogger } from '../../../src';
 import { allEvents } from './events';
 
 export function createCanHandleTestsForAdapter<

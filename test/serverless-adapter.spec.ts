@@ -1,10 +1,13 @@
-import { ServerlessAdapter } from '../src';
-import { BinarySettings } from '../src/@types';
+import {
+  BinarySettings,
+  HandlerContract,
+  NO_OP,
+  ServerlessAdapter,
+  createDefaultLogger,
+} from '../src';
 import { ApiGatewayV2Adapter } from '../src/adapters/aws';
-import { HandlerContract } from '../src/contracts';
-import { NO_OP, createDefaultLogger } from '../src/core';
-import { DefaultHandler } from '../src/handlers';
-import { PromiseResolver } from '../src/resolvers';
+import { DefaultHandler } from '../src/handlers/default';
+import { PromiseResolver } from '../src/resolvers/promise';
 import { FrameworkMock } from './mocks/framework.mock';
 
 describe('ServerlessAdapter', () => {

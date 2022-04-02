@@ -1,8 +1,8 @@
-import { BothValueHeaders } from '../../src/@types';
 import {
+  BothValueHeaders,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
-} from '../../src/core';
+} from '../../src';
 
 describe('getFlattenedHeadersMap', () => {
   it('should return headers flattened', () => {

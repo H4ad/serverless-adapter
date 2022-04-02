@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import { ExpressFramework } from '../../src/frameworks';
+import { ExpressFramework } from '../../src/frameworks/express';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(

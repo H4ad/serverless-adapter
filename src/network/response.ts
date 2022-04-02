@@ -1,5 +1,5 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
 import { NO_OP } from '../core';
 
@@ -114,8 +114,8 @@ export class ServerlessResponse extends ServerResponse {
 
   writeHead(
     statusCode: number,
-    statusMessage?: string | OutgoingHttpHeaders | OutgoingHttpHeaders[],
-    obj?: OutgoingHttpHeaders | OutgoingHttpHeaders[],
+    statusMessage?: string | any | any[],
+    obj?: any | any[],
   ): any {
     const headersObjOrArray =
       typeof statusMessage === 'string' ? obj : statusMessage;
