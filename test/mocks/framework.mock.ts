@@ -8,6 +8,8 @@ import { FrameworkContract } from '../../src';
 
 /**
  * The class that represents a mock for framework that forward the request body to the response.
+ *
+ * @internal
  */
 export class FrameworkMock implements FrameworkContract<null> {
   //#region Constructor
@@ -23,7 +25,7 @@ export class FrameworkMock implements FrameworkContract<null> {
   //#endregion
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public sendRequest(
     _: null,

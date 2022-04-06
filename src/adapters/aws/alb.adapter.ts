@@ -19,12 +19,14 @@ import {
 
 /**
  * The options to customize the {@link AlbAdapter}
+ *
+ * @public
  */
 export interface AlbAdapterOptions {
   /**
    * Strip base path for custom domains
    *
-   * @default ''
+   * @defaultValue ''
    */
   stripBasePath?: string;
 }
@@ -32,12 +34,17 @@ export interface AlbAdapterOptions {
 /**
  * The adapter to handle requests from AWS ALB
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
  * const adapter = new AlbAdapter({ stripBasePath });
  * ```
  *
- * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html Event Reference}
+ * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html | Event Reference}
+ *
+ * @public
+ * {@menu Adapters}
+ * {@submenu AWS}
  */
 export class AlbAdapter
   implements AdapterContract<ALBEvent, Context, ALBResult>
@@ -47,7 +54,7 @@ export class AlbAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link AlbAdapter}
+   * @param options - The options to customize the {@link AlbAdapter}
    */
   constructor(protected readonly options?: AlbAdapterOptions) {}
 
@@ -56,14 +63,14 @@ export class AlbAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return AlbAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is ALBEvent {
     const albEvent = event as Partial<ALBEvent>;
@@ -72,7 +79,7 @@ export class AlbAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: ALBEvent): AdapterRequest {
     const method = event.httpMethod;
@@ -109,7 +116,7 @@ export class AlbAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse({
     event,
@@ -136,7 +143,7 @@ export class AlbAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,
@@ -165,7 +172,7 @@ export class AlbAdapter
   /**
    * Get path from event with query strings
    *
-   * @param event The event sent by serverless
+   * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: ALBEvent): string {
     const stripBasePath = getDefaultIfUndefined(

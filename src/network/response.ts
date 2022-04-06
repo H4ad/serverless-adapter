@@ -20,10 +20,22 @@ function addData(stream: ServerlessResponse, data: Uint8Array | string) {
   else throw new Error(`response.write() of unexpected type: ${typeof data}`);
 }
 
+/**
+ * @public
+ */
 export interface ServerlessResponseProps {
+  /**
+   * The HTTP Method from request
+   */
   method?: string;
 }
 
+/**
+ * The class that represents a response instance used to send to the framework and wait until the framework finishes processing the request.
+ * Once it's happens, we use the properties from this response to built the response to the cloud.
+ *
+ * @public
+ */
 export class ServerlessResponse extends ServerResponse {
   constructor({ method }: ServerlessResponseProps) {
     super({ method } as any);
@@ -140,7 +152,7 @@ export class ServerlessResponse extends ServerResponse {
 
   /**
    * I use ignore here because in nodejs 12.x, statusMessage can be string | OutgoingHttpHeaders
-   * But in nodejs >=14.x, statusMessage can also be OutgoingHttpHeaders[]
+   * But in nodejs \>=14.x, statusMessage can also be OutgoingHttpHeaders[]
    * I take care of these cases above, but here I can't handle it well, so I give up
    * nodejs 12.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v12/http.d.ts#L229
    * nodejs 14.x ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v14/http.d.ts#L263

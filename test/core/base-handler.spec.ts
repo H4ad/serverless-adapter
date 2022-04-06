@@ -21,7 +21,7 @@ class TestHandler<
   getHandler = jest.fn();
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterByEventAndContext(
     event: any,
@@ -33,7 +33,7 @@ class TestHandler<
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getServerlessRequestResponseFromAdapterRequest(
     requestValues: AdapterRequest,

@@ -13,25 +13,29 @@ import {
 
 /**
  * The options to customize the {@link EventBridgeAdapter}
+ *
+ * @public
  */
 export interface EventBridgeOptions {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
-   * @default /eventbridge
+   * @defaultValue /eventbridge
    */
   eventBridgeForwardPath?: string;
 
   /**
    * The http method that will be used to create a request to be forwarded to the framework.
    *
-   * @default POST
+   * @defaultValue POST
    */
   eventBridgeForwardMethod?: string;
 }
 
 /**
  * Just a type alias to ignore generic types in the event
+ *
+ * @public
  */
 export type EventBridgeEventAll = EventBridgeEvent<any, any>;
 
@@ -40,13 +44,16 @@ export type EventBridgeEventAll = EventBridgeEvent<any, any>;
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html Event Reference}
+ * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html | Event Reference}
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const eventBridgeForwardPath = '/your/route/eventbridge'; // default /eventbridge
  * const eventBridgeForwardMethod = 'POST'; // default POST
  * const adapter = new EventBridgeAdapter({ eventBridgeForwardPath, eventBridgeForwardMethod });
  * ```
+ *
+ * @public
  */
 export class EventBridgeAdapter
   implements AdapterContract<EventBridgeEventAll, Context, IEmptyResponse>
@@ -56,7 +63,7 @@ export class EventBridgeAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link EventBridgeAdapter}
+   * @param options - The options to customize the {@link EventBridgeAdapter}
    */
   constructor(protected readonly options?: EventBridgeOptions) {}
 
@@ -65,14 +72,14 @@ export class EventBridgeAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return EventBridgeAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is EventBridgeEventAll {
     const eventBridgeEvent = event as Partial<EventBridgeEventAll>;
@@ -97,7 +104,7 @@ export class EventBridgeAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: EventBridgeEventAll): AdapterRequest {
     const path = getDefaultIfUndefined(
@@ -129,14 +136,14 @@ export class EventBridgeAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse(): IEmptyResponse {
     return EmptyResponse;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,

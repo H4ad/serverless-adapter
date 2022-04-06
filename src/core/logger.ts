@@ -1,5 +1,6 @@
 /**
  * The type representing the possible log levels to choose from.
+ * @public
  */
 export type LogLevels =
   | 'debug'
@@ -11,39 +12,44 @@ export type LogLevels =
 
 /**
  * The options to customize {@link ILogger}
+ * @public
  */
 export type LoggerOptions = {
   /**
-   * Select the log level, {@link LogLevels see more}.
+   * Select the log level, {@link LogLevels | see more}.
    *
-   * @default error
+   * @defaultValue error
    */
   level: LogLevels;
 };
 
 /**
  * The log function used in any level.
+ * @public
  */
 export type LoggerFN = (message: any, ...additional: any[]) => void;
 
 /**
  * The interface representing the logger, you can provide a custom logger by implementing this interface.
+ * @public
  */
 export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
 
 /**
  * The method used to create a simple logger instance to use in this library.
  *
- * @note Behind the scenes, this simple logger sends the message to the `console` methods.
+ * @remarks Behind the scenes, this simple logger sends the message to the `console` methods.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const logger = createDefaultLogger();
  *
  * logger.error('An error happens.');
  * // An error happens.
  * ```
  *
- * @param level Select the level of the log
+ * @param level - Select the level of the log
+ * @public
  */
 export function createDefaultLogger(
   { level }: LoggerOptions = { level: 'error' },

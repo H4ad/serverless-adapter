@@ -10,15 +10,17 @@ import { getFlattenedHeadersMap, getMultiValueHeadersMap } from './headers';
 /**
  * The function that determines by the content encoding whether the response should be treated as binary
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'Content-Encoding': 'gzip' };
  * const isBinary = isContentEncodingBinary(headers, ['gzip']);
  * console.log(isBinary);
  * // true
  * ```
  *
- * @param headers The headers of the response
- * @param binaryEncodingTypes The list of content encodings that will be treated as binary
+ * @param headers - The headers of the response
+ * @param binaryEncodingTypes - The list of content encodings that will be treated as binary
+ * @public
  */
 export function isContentEncodingBinary(
   headers: BothValueHeaders,
@@ -38,14 +40,16 @@ export function isContentEncodingBinary(
 /**
  * The function that returns the content type of headers
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'Content-Type': 'application/json' };
  * const contentType = getContentType(headers);
  * console.log(contentType);
  * // application/json
  * ```
  *
- * @param headers The headers of the response
+ * @param headers - The headers of the response
+ * @public
  */
 export function getContentType(headers: BothValueHeaders): string {
   const flattenedHeaders = getFlattenedHeadersMap(headers, ';', true);
@@ -58,15 +62,17 @@ export function getContentType(headers: BothValueHeaders): string {
 /**
  * The function that determines by the content type whether the response should be treated as binary
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'Content-Type': 'image/png' };
  * const isBinary = isContentTypeBinary(headers, [new RegExp('^image/.*$')]);
  * console.log(isBinary);
  * // true
  * ```
  *
- * @param headers The headers of the response
- * @param binaryContentTypes The list of content types that will be treated as binary
+ * @param headers - The headers of the response
+ * @param binaryContentTypes - The list of content types that will be treated as binary
+ * @public
  */
 export function isContentTypeBinary(
   headers: BothValueHeaders,
@@ -90,14 +96,17 @@ export function isContentTypeBinary(
 /**
  * The function used to determine from the headers and the binary settings if a response should be encoded or not
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'Content-Type': 'image/png', 'Content-Encoding': 'gzip' };
  * const isContentBinary = isBinary(headers, { contentEncodings: ['gzip'], contentTypes: [new RegExp('^image/.*$')] });
  * console.log(isContentBinary);
  * // true
+ * ```
  *
- * @param headers The headers of the response
- * @param binarySettings The settings for the validation
+ * @param headers - The headers of the response
+ * @param binarySettings - The settings for the validation
+ * @public
  */
 export function isBinary(
   headers: BothValueHeaders,

@@ -1,7 +1,8 @@
 /**
  * Transform the path and a map of query params to a string with formatted query params
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const path = '/pets/search';
  * const queryParams = { batata: undefined, petType: [ 'dog', 'fish' ] };
  * const result = getPathWithQueryStringParams(path, queryParams);
@@ -9,8 +10,10 @@
  * // /pets/search?batata=&petType=dog&petType=fish
  * ```
  *
- * @param path The path
- * @param queryParams The query params
+ * @param path - The path
+ * @param queryParams - The query params
+ *
+ * @public
  */
 export function getPathWithQueryStringParams(
   path: string,
@@ -34,14 +37,17 @@ export function getPathWithQueryStringParams(
 /**
  * Map query params to a string with formatted query params
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const queryParams = { batata: undefined, petType: [ 'dog', 'fish' ] };
  * const result = getQueryParamsStringFromRecord(queryParams);
  * console.log(result);
  * // batata=&petType=dog&petType=fish
  * ```
  *
- * @param queryParamsRecord The query params record
+ * @param queryParamsRecord - The query params record
+ *
+ * @public
  */
 export function getQueryParamsStringFromRecord(
   queryParamsRecord:

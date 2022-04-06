@@ -1,16 +1,20 @@
 /**
  * Get the event body as buffer from body string with content length
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const body = '{}';
  * const [buffer, contentLength] = getEventBodyAsBuffer(body, false);
  * console.log(buffer);
  * // <Buffer 7b 7d>
  * console.log(contentLength);
  * // 2
+ * ```
  *
- * @param body The body string that can be encoded or not
- * @param isBase64Encoded Tells if body string is encoded in base64
+ * @param body - The body string that can be encoded or not
+ * @param isBase64Encoded - Tells if body string is encoded in base64
+ *
+ * @public
  */
 export function getEventBodyAsBuffer(
   body: string,

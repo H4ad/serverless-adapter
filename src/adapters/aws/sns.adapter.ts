@@ -13,19 +13,21 @@ import {
 
 /**
  * The options to customize the {@link SNSAdapter}
+ *
+ * @public
  */
 export interface SNSAdapterOptions {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
-   * @default /sns
+   * @defaultValue /sns
    */
   snsForwardPath?: string;
 
   /**
    * The http method that will be used to create a request to be forwarded to the framework.
    *
-   * @default POST
+   * @defaultValue POST
    */
   snsForwardMethod?: string;
 }
@@ -35,13 +37,16 @@ export interface SNSAdapterOptions {
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html Event Reference}
+ * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html | Event Reference}
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const snsForwardPath = '/your/route/sns'; // default /sns
  * const snsForwardMethod = 'POST'; // default POST
  * const adapter = new SNSAdapter({ snsForwardPath, snsForwardMethod });
  * ```
+ *
+ * @public
  */
 export class SNSAdapter
   implements AdapterContract<SNSEvent, Context, IEmptyResponse>
@@ -51,7 +56,7 @@ export class SNSAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link SNSAdapter}
+   * @param options - The options to customize the {@link SNSAdapter}
    */
   constructor(protected readonly options?: SNSAdapterOptions) {}
 
@@ -60,14 +65,14 @@ export class SNSAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return SNSAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is SNSEvent {
     const snsEvent = event as Partial<SNSEvent>;
@@ -80,7 +85,7 @@ export class SNSAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: SNSEvent): AdapterRequest {
     const path = getDefaultIfUndefined(this.options?.snsForwardPath, '/sns');
@@ -109,14 +114,14 @@ export class SNSAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse(): IEmptyResponse {
     return EmptyResponse;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,

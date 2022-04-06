@@ -10,11 +10,15 @@ import { ResolverContract } from './resolver.contract';
 
 /**
  * The function used to handle serverless requests
+ *
+ * @public
  */
 export type ServerlessHandler<TReturn> = (...args: any[]) => TReturn;
 
 /**
  * The interface that represents the contract between the handler and the real implementation
+ *
+ * @public
  */
 export interface HandlerContract<
   TApp,
