@@ -120,3 +120,12 @@ lib/
 
 # IDEs
 .idea
+
+# tsdoc
+temp
+
+# docs
+docs/api/*
+!docs/api/.gitkeep
+
+.env
