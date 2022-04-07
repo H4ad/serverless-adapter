@@ -18,6 +18,7 @@
     "semantic-release": "semantic-release",
     "docs:generate:api-pages": "ts-node scripts/apidoc.ts",
     "docs:generate:api-pages-test": "ts-node scripts/apidoc-test.ts",
+    "docs:generate:api-pages-test-1": "ts-node scripts/apidoc-test-1.ts",
     "docs:typedoc": "npm run build:docs && npm run docs:typedoc:extract:local && npm run docs:typedoc:extract && npm run docs:typedoc:markdown",
     "docs:typedoc:extract:local": "npx @microsoft/api-extractor run --local",
     "docs:typedoc:extract": "npx @microsoft/api-extractor run",
