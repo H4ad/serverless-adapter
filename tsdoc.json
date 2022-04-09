@@ -2,13 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
   "tagDefinitions": [
     {
-      "tagName": "@menu",
-      "syntaxKind": "inline",
-      "allowMultiple": false
-    },
-    {
-      "tagName": "@submenu",
-      "syntaxKind": "inline",
+      "tagName": "@breadcumb",
+      "syntaxKind": "block",
       "allowMultiple": false
     }
   ],

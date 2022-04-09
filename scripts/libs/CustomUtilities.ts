@@ -1,7 +1,7 @@
 import { ApiItem, ApiParameterListMixin } from '@microsoft/api-extractor-model';
 
 export class CustomUtilities {
-  private static readonly _badFilenameCharsRegExp: RegExp = /[^a-z0-9_\-\.]/gi;
+  private static readonly _badFilenameCharsRegExp: RegExp = /[^a-z0-9_\-.]/gi;
 
   /**
    * Generates a concise signature for a function.  Example: "getArea(width, height)"
