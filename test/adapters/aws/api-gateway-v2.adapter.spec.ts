@@ -139,7 +139,7 @@ describe(ApiGatewayV2Adapter.name, () => {
       const requestBody = { name: 'H4ad Collaborator V2' };
       const queryParams = { page: '2' };
       const cookies = ['batata', 'joga10'];
-      const resultCookies = 'batata; joga10; h4ad';
+      const resultCookies = 'batata; joga10';
 
       const resultBody = '{"success":true}';
       const resultStatusCode = 200;
@@ -155,7 +155,47 @@ describe(ApiGatewayV2Adapter.name, () => {
       );
       const resultHeaders = getFlattenedHeadersMap(event.headers);
 
-      resultHeaders['set-cookie'] = resultCookies;
+      const result = adapter.getResponse({
+        event,
+        log: {} as ILogger,
+        body: resultBody,
+        isBase64Encoded: resultIsBase64Encoded,
+        statusCode: resultStatusCode,
+        headers: {
+          ...resultHeaders,
+          'set-cookie': resultCookies,
+        },
+      });
+
+      expect(result).toHaveProperty('statusCode', 200);
+      expect(result).toHaveProperty('body', resultBody);
+      expect(result).toHaveProperty('headers');
+      expect(result.headers).toHaveProperty('set-cookie', undefined);
+      expect(result).toHaveProperty('cookies', [resultCookies]);
+      expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
+    });
+
+    it('should return the correct mapping for the response when set-cookie is array', () => {
+      const method = 'PUT';
+      const path = '/collaborators';
+      const requestBody = { name: 'H4ad Collaborator V2' };
+      const queryParams = { page: '2' };
+      const cookies = ['batata', 'joga10'];
+      const resultCookies = ['batata', 'joga10'];
+
+      const resultBody = '{"success":true}';
+      const resultStatusCode = 200;
+      const resultIsBase64Encoded = false;
+
+      const event = createApiGatewayV2(
+        method,
+        path,
+        requestBody,
+        {},
+        queryParams,
+        cookies,
+      );
+      const resultHeaders = getFlattenedHeadersMap(event.headers);
 
       const result = adapter.getResponse({
         event,
@@ -163,14 +203,17 @@ describe(ApiGatewayV2Adapter.name, () => {
         body: resultBody,
         isBase64Encoded: resultIsBase64Encoded,
         statusCode: resultStatusCode,
-        headers: resultHeaders,
+        headers: {
+          ...resultHeaders,
+          'set-cookie': resultCookies,
+        },
       });
 
       expect(result).toHaveProperty('statusCode', 200);
       expect(result).toHaveProperty('body', resultBody);
       expect(result).toHaveProperty('headers');
       expect(result.headers).toHaveProperty('set-cookie', undefined);
-      expect(result.headers).toHaveProperty('cookies', resultCookies);
+      expect(result).toHaveProperty('cookies', resultCookies);
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });
 

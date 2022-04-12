@@ -12,6 +12,7 @@ import {
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
+  getMultiValueHeadersMap,
   getPathWithQueryStringParams,
 } from '../../core';
 
@@ -127,6 +128,7 @@ export class ApiGatewayV2Adapter
     response,
   }: GetResponseAdapterProps<APIGatewayProxyEventV2>): APIGatewayProxyStructuredResultV2 {
     const headers = getFlattenedHeadersMap(responseHeaders);
+    const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
 
     const transferEncodingHeader: string | undefined =
       headers['transfer-encoding'];
@@ -146,19 +148,16 @@ export class ApiGatewayV2Adapter
       );
     }
 
-    const cookies = headers['set-cookie'];
+    const cookies = multiValueHeaders['set-cookie'];
 
-    if (cookies) {
-      headers.cookies = cookies;
-
-      delete headers['set-cookie'];
-    }
+    if (headers) delete headers['set-cookie'];
 
     return {
       statusCode,
       body,
       headers,
       isBase64Encoded,
+      cookies,
     };
   }
 
