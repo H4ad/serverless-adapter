@@ -8,6 +8,7 @@ import { AdapterContract } from './adapter.contract';
 /**
  * The type that represents a resolver used to send the response, error or success, to the client
  *
+ * @breadcumb Contracts / ResolverContract
  * @public
  */
 export type Resolver<TResponse, TReturn> = {
@@ -22,6 +23,7 @@ export type Resolver<TResponse, TReturn> = {
 /**
  * The type that represents a delegate resolver that is passed to the adapter to handle what to do when an error occurs during forwarding.
  *
+ * @breadcumb Contracts / ResolverContract
  * @public
  */
 export type DelegatedResolver<TResponse> = {
@@ -43,6 +45,7 @@ export type DelegatedResolver<TResponse> = {
 /**
  * The createResolver contract props
  *
+ * @breadcumb Contracts / ResolverContract
  * @public
  */
 export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
@@ -80,6 +83,7 @@ export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
 /**
  * The interface that represents the contract used to send the response to the client
  *
+ * @breadcumb Contracts / ResolverContract
  * @public
  */
 export interface ResolverContract<

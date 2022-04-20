@@ -19,13 +19,6 @@
     "docs:parse": "npm run build:docs && ts-node scripts/parse-docs.ts",
     "docs:generate:markdown": "ts-node scripts/generate-markdown.ts",
     "docs:generate:api-pages": "ts-node scripts/generate-api-pages.ts",
-    "docs:typedoc": "npm run build:docs && npm run docs:typedoc:extract:local && npm run docs:typedoc:extract && npm run docs:typedoc:markdown",
-    "docs:typedoc:extract:local": "npx @microsoft/api-extractor run --local",
-    "docs:typedoc:extract": "npx @microsoft/api-extractor run",
-    "docs:typedoc:markdown": "npx @microsoft/api-documenter markdown --input-folder temp --output-folder docs/api",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:serve": "vitepress serve docs",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
     "typecheck": "tsc --noEmit"
@@ -95,11 +88,11 @@
     "ts-jest": "^27.1.3",
     "ts-node": "^10.4.0",
     "typedoc": "^0.22.13",
-    "typescript": "^4.5.5",
-    "vitepress": "^0.22.3"
+    "typescript": "^4.5.5"
   },
   "peerDependencies": {
     "@hapi/hapi": ">= 20.0.0",
+    "@types/aws-lambda": "^8.10.92",
     "@types/express": ">= 4.15.4",
     "@types/hapi": ">= 18.0.7",
     "@types/koa": ">= 2.11.2",
@@ -108,6 +101,9 @@
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
+    "@types/aws-lambda": {
+      "optional": true
+    },
     "@hapi/hapi": {
       "optional": true
     },

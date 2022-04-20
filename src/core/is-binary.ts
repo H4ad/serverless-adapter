@@ -20,6 +20,8 @@ import { getFlattenedHeadersMap, getMultiValueHeadersMap } from './headers';
  *
  * @param headers - The headers of the response
  * @param binaryEncodingTypes - The list of content encodings that will be treated as binary
+ *
+ * @breadcumb Core / isBinary
  * @public
  */
 export function isContentEncodingBinary(
@@ -49,6 +51,8 @@ export function isContentEncodingBinary(
  * ```
  *
  * @param headers - The headers of the response
+ *
+ * @breadcumb Core / isBinary
  * @public
  */
 export function getContentType(headers: BothValueHeaders): string {
@@ -72,6 +76,8 @@ export function getContentType(headers: BothValueHeaders): string {
  *
  * @param headers - The headers of the response
  * @param binaryContentTypes - The list of content types that will be treated as binary
+ *
+ * @breadcumb Core / isBinary
  * @public
  */
 export function isContentTypeBinary(
@@ -106,6 +112,8 @@ export function isContentTypeBinary(
  *
  * @param headers - The headers of the response
  * @param binarySettings - The settings for the validation
+ *
+ * @breadcumb Core / isBinary
  * @public
  */
 export function isBinary(

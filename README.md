@@ -22,7 +22,7 @@ Run REST APIs and other web applications using your existing Node.js application
 Fastify), on top of AWS Lambda, Amazon API Gateway and many other event sources.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
-created a new way to interact and extend event sources by creating contracts to abstract the integrations between each
+create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
 library layer.
 
 Why you would use this libray instead of [@vendia/serverless-express](https://github.com/vendia/serverless-express)?
@@ -196,8 +196,8 @@ cloud X with NodeJS).
 
 The real reason I created this library was because I wanted to add API Gateway and SQS support at the same time to save
 some money. But, [@vendia/serverless-express](https://github.com/vendia/serverless-express) was not supported, so
-I [created a PR](https://github.com/vendia/serverless-express/pull/483), but until I finished this library, that PR was
-never accepted.
+I [created a PR](https://github.com/vendia/serverless-express/pull/483), ~~but until I finished this library that PR was
+never accepted~~ and it was merged but it took so long that it was more worth it for me to create a new one.
 
 So I build my own library based on that library with better APIs so I never have to wait for the maintainer to accept my
 PR just to extend the library's functionality :)

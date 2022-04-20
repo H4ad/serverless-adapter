@@ -14,6 +14,7 @@ import {
 /**
  * The options to customize the {@link DynamoDBAdapter}
  *
+ * @breadcumb Adapters / AWS / DynamoDBAdapter
  * @public
  */
 export interface DynamoDBAdapterOptions {
@@ -46,6 +47,7 @@ export interface DynamoDBAdapterOptions {
  * const adapter = new DynamoDBAdapter({ dynamoDBForwardPath, dynamoDBForwardMethod });
  * ```
  *
+ * @breadcumb Adapters / AWS / DynamoDBAdapter
  * @public
  */
 export class DynamoDBAdapter

@@ -7,6 +7,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 /**
  * The interface that represents a contract between the framework and the framework implementation
  *
+ * @breadcumb Contracts
  * @public
  */
 export interface FrameworkContract<TApp> {

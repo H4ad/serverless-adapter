@@ -5,7 +5,6 @@ import {
   MarkdownDocumenterFeatureContext,
 } from '@microsoft/api-documenter/lib';
 import { DocumenterConfig } from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
-import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { CustomDocNodes } from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
 import { DocEmphasisSpan } from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
 import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
@@ -60,6 +59,7 @@ import {
   PackageName,
 } from '@rushstack/node-core-library';
 import { CustomUtilities } from './CustomUtilities';
+import { MarkdownEmitter } from './MarkdownEmitter';
 
 export interface IMarkdownDocumenterOptions {
   apiModel: ApiModel;
@@ -77,7 +77,7 @@ export class CustomMarkdownDocumenter {
     this._documenterConfig = options.documenterConfig;
     this._outputFolder = options.outputFolder;
     this._tsdocConfiguration = CustomDocNodes.configuration;
-    this._markdownEmitter = new CustomMarkdownEmitter(this._apiModel);
+    this._markdownEmitter = new MarkdownEmitter(this._apiModel);
 
     this._pluginLoader = new PluginLoader();
   }
@@ -85,7 +85,7 @@ export class CustomMarkdownDocumenter {
   private readonly _apiModel: ApiModel;
   private readonly _documenterConfig: DocumenterConfig | undefined;
   private readonly _tsdocConfiguration: TSDocConfiguration;
-  private readonly _markdownEmitter: CustomMarkdownEmitter;
+  private readonly _markdownEmitter: MarkdownEmitter;
   private readonly _outputFolder: string;
   private readonly _pluginLoader: PluginLoader;
 
@@ -104,7 +104,6 @@ export class CustomMarkdownDocumenter {
       });
     }
 
-    console.log();
     this._deleteOldOutputFiles();
 
     this._writeApiItemPage(this._apiModel);
@@ -354,6 +353,7 @@ export class CustomMarkdownDocumenter {
     if (parentOutput) return;
 
     FileSystem.writeFile(filename, pageContent, {
+      ensureFolderExists: true,
       convertLineEndings: this._documenterConfig
         ? this._documenterConfig.newlineKind
         : NewlineKind.CrLf,
@@ -749,124 +749,16 @@ export class CustomMarkdownDocumenter {
    * GENERATE PAGE: CLASS
    */
   private _writeClassTables(output: DocSection, apiClass: ApiClass): void {
-    const configuration: TSDocConfiguration = this._tsdocConfiguration;
-
-    const eventsTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Property', 'Modifiers', 'Type', 'Description'],
-    });
-
-    const constructorsTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Constructor', 'Modifiers', 'Description'],
-    });
-
-    const propertiesTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Property', 'Modifiers', 'Type', 'Description'],
-    });
-
-    const methodsTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Method', 'Modifiers', 'Description'],
-    });
-
     const postApiMembers: ApiItem[] = [];
 
     for (const apiMember of apiClass.members) {
       switch (apiMember.kind) {
-        case ApiItemKind.Constructor: {
-          constructorsTable.addRow(
-            new DocTableRow({ configuration }, [
-              this._createTitleCell(apiMember),
-              this._createModifiersCell(apiMember),
-              this._createDescriptionCell(apiMember),
-            ]),
-          );
-
-          // this._writeApiItemPage(apiMember);
+        case ApiItemKind.Constructor:
+        case ApiItemKind.Method:
+        case ApiItemKind.Property:
           postApiMembers.push(apiMember);
           break;
-        }
-        case ApiItemKind.Method: {
-          methodsTable.addRow(
-            new DocTableRow({ configuration }, [
-              this._createTitleCell(apiMember),
-              this._createModifiersCell(apiMember),
-              this._createDescriptionCell(apiMember),
-            ]),
-          );
-
-          // this._writeApiItemPage(apiMember);
-          postApiMembers.push(apiMember);
-          break;
-        }
-        case ApiItemKind.Property: {
-          if ((apiMember as ApiPropertyItem).isEventProperty) {
-            eventsTable.addRow(
-              new DocTableRow({ configuration }, [
-                this._createTitleCell(apiMember),
-                this._createModifiersCell(apiMember),
-                this._createPropertyTypeCell(apiMember),
-                this._createDescriptionCell(apiMember),
-              ]),
-            );
-          } else {
-            propertiesTable.addRow(
-              new DocTableRow({ configuration }, [
-                this._createTitleCell(apiMember),
-                this._createModifiersCell(apiMember),
-                this._createPropertyTypeCell(apiMember),
-                this._createDescriptionCell(apiMember),
-              ]),
-            );
-          }
-
-          // this._writeApiItemPage(apiMember);
-          postApiMembers.push(apiMember);
-          break;
-        }
       }
-    }
-
-    if (eventsTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Events',
-        }),
-      );
-      output.appendNode(eventsTable);
-    }
-
-    if (constructorsTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Constructors',
-        }),
-      );
-      output.appendNode(constructorsTable);
-    }
-
-    if (propertiesTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Properties',
-        }),
-      );
-      output.appendNode(propertiesTable);
-    }
-
-    if (methodsTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Methods',
-        }),
-      );
-      output.appendNode(methodsTable);
     }
 
     if (postApiMembers.length > 0) {
@@ -931,95 +823,16 @@ export class CustomMarkdownDocumenter {
     output: DocSection,
     apiClass: ApiInterface,
   ): void {
-    const configuration: TSDocConfiguration = this._tsdocConfiguration;
-
-    const eventsTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Property', 'Type', 'Description'],
-    });
-
-    const propertiesTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Property', 'Type', 'Description'],
-    });
-
-    const methodsTable: DocTable = new DocTable({
-      configuration,
-      headerTitles: ['Method', 'Description'],
-    });
-
     const postApiMembers: ApiItem[] = [];
 
     for (const apiMember of apiClass.members) {
       switch (apiMember.kind) {
         case ApiItemKind.ConstructSignature:
-        case ApiItemKind.MethodSignature: {
-          methodsTable.addRow(
-            new DocTableRow({ configuration }, [
-              this._createTitleCell(apiMember),
-              this._createDescriptionCell(apiMember),
-            ]),
-          );
-
-          // se pá é aqui que ele diverge e cria um novo arquivo
-          // this._writeApiItemPage(apiMember);
+        case ApiItemKind.MethodSignature:
+        case ApiItemKind.PropertySignature:
           postApiMembers.push(apiMember);
           break;
-        }
-        case ApiItemKind.PropertySignature: {
-          if ((apiMember as ApiPropertyItem).isEventProperty) {
-            eventsTable.addRow(
-              new DocTableRow({ configuration }, [
-                this._createTitleCell(apiMember),
-                this._createPropertyTypeCell(apiMember),
-                this._createDescriptionCell(apiMember),
-              ]),
-            );
-          } else {
-            propertiesTable.addRow(
-              new DocTableRow({ configuration }, [
-                this._createTitleCell(apiMember),
-                this._createPropertyTypeCell(apiMember),
-                this._createDescriptionCell(apiMember),
-              ]),
-            );
-          }
-
-          // this._writeApiItemPage(apiMember);
-          postApiMembers.push(apiMember);
-          break;
-        }
       }
-    }
-
-    if (eventsTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Events',
-        }),
-      );
-      output.appendNode(eventsTable);
-    }
-
-    if (propertiesTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Properties',
-        }),
-      );
-      output.appendNode(propertiesTable);
-    }
-
-    if (methodsTable.rows.length > 0) {
-      output.appendNode(
-        new DocHeading({
-          configuration: this._tsdocConfiguration,
-          title: 'Methods',
-        }),
-      );
-      output.appendNode(methodsTable);
     }
 
     if (postApiMembers.length > 0) {
@@ -1085,6 +898,7 @@ export class CustomMarkdownDocumenter {
         new DocHeading({
           configuration: this._tsdocConfiguration,
           title: 'Parameters',
+          level: 3,
         }),
       );
       output.appendNode(parametersTable);
@@ -1347,6 +1161,35 @@ export class CustomMarkdownDocumenter {
       return 'ignored.md';
     }
 
+    const apiDocumentedItem = apiItem as ApiDocumentedItem;
+
+    if (apiDocumentedItem.tsdocComment) {
+      const breadcumb = apiDocumentedItem.tsdocComment.customBlocks.find(
+        block => block.blockTag.tagName === '@breadcumb',
+      );
+
+      if (breadcumb) {
+        const breadcumbContent = breadcumb.content
+          .getChildNodes()
+          .filter(block => block.kind === DocNodeKind.Paragraph)
+          .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])
+          .filter(block => block.kind === DocNodeKind.PlainText)
+          .map((plainText: DocPlainText) => plainText.text)
+          .join('');
+
+        const breadcumbs = breadcumbContent
+          .split('/')
+          .map(section => section.trimLeft().trimRight());
+
+        const safeName = CustomUtilities.getSafeFilenameForNameWithCase(
+          apiItem.displayName,
+        );
+        const filename = safeName + '.md';
+
+        return [...breadcumbs, filename].join('/');
+      }
+    }
+
     let baseName: string = '';
 
     for (const hierarchyItem of apiItem.getHierarchy()) {
@@ -1376,13 +1219,13 @@ export class CustomMarkdownDocumenter {
     }
 
     // when we don't have name, usually is the package documentation
-    if (!baseName) return 'index.md';
+    if (!baseName) return 'Introduction/Introduction.md';
 
     return baseName + '.md';
   }
 
   private _getLinkFilenameForApiItem(apiItem: ApiItem): string {
-    return './' + this._getFilenameForApiItem(apiItem);
+    return '/docs/api/' + this._getFilenameForApiItem(apiItem);
   }
 
   private _deleteOldOutputFiles(): void {

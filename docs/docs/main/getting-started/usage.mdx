@@ -1,0 +1,712 @@
+---
+title: Usage
+position: 2
+---
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+To start to use, first you need to know what you need to import, let's start showing the [ServerlessAdapter](/docs/api/ServerlessAdapter).
+
+```tsx
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+```
+
+## Creating the instance
+
+To start, we need to pass to [Serverless Adapter](/docs/api/ServerlessAdapter) the instance of your api, todo this I will create an async function called `bootstrap`.
+
+:::note
+
+It doesn't have to be asynchronous code, but I just use it to be standardized with NestJS.
+
+:::
+
+<Tabs groupId="framework">
+
+<TabItem value="express" label="Express">
+
+```typescript
+const express = require('express');
+
+async function bootstrap() {
+  return express();
+}
+```
+
+</TabItem>
+
+<TabItem value="nestjs" label="NestJS" default>
+
+Accords NestJS docs:
+
+<BrowserWindow url="https://docs.nestjs.com/first-steps#platform">
+
+There are two HTTP platforms supported out-of-the-box: `express` and `fastify`. You can choose the one that best suits your needs.
+
+- platform-express: `Express` is a well-known minimalist web framework for node. It's a battle tested, production-ready library with lots of resources implemented by the community. The `@nestjs/platform-express` package is used by default. Many users are well served with Express, and need take no action to enable it.
+- platform-fastify: `Fastify` is a high performance and low overhead framework highly focused on providing maximum efficiency and speed. Read how to use it here.
+
+The NestJS is platform-agnostic, so we can choose which platform we will use. By default, I always use express but if in your company you use fastify, it's okay too.
+
+</BrowserWindow>
+
+So, to add support to NestJS, we have two ways:
+
+<Tabs groupId="framework-nestjs">
+<TabItem value="nestjs-express" label="Express" default>
+
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new ExpressAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be express
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+```
+
+</TabItem>
+
+<TabItem value="nestjs-fastify" label="Fastify" default>
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new FastifyAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be fastify
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+```
+
+</TabItem>
+</Tabs>
+
+</TabItem>
+
+<TabItem value="fastify" label="Fastify">
+
+```typescript
+const Fastify = require('fastify');
+
+async function bootstrap() {
+  return Fastify({ logger: true });
+}
+```
+
+</TabItem>
+
+<TabItem value="hapi" label="Hapi">
+
+```typescript
+const hapi = require('@hapi/hapi');
+
+async function bootstrap() {
+  return hapi;
+}
+```
+
+</TabItem>
+
+<TabItem value="koa" label="Koa">
+
+```typescript
+const Koa = require('koa');
+
+async function bootstrap() {
+  return new Koa();
+}
+```
+
+</TabItem>
+
+</Tabs>
+
+With the `bootstrap` function, we can create another function to initialize our `ServerlessAdapter`.
+
+## Creating the handler
+
+Inside `createHandler` function, I will choose [ApiGatewayV2](../adapters/aws/api-gateway-v2]) as my adapter and I will use [DefaultHandler](../handlers/default) and [PromiseResolver](../resolvers/promise).
+
+<Tabs groupId="framework">
+
+<TabItem value="express" label="Express">
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new ExpressFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+
+<TabItem value="nestjs" label="NestJS" default>
+
+To add support to NestJS, we have two ways:
+
+<Tabs groupId="framework-nestjs">
+<TabItem value="nestjs-express" label="Express" default>
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new ExpressFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+
+<TabItem value="nestjs-fastify" label="Fastify" default>
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new FastifyFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+</Tabs>
+
+</TabItem>
+
+<TabItem value="fastify" label="Fastify">
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new FastifyFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+
+<TabItem value="hapi" label="Hapi">
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { HapiFramework } from '@h4ad/serverless-adapter/lib/frameworks/hapi';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new HapiFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+
+<TabItem value="koa" label="Koa">
+
+```typescript
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { KoaFramework } from '@h4ad/serverless-adapter/lib/frameworks/koa';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new KoaFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+```
+
+</TabItem>
+</Tabs>
+
+With this function above we are now able to create our handler, however, how are we going to call an asynchronous function to export something?
+
+## Exporting the handler
+
+Well, we can do it in two ways:
+
+<Tabs>
+<TabItem value="optmized" label="Optimized Version" default>
+
+This is an optimized version that could save almost 1s because we initialize our app while the lambda warms up and before the lambda receives the first request.
+```typescript
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+:::tip
+
+The solution above is inspired by [top-level await](https://aws.amazon.com/pt/blogs/compute/using-node-js-es-modules-and-top-level-await-in-aws-lambda/).
+It is very much worth reading.
+
+:::
+
+</TabItem>
+
+<TabItem value="slow" label="Slow Version">
+
+This is the normal version of exposing your lambda, I don't like it because it waits until the first request to initialize your app.
+
+I build my apis with NestJS and because of that my startup is slow so the best option is to initialize as early as possible and this option is too slow for me.
+
+```typescript
+let cachedHandler;
+
+const handler = async (...params) => {
+  cachedHandler = cachedHandler ?? await createHandler();
+
+  return cachedHandler(...params);
+};
+
+export { handler };
+```
+
+</TabItem>
+</Tabs>
+
+:::info
+
+If you don't use NestJS and your app initializes synchronously, the "Slow version" and "Optimized version" will have almost the same performance.
+
+:::
+
+## Final Code
+
+The final code will look as:
+
+
+<Tabs groupId="framework">
+
+<TabItem value="express" label="Express">
+
+```typescript
+const express = require('express');
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  return express();
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new ExpressFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+
+<TabItem value="nestjs" label="NestJS" default>
+
+<Tabs groupId="framework-nestjs">
+<TabItem value="nestjs-express" label="Express" default>
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new ExpressAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be express
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new ExpressFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+
+<TabItem value="nestjs-fastify" label="Fastify" default>
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { AppModule } from './app.module';
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new FastifyAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be fastify
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new FastifyFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+</Tabs>
+
+</TabItem>
+
+<TabItem value="fastify" label="Fastify">
+
+```typescript
+const Fastify = require('fastify');
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  return Fastify({ logger: true });
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new FastifyFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+
+<TabItem value="hapi" label="Hapi">
+
+```typescript
+const hapi = require('@hapi/hapi');
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { HapiFramework } from '@h4ad/serverless-adapter/lib/frameworks/hapi';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  return hapi;
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new HapiFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+
+<TabItem value="koa" label="Koa">
+
+```typescript
+const Koa = require('koa');
+
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { KoaFramework } from '@h4ad/serverless-adapter/lib/frameworks/koa';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+async function bootstrap() {
+  return new Koa();
+}
+
+async createHandler() {
+  const app = await bootstrap();
+
+  const adapter = ServerlessAdapter.new(app)
+    .setHandler(new DefaultHandler())
+    .setResolver(new PromiseResolver())
+    .setFramework(new KoaFramework())
+    // if you need more adapters
+    // just append more `addAdapter` calls
+    .addAdapter(new ApiGatewayV2Adapter());
+
+   return adapter.build();
+}
+
+let resolver: Promise<any> = Promise.resolve();
+let cachedHandler;
+
+async function bootstrapServer() {
+  if (!cachedHandler) {
+    cachedHandler = await createHandler();
+  }
+
+  return cachedHandler;
+}
+
+resolver = resolver.then(() => bootstrapServer());
+
+const handler = (...params) => {
+  return resolver.then(() => cachedHandler(...params));
+};
+
+export { handler };
+```
+
+</TabItem>
+</Tabs>
+
+

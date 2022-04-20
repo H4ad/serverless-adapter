@@ -14,6 +14,7 @@
  * @param body - The body string that can be encoded or not
  * @param isBase64Encoded - Tells if body string is encoded in base64
  *
+ * @breadcumb Core
  * @public
  */
 export function getEventBodyAsBuffer(

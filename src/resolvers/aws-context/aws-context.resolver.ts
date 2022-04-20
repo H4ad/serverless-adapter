@@ -17,6 +17,7 @@ import {
  *
  * @deprecated From the AWS Documentation, describing the functions used in this resolver: Functions for compatibility with earlier Node.js Runtime v0.10.42. No longer documented, so they are deprecated, but they still work as of the 12.x runtime, so they are not removed from the types.
  *
+ * @breadcumb Resolvers / AwsContextResolver
  * @public
  */
 export class AwsContextResolver<TEvent, TCallback, TResponse>

@@ -28,6 +28,8 @@ import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
  *   .addAdapter(new SNSAdapter())
  *   .build();
  * ```
+ *
+ * @breadcumb ServerlessAdapter
  * @public
  */
 export class ServerlessAdapter<

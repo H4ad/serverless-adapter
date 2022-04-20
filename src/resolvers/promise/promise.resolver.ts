@@ -12,6 +12,7 @@ import {
 /**
  * The class that implements the resolver using the promise object sent by this library
  *
+ * @breadcumb Resolvers / PromiseResolver
  * @public
  */
 export class PromiseResolver<TEvent, TContext, TCallback, TResponse, TReturn>

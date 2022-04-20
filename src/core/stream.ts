@@ -8,6 +8,8 @@ import { Readable, Writable } from 'stream';
  * Wait asynchronous the stream to complete
  *
  * @param stream - The stream
+ *
+ * @breadcumb Core / Stream
  * @public
  */
 export function waitForStreamComplete<TStream extends Readable | Writable>(

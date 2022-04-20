@@ -1,0 +1,25 @@
+.howto {
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.howtoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.howto .row {
+  display: flex;
+  flex-direction: column;
+}
+
+.exampleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mt-5 {
+  margin-top: 2rem;
+}

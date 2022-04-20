@@ -14,6 +14,7 @@ import {
 /**
  * The options to customize the {@link SQSAdapter}
  *
+ * @breadcumb Adapters / AWS / SQSAdapter
  * @public
  */
 export interface SQSAdapterOptions {
@@ -46,6 +47,7 @@ export interface SQSAdapterOptions {
  * const adapter = new SQSAdapter({ sqsForwardPath, sqsForwardMethod });
  * ```
  *
+ * @breadcumb Adapters / AWS / SQSAdapter
  * @public
  */
 export class SQSAdapter

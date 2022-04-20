@@ -186,6 +186,11 @@ export class CallbackResolver<TEvent, TContext, TResponse> implements ResolverCo
 }
 
 // @public
+export type Concrete<Type> = {
+    [Property in keyof Type]-?: Type[Property];
+};
+
+// @public
 export function createDefaultLogger({ level }?: LoggerOptions): ILogger;
 
 // @public
@@ -465,8 +470,6 @@ export type NewLambdaEdgeBody = CloudFrontRequestEvent['Records'][number]['cf'][
 // @public
 export const NO_OP: (...args: any[]) => any;
 
-// Warning: (ae-forgotten-export) The symbol "Concrete" needs to be exported by the entry point index.doc.d.ts
-//
 // @public
 export type OldLambdaEdgeBody = Concrete<CloudFrontRequestEvent['Records'][number]['cf']['request']>['body']['data'];
 
@@ -580,7 +583,7 @@ export class ServerlessResponse extends ServerResponse {
     _wroteHeader?: boolean;
 }
 
-// @public (undocumented)
+// @public
 export interface ServerlessResponseProps {
     method?: string;
 }

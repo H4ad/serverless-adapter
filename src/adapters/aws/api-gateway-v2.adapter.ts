@@ -20,6 +20,7 @@ import {
 /**
  * The options to customize the {@link ApiGatewayV2Adapter}
  *
+ * @breadcumb Adapters / AWS / ApiGatewayV2Adapter
  * @public
  */
 export interface ApiGatewayV2Options {
@@ -44,6 +45,7 @@ export interface ApiGatewayV2Options {
  *
  * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html | Event Reference}
  *
+ * @breadcumb Adapters / AWS / ApiGatewayV2Adapter
  * @public
  */
 export class ApiGatewayV2Adapter

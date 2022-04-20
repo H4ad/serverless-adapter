@@ -9,6 +9,7 @@ const HTTPS_PORT = 443;
 /**
  * The properties to create a {@link ServerlessRequest}
  *
+ * @breadcumb Network / ServerlessRequest
  * @public
  */
 export interface ServerlessRequestProps {
@@ -41,6 +42,7 @@ export interface ServerlessRequestProps {
 /**
  * The class that represents an {@link http#IncomingMessage} created by the library to represent an actual request to the framework.
  *
+ * @breadcumb Network / ServerlessRequest
  * @public
  */
 export class ServerlessRequest extends IncomingMessage {

@@ -6,11 +6,9 @@ import {
   ApiModel,
 } from '@microsoft/api-extractor-model';
 import { DocNodeKind, DocPlainText } from '@microsoft/tsdoc';
-import { DefaultTheme } from 'vitepress';
-import SideBarGroup = DefaultTheme.SideBarGroup;
 
 const apiModelPath = resolve('.', 'temp', 'serverless-adapter.api.json');
-const outputFile = resolve('.', 'docs', '.vitepress', 'api-pages.ts');
+const outputFile = resolve('.', 'docs', 'sidebar-api-generated.js');
 
 type BreadcumbItem = {
   breadcumbs: string[];
@@ -54,6 +52,18 @@ function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
   return breadcumbs;
 }
 
+type SidebarItem = {
+  type: string;
+  label: string;
+  link?: {
+    type: string;
+    id: string;
+  };
+  items: Sidebar[];
+};
+
+type Sidebar = SidebarItem;
+
 function build(): void {
   const apiModel = new ApiModel();
 
@@ -61,36 +71,38 @@ function build(): void {
 
   const breadcumbsWithApiItems = getBreadcumbsWithApiItem(apiModel);
 
-  const pages: SideBarGroup[] = [];
+  const pages: Sidebar[] = [];
 
   let level: number = 0;
 
   for (const breadcumbWithApiItem of breadcumbsWithApiItems) {
-    let lastPage: SideBarGroup | undefined;
+    let lastPage: SidebarItem | undefined;
 
     for (const breadcumb of breadcumbWithApiItem.breadcumbs) {
       level++;
 
-      const newPage: SideBarGroup = {
-        text: breadcumb,
-        collapsable: level > 1,
-        children: [],
+      const newPage: SidebarItem = {
+        type: 'category',
+        label: breadcumb,
+        items: [],
+        link: {
+          id: `./api/${breadcumb}`,
+          type: 'doc',
+        },
       };
 
       if (lastPage) {
-        let subpage = lastPage.children.find(
-          page => page.text === breadcumb,
-        ) as SideBarGroup;
+        let subpage = lastPage.items.find(page => page.label === breadcumb);
 
         if (!subpage) {
           subpage = newPage;
 
-          lastPage.children.push(subpage);
+          lastPage.items.push(subpage);
         }
 
         lastPage = subpage;
       } else {
-        const oldPage = pages.find(page => page.text === breadcumb);
+        const oldPage = pages.find(page => page.label === breadcumb);
 
         if (oldPage) lastPage = oldPage;
         else {
@@ -107,15 +119,14 @@ function build(): void {
       );
     }
 
-    lastPage.children.push({
-      text: breadcumbWithApiItem.apiMember.displayName,
-      link: `./api/${breadcumbWithApiItem.apiMember.displayName}`,
-      collapsable: false,
-      children: [],
+    lastPage.items.push({
+      type: 'category',
+      label: breadcumbWithApiItem.apiMember.displayName,
+      items: [],
     });
   }
 
-  writeFileSync(outputFile, `export const apiPages = ${JSON.stringify(pages)}`);
+  writeFileSync(outputFile, `export default ${JSON.stringify(pages)}`);
 }
 
 build();

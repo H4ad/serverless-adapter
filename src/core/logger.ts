@@ -1,5 +1,7 @@
 /**
  * The type representing the possible log levels to choose from.
+ *
+ * @breadcumb Core / Logger
  * @public
  */
 export type LogLevels =
@@ -12,6 +14,8 @@ export type LogLevels =
 
 /**
  * The options to customize {@link ILogger}
+ *
+ * @breadcumb Core / Logger
  * @public
  */
 export type LoggerOptions = {
@@ -25,12 +29,16 @@ export type LoggerOptions = {
 
 /**
  * The log function used in any level.
+ *
+ * @breadcumb Core / Logger
  * @public
  */
 export type LoggerFN = (message: any, ...additional: any[]) => void;
 
 /**
  * The interface representing the logger, you can provide a custom logger by implementing this interface.
+ *
+ * @breadcumb Core / Logger
  * @public
  */
 export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
@@ -49,6 +57,8 @@ export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
  * ```
  *
  * @param level - Select the level of the log
+ *
+ * @breadcumb Core / Logger
  * @public
  */
 export function createDefaultLogger(

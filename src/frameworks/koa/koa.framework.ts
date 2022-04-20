@@ -9,6 +9,7 @@ import { FrameworkContract } from '../../contracts';
 /**
  * The framework that forwards requests to koa handler
  *
+ * @breadcumb Frameworks / KoaFramework
  * @public
  */
 export class KoaFramework implements FrameworkContract<Application> {

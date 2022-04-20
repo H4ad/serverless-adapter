@@ -3,6 +3,7 @@
  *
  * @remarks Encoded as binary means the response body will be converted to base64
  *
+ * @breadcumb Types
  * @public
  */
 export type BinarySettings =

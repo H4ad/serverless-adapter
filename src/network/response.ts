@@ -21,6 +21,9 @@ function addData(stream: ServerlessResponse, data: Uint8Array | string) {
 }
 
 /**
+ * The properties to create a {@link ServerlessResponse}.
+ *
+ * @breadcumb Network / ServerlessResponse
  * @public
  */
 export interface ServerlessResponseProps {
@@ -34,6 +37,7 @@ export interface ServerlessResponseProps {
  * The class that represents a response instance used to send to the framework and wait until the framework finishes processing the request.
  * Once it's happens, we use the properties from this response to built the response to the cloud.
  *
+ * @breadcumb Network / ServerlessResponse
  * @public
  */
 export class ServerlessResponse extends ServerResponse {

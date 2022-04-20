@@ -43,7 +43,7 @@ export interface AlbAdapterOptions {
  *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html | Event Reference}
  *
- * @breadcumb Adapters / AWS
+ * @breadcumb Adapters / AWS / AlbAdapter
  * @public
  */
 export class AlbAdapter

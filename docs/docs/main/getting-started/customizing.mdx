@@ -1,0 +1,47 @@
+---
+title: Customizing
+position: 2
+---
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+With the instance of adapter, we have some options:
+
+### setHandler
+
+> Calling this method more than once throws an error.
+
+Defines the handler that will get the event, context and callback and pass it to the adapter and framework.
+
+:::tip
+
+See supported handlers in [Handlers Section](../handlers)
+
+:::
+
+### setResolver
+
+> Calling this method more than once throws an error.
+
+Defines the resolver that aims to resolve the response to serverless and stop its execution when the request ends.
+
+:::tip
+
+See supported resolvers in [Resolvers Section](../resolvers)
+
+:::
+
+### setFramework
+
+> Calling this method more than once throws an error.
+
+Defines the framework that will process requests.
+
+:::tip
+
+See supported frameworks in [Framewoks Section](../frameworks)
+
+:::
+

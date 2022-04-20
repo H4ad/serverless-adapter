@@ -10,6 +10,7 @@ import { DelegatedResolver } from './resolver.contract';
 /**
  * The request interface used to bridge any event source to the framework.
  *
+ * @breadcumb Contracts / AdapterContract
  * @public
  */
 export interface AdapterRequest {
@@ -52,6 +53,7 @@ export interface AdapterRequest {
 /**
  * The props of the method that get the response from the framework and transform it into a format that the event source can handle
  *
+ * @breadcumb Contracts / AdapterContract
  * @public
  */
 export interface GetResponseAdapterProps<TEvent> {
@@ -96,6 +98,7 @@ export interface GetResponseAdapterProps<TEvent> {
 /**
  * The props of the method that handle the response when an error occurs while forwarding the request to the framework
  *
+ * @breadcumb Contracts / AdapterContract
  * @public
  */
 export interface OnErrorProps<TEvent, TResponse> {
@@ -128,6 +131,7 @@ export interface OnErrorProps<TEvent, TResponse> {
 /**
  * The interface that represents a contract between the adapter and the actual implementation of the adapter.
  *
+ * @breadcumb Contracts / AdapterContract
  * @public
  */
 export interface AdapterContract<TEvent, TContext, TResponse> {

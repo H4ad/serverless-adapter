@@ -13,6 +13,7 @@
  * @param path - The path
  * @param queryParams - The query params
  *
+ * @breadcumb Core / Path
  * @public
  */
 export function getPathWithQueryStringParams(
@@ -47,6 +48,7 @@ export function getPathWithQueryStringParams(
  *
  * @param queryParamsRecord - The query params record
  *
+ * @breadcumb Core / Path
  * @public
  */
 export function getQueryParamsStringFromRecord(

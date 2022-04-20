@@ -14,6 +14,7 @@ import {
 /**
  * The options to customize the {@link EventBridgeAdapter}
  *
+ * @breadcumb Adapters / AWS / EventBridgeAdapter
  * @public
  */
 export interface EventBridgeOptions {
@@ -35,6 +36,7 @@ export interface EventBridgeOptions {
 /**
  * Just a type alias to ignore generic types in the event
  *
+ * @breadcumb Adapters / AWS / EventBridgeAdapter
  * @public
  */
 export type EventBridgeEventAll = EventBridgeEvent<any, any>;
@@ -53,6 +55,7 @@ export type EventBridgeEventAll = EventBridgeEvent<any, any>;
  * const adapter = new EventBridgeAdapter({ eventBridgeForwardPath, eventBridgeForwardMethod });
  * ```
  *
+ * @breadcumb Adapters / AWS / EventBridgeAdapter
  * @public
  */
 export class EventBridgeAdapter
