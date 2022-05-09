@@ -185,7 +185,7 @@ export class CustomMarkdownDocumenter {
         break;
       case ApiItemKind.TypeAlias:
         output.appendNode(
-          new DocHeading({ configuration, title: `(type) ${scopedName}e` }),
+          new DocHeading({ configuration, title: `(type) ${scopedName}` }),
         );
         break;
       case ApiItemKind.Variable:

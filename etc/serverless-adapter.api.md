@@ -167,12 +167,18 @@ export abstract class BaseHandler<TApp, TEvent, TContext, TCallback, TResponse, 
 }
 
 // @public
-export type BinarySettings = {
-    isBinary: ((headers: Record<string, string | string[] | undefined>) => boolean) | false;
-} | {
-    contentTypes: (string | RegExp)[];
+export type BinarySettings = BinarySettingsFunction | BinarySettingsContentHeaders;
+
+// @public
+export interface BinarySettingsContentHeaders {
     contentEncodings: string[];
-};
+    contentTypes: (string | RegExp)[];
+}
+
+// @public
+export interface BinarySettingsFunction {
+    isBinary: ((headers: Record<string, string | string[] | undefined>) => boolean) | false;
+}
 
 // @public
 export type BothValueHeaders = Record<string, string | string[] | undefined>;

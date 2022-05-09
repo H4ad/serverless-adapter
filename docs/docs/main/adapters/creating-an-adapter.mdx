@@ -1,0 +1,150 @@
+---
+title: Creating an Adapter
+position: 2
+---
+
+As we saw in [Introduction](./introduction), you are already familiar with adapter methods.
+
+In this chapter, we will create a new adapter to implement the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2)
+that has the request and response in the following format:
+
+## Request and Response
+
+```json title="request.json"
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/my/path",
+  "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
+  "cookies": [
+    "cookie1",
+    "cookie2"
+  ],
+  "headers": {
+    "header1": "value1",
+    "header2": "value1,value2"
+  },
+  "queryStringParameters": {
+    "parameter1": "value1,value2",
+    "parameter2": "value"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "api-id",
+    "authentication": {
+      "clientCert": {
+        "clientCertPem": "CERT_CONTENT",
+        "subjectDN": "www.example.com",
+        "issuerDN": "Example issuer",
+        "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
+        "validity": {
+          "notBefore": "May 28 12:30:02 2019 GMT",
+          "notAfter": "Aug  5 09:36:04 2021 GMT"
+        }
+      }
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "claim1": "value1",
+          "claim2": "value2"
+        },
+        "scopes": [
+          "scope1",
+          "scope2"
+        ]
+      }
+    },
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "http": {
+      "method": "POST",
+      "path": "/my/path",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "IP",
+      "userAgent": "agent"
+    },
+    "requestId": "id",
+    "routeKey": "$default",
+    "stage": "$default",
+    "time": "12/Mar/2020:19:03:58 +0000",
+    "timeEpoch": 1583348638390
+  },
+  "body": "Hello from Lambda",
+  "pathParameters": {
+    "parameter1": "value1"
+  },
+  "isBase64Encoded": false,
+  "stageVariables": {
+    "stageVariable1": "value1",
+    "stageVariable2": "value2"
+  }
+}
+```
+
+
+```json title="response.json"
+{
+    "isBase64Encoded": true,
+    "statusCode": 201,
+    "headers": { "headername": "headervalue" },
+    "multiValueHeaders": { "headername": ["headervalue", "headervalue2"] },
+    "body": "Done"
+}
+```
+
+## Creating the class
+
+First, we need to create our new adapter class, let's define it as:
+
+```typescript title="api-gateway-v2.adapter.ts"
+import type { APIGatewayProxyEventV2, Context } from 'aws-lambda';
+import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
+import { AdapterContract } from '@h4ad/serverless-adapter/lib/contracts';
+
+export class ApiGatewayV2Adapter implements AdapterContract<APIGatewayProxyEventV2, Context, APIGatewayProxyStructuredResultV2> {}
+```
+
+The interface we need to implement is [AdapterContract](../../api/Contracts/AdapterContract) which takes 3 generic arguments:
+the event sent by the event source, the context of the serverless environment, and the response that the event source understands.
+
+## Implementing the `getAdapterName` method
+
+This is the easiest method to implement, we can do it as follows:
+
+```typescript title="api-gateway-v2.adapter.ts"
+public getAdapterName(): string {
+  return ApiGatewayV2Adapter.name;
+}
+```
+
+## Implementing the `canHandle` method
+
+When we implement this method, we must study the request event to know which properties are always sent by the event source,
+in case of [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), the most important ones are `requestContext` and `version` and
+checking that the value of `version` is equal to `2.0`.
+
+This way, we can implement if the event was sent from [AWS Api Gateway V2](../adapters/aws/api-gateway-v2) as follows:
+
+```typescript title="api-gateway-v2.adapter.ts"
+public canHandle(event: unknown): event is APIGatewayProxyEventV2 {
+  const apiGatewayEvent = event as Partial<APIGatewayProxyEventV2> & {
+    version?: string;
+  };
+
+  // this basically will verify if:
+  // - if event has requestContext
+  // - if event has version property equal to 2.0
+  // if both are true, then we do double bang
+  // just to make sure we return boolean
+  return !!(
+    apiGatewayEvent?.requestContext && apiGatewayEvent.version === '2.0'
+  );
+}
+```
+
+## Implementing the `getRequest` method
+
+In this method, we need to return the [AdapterRequest](../../api/Contracts/AdapterContract/AdapterRequest) interface,
+to understand better what we need to return, let's look at the table below:
+

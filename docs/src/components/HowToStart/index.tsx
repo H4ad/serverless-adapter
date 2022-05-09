@@ -19,7 +19,7 @@ export default function HowToStart(): JSX.Element {
         </div>
         <div className={styles.exampleContainer}>
           <p>
-            And then you can add support to{' '}
+            And then you can add support, for example, to{' '}
             <Link to="/docs/Adapters/AWS/ApiGatewayV2Adapter">
               AWS Api Gateway V2
             </Link>

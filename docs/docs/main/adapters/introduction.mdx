@@ -1,0 +1,69 @@
+---
+title: Introduction
+position: 1
+---
+
+As we see in the [Architecture](../architecture) section, adapters are responsible for handling the received event,
+transforming the request in a way that your application can understand and then transforming the response in a way your cloud can understand.
+
+The interface that represents an adapter is:
+
+```typescript
+export interface AdapterContract<
+  TEvent,
+  TContext,
+  TResponse
+> {
+  getAdapterName(): string;
+  canHandle(
+    event: unknown,
+    context: TContext,
+    log: ILogger
+  ): boolean;
+  getRequest(
+    event: TEvent,
+    context: TContext,
+    log: ILogger
+  ): AdapterRequest;
+  getResponse(props: GetResponseAdapterProps<TEvent>): TResponse;
+  onErrorWhileForwarding(props: OnErrorProps<TEvent, TResponse>): void;
+}
+```
+
+> You can see in more details [in the API section](../../api/Contracts/AdapterContract).
+
+## getAdapterName
+
+This method just return the name of the Adapter, used by the library to log which adapter was resolved.
+
+## canHandle
+
+In this method, you should implement the logic to detect if the event sent by the serverless environment should be handle by this adapter.
+
+You must be very confident when you implement this method to not get conflict with another adapter.
+
+## getRequest
+
+In this method, you should implement the logic to transform your event in an interface that the library could handle and forward to any framework.
+
+So, you can use the constructor of your adapter to customize the options when create the request, or, just get the event info and then transform into a request.
+
+When I say that we create a request, I literally mean that I'm going to create a request for the framework, something like:
+
+- SQS: create a POST request to /sqs
+- SNS: create a POST request to /sns
+- and so on.
+
+## getResponse
+
+In this method, you should map the response of the framework to a payload that serverless environment can handle.
+
+The response is built based on what your framework returns in the request, something like:
+
+If you return a json response based on the `{ success: true }` object, the response will contain the headers from that response and
+in the body will have the object you sent in text form and then you can map this body to whatever your event source needs as a response.
+
+## onErrorWhileForwarding
+
+When an error occurs while forwarding the request to the framework, this method is called,
+therefore, you must implement what will be done when an error during the forwarding occurs.
