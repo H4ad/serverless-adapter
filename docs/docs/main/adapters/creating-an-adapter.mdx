@@ -146,5 +146,88 @@ public canHandle(event: unknown): event is APIGatewayProxyEventV2 {
 ## Implementing the `getRequest` method
 
 In this method, we need to return the [AdapterRequest](../../api/Contracts/AdapterContract/AdapterRequest) interface,
-to understand better what we need to return, let's look at the table below:
+to understand better what we need to return, let's deep into to know more about them.
 
+### `method`
+
+The HTTP Method to use to create the request to the framework.
+
+In [AWS Api Gateway V2](../adapters/aws/api-gateway-v2) we can take the method from `APIGatewayProxyEventV2`,
+accessing the `method` property inside the `http` object that is inside the `requestContext`, the code will look like this:
+
+```typescript title="api-gateway-v2.adapter.ts"
+const method = event.requestContext.http.method;
+```
+
+:::tip
+
+In some cases, you may not have this information from events such as SQS,
+in these specific cases you need to provide a way to control the path,
+we recommend you provide a default option and provide a way for the user to customize,
+such as the implementation of [AWS SQS](../adapters/aws/sqs).
+
+:::
+
+### `path`
+
+The path to use to create the request to the framework.
+
+In the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), we can grab the path from `APIGatewayProxyEventV2`,
+acessing the property `rawPath` and combining with `rawQueryString`.
+
+Fortunately, this operation is so common that we provide a function to help you with this operation, see above:
+
+```typescript title="api-gateway-v2.adapter.ts"
+import { getPathWithQueryStringParams } from '@h4ad/serverless-adapter';
+
+// ...
+// inside the function `getRequest`
+const path = event.rawPath;
+const queryParams = event.rawQueryString;
+
+const pathWithQueryParams = getPathWithQueryStringParams(path, queryParams);
+```
+
+:::info
+
+This implementation deviates from the original implementation for educational purposes only.
+See the original implementation [here](https://github.com/H4ad/serverless-adapter/blob/main/src/adapters/aws/api-gateway-v2.adapter.ts#L194-L210).
+
+:::
+
+:::tip
+
+In some cases, you may not have this information from events such as SQS,
+in these specific cases you need to provide a way to control the path,
+we recommend you provide a default option and provide a way for the user to customize,
+such as the implementation of [AWS SQS](../adapters/aws/sqs).
+
+:::
+
+### `headers`
+
+Work in progress.
+
+### `body`
+
+Work in progress.
+
+### `remoteAddress`
+
+Work in progress.
+
+### `host`
+
+Work in progress.
+
+### `hostname`
+
+Work in progress.
+
+## Implementing the `getResponse` method
+
+Work in progress.
+
+## Implementing the `onErrorWhileForwarding` method
+
+Work in progress.
