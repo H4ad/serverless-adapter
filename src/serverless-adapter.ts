@@ -8,7 +8,12 @@ import {
   ResolverContract,
   ServerlessHandler,
 } from './contracts';
-import { DEFAULT_BINARY_ENCODINGS, ILogger, createDefaultLogger } from './core';
+import {
+  DEFAULT_BINARY_CONTENT_TYPES,
+  DEFAULT_BINARY_ENCODINGS,
+  ILogger,
+  createDefaultLogger,
+} from './core';
 
 //#endregion
 
@@ -61,11 +66,11 @@ export class ServerlessAdapter<
   /**
    * Settings for whether the response should be treated as binary or not
    *
-   * @default `contentEncodings` and `contentTypes` are set with {@link DEFAULT_BINARY_ENCODINGS} and {@link DEFAULT_BINARY_ENCODINGS}, respectively.
+   * @default `contentEncodings` and `contentTypes` are set with {@link DEFAULT_BINARY_ENCODINGS} and {@link DEFAULT_BINARY_CONTENT_TYPES}, respectively.
    */
   protected binarySettings: BinarySettings = {
     contentEncodings: DEFAULT_BINARY_ENCODINGS,
-    contentTypes: DEFAULT_BINARY_ENCODINGS,
+    contentTypes: DEFAULT_BINARY_CONTENT_TYPES,
   };
 
   /**
