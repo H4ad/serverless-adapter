@@ -38,6 +38,7 @@ export class FrameworkMock implements FrameworkContract<null> {
     );
 
     response.statusCode = this.statusCode;
+    response.setHeader('content-type', 'application/json');
 
     writableOutput.pipe(response);
   }

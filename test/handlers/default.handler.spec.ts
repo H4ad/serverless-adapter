@@ -83,7 +83,9 @@ describe('DefaultHandler', () => {
         expect.any(Object),
       );
 
-      expect(result).toHaveProperty('headers', {});
+      expect(result).toHaveProperty('headers', {
+        'content-type': 'application/json',
+      });
       expect(result).toHaveProperty('isBase64Encoded', false);
       expect(result).toHaveProperty('statusCode', statusCode);
       expect(result).toHaveProperty('body', JSON.stringify(response));
@@ -108,7 +110,9 @@ describe('DefaultHandler', () => {
 
     const result = await handler(event, context, NO_OP);
 
-    expect(result).toHaveProperty('headers', {});
+    expect(result).toHaveProperty('headers', {
+      'content-type': 'application/json',
+    });
     expect(result).toHaveProperty('isBase64Encoded', true);
     expect(result).toHaveProperty('statusCode', 200);
     expect(result).toHaveProperty(
@@ -137,7 +141,9 @@ describe('DefaultHandler', () => {
 
     const result = await handler(event, context, NO_OP);
 
-    expect(result).toHaveProperty('headers', {});
+    expect(result).toHaveProperty('headers', {
+      'content-type': 'application/json',
+    });
     expect(result).toHaveProperty('isBase64Encoded', true);
     expect(result).toHaveProperty('statusCode', 200);
     expect(result).toHaveProperty(
