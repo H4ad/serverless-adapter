@@ -10,12 +10,12 @@ import {
   ServerlessHandler,
 } from '../../contracts';
 import {
+  BaseHandler,
   ILogger,
   isBinary,
   setCurrentInvoke,
   waitForStreamComplete,
 } from '../../core';
-import { BaseHandler } from '../../core/base-handler';
 import { ServerlessResponse } from '../../network';
 
 //#endregion
