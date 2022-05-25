@@ -143,6 +143,10 @@ We support these event sources:
   - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): Work in progress.
 - Azure
   - [The support is coming soon.](https://github.com/H4ad/serverless-adapter/issues/3)
+- Firebase
+  - The support is coming soon.
+- GCP
+  - The support is coming soon.
 
 We support these resolvers:
 
