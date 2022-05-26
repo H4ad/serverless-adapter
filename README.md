@@ -63,6 +63,10 @@ import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
 import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
 import app from './app';
 
+// if you create your app asynchronously
+// check the docs about the LazyFramework.
+// ServerlessAdapter.new(null)
+// .setFramework(new LazyFramework(new ExpressFramework(), async () => createAsyncApp()))
 export const handler = ServerlessAdapter.new(app)
   .setFramework(new ExpressFramework())
   .setHandler(new DefaultHandler())
@@ -119,6 +123,9 @@ Currently, we support these frameworks:
 - [Fastify](https://www.fastify.io/) by using ([FastifyFramework](src/frameworks/fastify/fastify.framework.ts))
 - [Hapi](https://hapi.dev/) by using ([HapiFramework](src/frameworks/hapi/hapi.framework.ts))
 - [Koa](https://koajs.com/) by using ([KoaFramework](src/frameworks/koa/koa.framework.ts))
+- Async Initialization by using ([LazyFramework](src/frameworks/lazy/lazy.framework.ts))
+  - Use this framework to provide a way to create the instance of your app asynchronously.
+  - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](src/frameworks/lazy/lazy.framework.ts).
 
 We support these event sources:
 
