@@ -1,4 +1,4 @@
-import { DummyResolver } from '../../src/resolvers/dummy/dummy.resolver';
+import { DummyResolver } from '../../src/resolvers/dummy';
 
 describe(DummyResolver.name, () => {
   it('should do nothing when called and return undefined', () => {

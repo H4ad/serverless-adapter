@@ -138,13 +138,13 @@ export class ApiGatewayV2Adapter
 
     if (hasTransferEncodingChunked) {
       throw new Error(
-        'chunked encoding in headers is not supported by API Gateway V1',
+        'chunked encoding in headers is not supported by API Gateway V2',
       );
     }
 
     if (response?.chunkedEncoding) {
       throw new Error(
-        'chunked encoding in response is not supported by API Gateway V1',
+        'chunked encoding in response is not supported by API Gateway V2',
       );
     }
 

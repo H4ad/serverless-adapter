@@ -35,8 +35,11 @@ export function createCanHandleTestsForAdapter<
 
       expect(events.length).toBeGreaterThan(0);
 
-      for (const [, event] of events)
-        expect(adapter.canHandle(event, context, logger)).toBe(false);
+      for (const [adapterName, event] of events) {
+        const canHandle = adapter.canHandle(event, context, logger);
+
+        expect(`${adapterName}: ${canHandle}`).toEqual(`${adapterName}: false`);
+      }
     });
   });
 }
