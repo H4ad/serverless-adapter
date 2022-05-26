@@ -140,7 +140,8 @@ We support these event sources:
     using ([SQSAdapter](./src/adapters/aws/sqs.adapter.ts))
 - Huawei
   - [Http Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1442.html): Look [this section](#huawei-http-function) about Huawei support for Http Function.
-  - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): Work in progress.
+  - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): 
+    - [Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) by using ([HuaweiApiGatewayAdapter](src/adapters/huawei/huawei-api-gateway.adapter.ts)).
 - Azure
   - [The support is coming soon.](https://github.com/H4ad/serverless-adapter/issues/3)
 - Firebase
@@ -161,7 +162,7 @@ We support these handlers:
 
 ## Huawei
 
-In Huawei, currently we only added support to FunctionGraphV2 with Http Function type.
+In Huawei, we added support to FunctionGraphV2 with Http Function and Event Function.
 
 The difference between Http Function and Event Function is that in Http Function you must expose port 8000 and Huawei will proxy Api Gateway requests to your application.
 So, on implementation, this library will create an http server to listen on port 8000 and forward the request to your framework.
@@ -216,7 +217,26 @@ In the end, the structure of the zip file you upload looks like this:
 
 ### Huawei Event Function
 
-Work in progress.
+With Http Function you need to use [HttpHuaweiHandler](src/handlers/huawei/http-huawei.handler.ts), 
+but with Event Function you should use [DefaultHandler](src/handlers/default/default.handler.ts).
+
+So, to add support to Api Gateway you do the following:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new HuaweiApiGatewayAdapter())
+  .build();
+```
 
 # Architecture
 
