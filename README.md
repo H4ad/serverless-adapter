@@ -6,6 +6,7 @@
   <a href="#install">Install</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#usage">Usage</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#support">Support</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#examples">Examples</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#architecture">Architecture</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#credits">Credits</a>
 </p>
@@ -227,16 +228,25 @@ import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
 import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
 import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { CallbackResolver } from '@h4ad/serverless-adapter/lib/resolvers/callback';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)
   .setFramework(new ExpressFramework())
   .setHandler(new DefaultHandler())
-  .setResolver(new PromiseResolver())
+  .setResolver(new CallbackResolver())
   .addAdapter(new HuaweiApiGatewayAdapter())
   .build();
 ```
+
+#### One important thing
+
+You must use the callback resolver because I couldn't get it to work with the PromiseResolver.
+Maybe it's a bug in the library or something specific in Huawei, if you have a tip please create an issue.
+
+# Examples
+
+You can see some examples of how to use this library [here](https://github.com/H4ad/serverless-adapter-examples).
 
 # Architecture
 
