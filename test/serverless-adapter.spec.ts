@@ -1,16 +1,54 @@
 import {
   BinarySettings,
+  DEFAULT_BINARY_CONTENT_TYPES,
+  DEFAULT_BINARY_ENCODINGS,
   HandlerContract,
   NO_OP,
   ServerlessAdapter,
   createDefaultLogger,
 } from '../src';
 import { ApiGatewayV2Adapter } from '../src/adapters/aws';
+import * as logger from '../src/core/logger';
 import { DefaultHandler } from '../src/handlers/default';
 import { PromiseResolver } from '../src/resolvers/promise';
 import { FrameworkMock } from './mocks/framework.mock';
 
 describe('ServerlessAdapter', () => {
+  it('should have correct default values', () => {
+    const defaultLoggerSymbol = Symbol('createDefaultLogger');
+
+    jest
+      .spyOn(logger, 'createDefaultLogger')
+      .mockReturnValue(defaultLoggerSymbol as any);
+    const oldEnv = process.env;
+    jest.resetModules();
+    process.env = { ...oldEnv, NODE_ENV: 'test' };
+
+    const adapter = ServerlessAdapter.new(null);
+
+    expect(adapter['binarySettings']).toHaveProperty(
+      'contentEncodings',
+      DEFAULT_BINARY_ENCODINGS,
+    );
+    expect(adapter['binarySettings']).toHaveProperty(
+      'contentTypes',
+      DEFAULT_BINARY_CONTENT_TYPES,
+    );
+    expect(adapter['respondWithErrors']).toEqual(false);
+    expect(adapter['log']).toEqual(defaultLoggerSymbol);
+    expect(adapter['adapters']).toHaveLength(0);
+    expect(adapter['framework']).toBeUndefined();
+    expect(adapter['resolver']).toBeUndefined();
+    expect(adapter['handler']).toBeUndefined();
+    expect(adapter['app']).toEqual(null);
+
+    jest.resetModules();
+    process.env = { ...oldEnv, NODE_ENV: 'development' };
+    const developmentAdapter = ServerlessAdapter.new(null);
+
+    expect(developmentAdapter['respondWithErrors']).toEqual(true);
+  });
+
   it('should can create a pipeline of handlers', () => {
     const statusCode = 200;
     const response = { body: true };

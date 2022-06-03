@@ -6,6 +6,7 @@
   <a href="#install">Install</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#usage">Usage</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#support">Support</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#examples">Examples</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#architecture">Architecture</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#credits">Credits</a>
 </p>
@@ -19,7 +20,7 @@
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
 Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and
-Fastify), on top of AWS Lambda, Amazon API Gateway and many other event sources.
+Fastify), on top of AWS Lambda, Huawei and many other clouds.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
 create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
@@ -56,12 +57,16 @@ You can quickly use this library as follows:
 
 ```ts
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ApiGatewayV2Adapter, AlbAdapter, SQSAdapter, SNSAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
 import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
 import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
 import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
 import app from './app';
 
+// if you create your app asynchronously
+// check the docs about the LazyFramework.
+// ServerlessAdapter.new(null)
+// .setFramework(new LazyFramework(new ExpressFramework(), async () => createAsyncApp()))
 export const handler = ServerlessAdapter.new(app)
   .setFramework(new ExpressFramework())
   .setHandler(new DefaultHandler())
@@ -70,8 +75,6 @@ export const handler = ServerlessAdapter.new(app)
   .addAdapter(new SQSAdapter())
   .addAdapter(new SNSAdapter())
   .build();
-
-export { handler };
 ```
 
 Too fast? Ok, I can explain.
@@ -120,6 +123,9 @@ Currently, we support these frameworks:
 - [Fastify](https://www.fastify.io/) by using ([FastifyFramework](src/frameworks/fastify/fastify.framework.ts))
 - [Hapi](https://hapi.dev/) by using ([HapiFramework](src/frameworks/hapi/hapi.framework.ts))
 - [Koa](https://koajs.com/) by using ([KoaFramework](src/frameworks/koa/koa.framework.ts))
+- Async Initialization by using ([LazyFramework](src/frameworks/lazy/lazy.framework.ts))
+  - Use this framework to provide a way to create the instance of your app asynchronously.
+  - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](src/frameworks/lazy/lazy.framework.ts).
 
 We support these event sources:
 
@@ -140,9 +146,15 @@ We support these event sources:
     using ([SNSAdapter](./src/adapters/aws/sns.adapter.ts))
   - [AWS SQS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html) by
     using ([SQSAdapter](./src/adapters/aws/sqs.adapter.ts))
-- Azure
-  - The support is coming soon.
 - Huawei
+  - [Http Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1442.html): Look [this section](#huawei-http-function) about Huawei support for Http Function.
+  - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): 
+    - [Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) by using ([HuaweiApiGatewayAdapter](src/adapters/huawei/huawei-api-gateway.adapter.ts)).
+- Azure
+  - [The support is coming soon.](https://github.com/H4ad/serverless-adapter/issues/3)
+- Firebase
+  - The support is coming soon.
+- GCP
   - The support is coming soon.
 
 We support these resolvers:
@@ -154,6 +166,94 @@ We support these resolvers:
 We support these handlers:
 
 - Default by using ([DefaultHandler](src/handlers/default/default.handler.ts))
+- Huawei by using ([HttpHuaweiHandler](src/handlers/huawei/http-huawei.handler.ts)) and ([EventHuaweiHandler](#huawei-event-function))
+
+## Huawei
+
+In Huawei, we added support to FunctionGraphV2 with Http Function and Event Function.
+
+The difference between Http Function and Event Function is that in Http Function you must expose port 8000 and Huawei will proxy Api Gateway requests to your application.
+So, on implementation, this library will create an http server to listen on port 8000 and forward the request to your framework.
+
+In Event Function, you will receive the event from event source in the same way you receive in AWS, an object with some structure, you can see the supported event sources [here](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html).
+
+### Huawei Http Function
+
+To integrate your app with Huawei FunctionGrapth with the Http Function type, you must do the following:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { HttpHuaweiHandler } from '@h4ad/serverless-adapter/lib/handlers/huawei';
+import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import { DummyAdapter } from '@h4ad/serverless-adapter/lib/adapters/dummy';
+import app from './app';
+
+// instead exposing handler, you have the dispose function
+// this dispose function is never called
+// but you can to close the http server created with him
+const dispose = ServerlessAdapter.new(app)
+    .setHandler(new HttpHuaweiHandler())
+    .setFramework(new ExpressFramework())
+    // dummy resolver and adapter is used because
+    // they are necessary in the core of the library to build
+    // but is optional to make huawei http function works.
+    .setResolver(new DummyResolver())
+    .addAdapter(new DummyAdapter())
+    .build();
+```
+
+> You don't need to expose a variable called `handler` when you choose Http Function, you just need to call build to the library create a http server.
+
+By the way of Huawei architecture in Http Function, they have no use for Resolvers and Adapters, so you need to use the dummy versions because the library requires it.
+
+#### ONE IMPORTANT THING
+
+You need to configure a file called `bootstrap` in the root of folder that you upload to Huawei, is like the file `Procfile` but for Huawei.
+
+In my setup, I configure like:
+```
+node /opt/function/code/index.js
+```
+
+The path `/opt/function/code` is where your code is uploaded when you deploy something and `index.js` is the file that contains the `ServerlessAdapter`.
+
+In the end, the structure of the zip file you upload looks like this:
+
+- `bootstrap`
+- `index.js`
+
+### Huawei Event Function
+
+With Http Function you need to use [HttpHuaweiHandler](src/handlers/huawei/http-huawei.handler.ts), 
+but with Event Function you should use [DefaultHandler](src/handlers/default/default.handler.ts).
+
+So, to add support to Api Gateway you do the following:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { CallbackResolver } from '@h4ad/serverless-adapter/lib/resolvers/callback';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new CallbackResolver())
+  .addAdapter(new HuaweiApiGatewayAdapter())
+  .build();
+```
+
+#### One important thing
+
+You must use the callback resolver because I couldn't get it to work with the PromiseResolver.
+Maybe it's a bug in the library or something specific in Huawei, if you have a tip please create an issue.
+
+# Examples
+
+You can see some examples of how to use this library [here](https://github.com/H4ad/serverless-adapter-examples).
 
 # Architecture
 
@@ -206,6 +306,12 @@ PR just to extend the library's functionality :)
 
 Honestly, I just refactored all the code that the @vendia team and many other contributors wrote, thanks so much to them
 for existing and giving us a brilliant library that is the core of my current company.
+
+# Sponsors
+
+| <a href="https://liga.facens.br/"><img height="50" src="https://mlogu6g7z5ex.i.optimole.com/yEwfkqo-4R0ttNtd/w:auto/h:auto/q:mauto/f:avif/http://liga.facens.br/wp-content/uploads/2020/03/logo-1.png" title="The LIGA logo" width="100"/></a> |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
 
 [build-img]:https://github.com/H4ad/serverless-adapter/actions/workflows/release.yml/badge.svg
 
