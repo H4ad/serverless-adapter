@@ -5,7 +5,7 @@ import {
   ApiItem,
   ApiModel,
 } from '@microsoft/api-extractor-model';
-import { DocNodeKind, DocPlainText } from '@microsoft/tsdoc';
+import { DocNode, DocNodeKind, DocPlainText } from '@microsoft/tsdoc';
 
 const apiModelPath = resolve('.', 'temp', 'serverless-adapter.api.json');
 const outputFile = resolve('.', 'docs', 'sidebar-api-generated.js');
@@ -14,6 +14,10 @@ type BreadcumbItem = {
   breadcumbs: string[];
   apiMember: ApiItem;
 };
+
+function isPlainTextNode(block: DocNode): block is DocPlainText {
+  return block.kind === DocNodeKind.PlainText;
+}
 
 function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
   const breadcumbs: BreadcumbItem[] = [];
@@ -35,7 +39,7 @@ function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
           .getChildNodes()
           .filter(block => block.kind === DocNodeKind.Paragraph)
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])
-          .filter(block => block.kind === DocNodeKind.PlainText)
+          .filter(isPlainTextNode)
           .map((plainText: DocPlainText) => plainText.text)
           .join('');
 
