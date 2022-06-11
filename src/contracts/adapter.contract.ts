@@ -41,11 +41,15 @@ export interface AdapterRequest {
 
   /**
    * The address of the event source (used in Lambda\@edge)
+   *
+   * @deprecated It is no longer used in the library and will be removed in the next major release.
    */
   host?: string;
 
   /**
    * The address of the event source (used in Lambda\@edge)
+   *
+   * @deprecated It is no longer used in the library and will be removed in the next major release.
    */
   hostname?: string;
 }
