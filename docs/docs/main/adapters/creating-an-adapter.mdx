@@ -206,28 +206,194 @@ such as the implementation of [AWS SQS](../adapters/aws/sqs).
 
 ### `headers`
 
-Work in progress.
+The headers to use to create the request to the framework.
+
+In the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), we can grab the headers from `APIGatewayProxyEventV2`,
+acessing the property `headers`.
+
+But not only need to pass the property `headers`, we need to take care of headers not being like `"accept-lang": ['pt-BR', 'en-US']`,
+so we will use the helper function `getFlattenedHeadersMap`.
+
+```ts
+const headers = getFlattenedHeadersMap(event.headers, ',', true);
+
+// this is a implementation detail for api gateway v2,
+// the cookies is sent from another property instead being
+// sent inside headers property
+if (event.cookies)
+  headers.cookie = event.cookies.join('; ');
+```
+
+:::tip
+
+In some cases, you may not have this information from events such as SQS,
+in these specific cases you can just mock the headers with default values,
+such as the implementation of [AWS SQS](../adapters/aws/sqs).
+
+:::
 
 ### `body`
 
-Work in progress.
+The body as buffer to use to create the request to the framework
+
+Well, the body actually can be anything you want, sometimes you will receive a JSON (eg: Api Gateway), Base64 or just plain javascript objects (eg: AWS SQS).ts
+
+In the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), we can grab the body from `APIGatewayProxyEventV2`,
+acessing the property `body` and use the property `isBase64Encoded` to determine if the body is base64.
+
+To help to transform the body from JSON or base64 to Buffer, we have the helper [getEventBodyAsBuffer](../../api/Core/getEventBodyAsBuffer).
+
+The code will look like this:
+
+```ts
+let body: Buffer | undefined;
+
+if (event.body) {
+  const [bufferBody, contentLength] = getEventBodyAsBuffer(
+    event.body,
+    event.isBase64Encoded,
+  );
+
+  body = bufferBody;
+  headers['content-length'] = String(contentLength);
+}
+```
+
+:::important
+
+You need to set the `content-length` header to the value returned by the `getEventBodyAsBuffer` function.
+
+:::
 
 ### `remoteAddress`
 
-Work in progress.
+The remote address (client ip) to use to create the request to the framework
 
-### `host`
+In the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), we can grab the remote address from `APIGatewayProxyEventV2`,
+acessing the property `requestContext.http.sourceIp`.
 
-Work in progress.
+```ts
+const remoteAddress = event.requestContext.http.sourceIp;
+```
 
-### `hostname`
+### `host` and `hostname`
 
-Work in progress.
+Actually these two properties are not used by the library, so you can just ignore.
 
 ## Implementing the `getResponse` method
 
-Work in progress.
+Maps the response of the framework to a payload that serverless can handle.
+
+In other words, do you remember the json from the answer at the beginning of this tutorial?
+
+So you need to return this json and let's see how we can map your function to this response:
+
+```ts title="api-gateway-v2.adapter.ts"
+public getResponse({
+  headers: responseHeaders,
+  body,
+  isBase64Encoded,
+  statusCode,
+  response,
+}: GetResponseAdapterProps<APIGatewayProxyEventV2>): APIGatewayProxyStructuredResultV2 {
+  const headers = getFlattenedHeadersMap(responseHeaders);
+  const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
+
+  // I removed content encoding checks for learning purposes only
+  // but in the original version we need to check more things here.
+
+  const cookies = multiValueHeaders['set-cookie'];
+
+  if (headers) delete headers['set-cookie'];
+
+  return {
+    statusCode,
+    body,
+    headers,
+    isBase64Encoded,
+    cookies,
+  };
+}
+```
+
+Why did I put all the code? Because in the response, I don't have much to explain because each adapter will have your own implementation for this function.
+
+[AWS SQS](../adapters/aws/sqs) for example, they don't need to return anything, so the implementation is:
+
+```ts title="sqs.adapter.ts"
+public getResponse(): IEmptyResponse {
+  return EmptyResponse;
+}
+```
+
+So look closely at the event source documents you are creating the adapter for and try to map as many properties as possible to the properties that the library sends you.
+
+:::tip
+
+You can check the [GetResponseAdapterProps](../../api/Contracts/AdapterContract/GetResponseAdapterProps) to check which data you have from the response of the framework.
+
+:::
 
 ## Implementing the `onErrorWhileForwarding` method
 
-Work in progress.
+When an error occurs while forwarding the request to the framework.ts
+
+Well, errors can happen and we need to have a way to handle those cases to not messup and not have any information about the error.ts
+
+So this method is used to those specific cases, to ensure how to map the error received to event source deal properly.
+
+In the [AWS Api Gateway V2](../adapters/aws/api-gateway-v2), we handle like this:
+
+```ts title="api-gateway-v2.adapter.ts"
+public onErrorWhileForwarding({
+  error,
+  delegatedResolver,
+  respondWithErrors,
+  event,
+  log,
+}: OnErrorProps<
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2
+>): void {
+  const body = respondWithErrors ? error.stack : '';
+  const errorResponse = this.getResponse({
+    event,
+    statusCode: 500,
+    body: body || '',
+    headers: {},
+    isBase64Encoded: false,
+    log,
+  });
+
+  delegatedResolver.succeed(errorResponse);
+}
+```
+
+If the `respondWithErrors` flag is enabled, we will return the entire stack trail in the response, so the user will get a 500 error with enough information.
+
+:::important
+
+When implementing this method, you must call `delegatedResolver.succeed` or `delegedResolver.fail`, or your request will not be resolved.
+
+:::
+
+Other adapters may fail when an error occurs, the [AWS SQS](../adapters/aws/sqs) adapter does that.
+
+```ts title="sqs.adapter.ts"
+public onErrorWhileForwarding({
+  error,
+  delegatedResolver,
+}: OnErrorProps<SQSEvent, IEmptyResponse>): void {
+  delegatedResolver.fail(error);
+}
+```
+
+## Well Done!
+
+Now you can create your own adapters to plug with any event source that you want.
+
+:::tip
+
+If you get lost while building your adapter, see the source code of other adapters to get some ideas on how to implement your own adapter, you can see the code [here](https://github.com/H4ad/serverless-adapter/tree/main/src/adapters).
+
+:::
