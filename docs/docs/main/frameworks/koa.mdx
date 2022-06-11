@@ -3,4 +3,38 @@ title: Koa
 position: 5
 ---
 
-Work in progress.
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save koa
+npm i --save-dev @types/koa
+```
+
+Then, you need you just need to use the [KoaFramework](../../api/Frameworks/KoaFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { KoaFramework } from '@h4ad/serverless-adapter/lib/frameworks/koa';
+
+const Koa = require('koa');
+
+const app = new Koa();
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new KoaFramework())
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::
+
+

@@ -1,0 +1,60 @@
+---
+title: Lazy
+position: 6
+---
+
+This framework is a helper framework that wraps another framework and receives a function to asynchronously initialize the application.
+
+The constructor looks like:
+
+```ts title="lazy.framework.ts"
+constructor(
+  protected readonly framework: FrameworkContract<TApp>,
+  protected readonly factory: () => Promise<TApp>,
+  protected readonly logger: ILogger = createDefaultLogger(),
+)
+```
+
+The first parameter is the instance of another framework, so if you want to use [Express](./express) for example, you can just use like this:
+
+```ts
+import { NestFactory } from '@nestjs/core';
+import { LazyFramework } from '@h4ad/serverless-adapter/lib/frameworks/lazy';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+
+const express = require('express');
+
+async function boostrap() {
+  const app = express();
+
+  // do the things asynchronously
+
+  return app;
+}
+
+const expressFramework = new ExpressFramework();
+const framework = new LazyFramework(expressFramework, boostrap);
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+## Benefits
+
+This is an optimized version that could save almost 1s (in my projects) because we initialize our app while the lambda warms up and before the lambda receives the first request.
+
+:::tip
+
+The solution above is inspired by [top-level await](https://aws.amazon.com/pt/blogs/compute/using-node-js-es-modules-and-top-level-await-in-aws-lambda/), it is very much worth reading.
+
+:::
+
+

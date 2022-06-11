@@ -3,4 +3,104 @@ title: NestJS
 position: 2
 ---
 
-Work in progress.
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+Accords NestJS docs:
+
+<BrowserWindow url="https://docs.nestjs.com/first-steps#platform">
+
+There are two HTTP platforms supported out-of-the-box: `express` and `fastify`. You can choose the one that best suits your needs.
+
+- platform-express: `Express` is a well-known minimalist web framework for node. It's a battle tested, production-ready library with lots of resources implemented by the community. The `@nestjs/platform-express` package is used by default. Many users are well served with Express, and need take no action to enable it.
+- platform-fastify: `Fastify` is a high performance and low overhead framework highly focused on providing maximum efficiency and speed. Read how to use it here.
+
+The NestJS is platform-agnostic, so we can choose which platform we will use. By default, I always use express but if in your company you use fastify, it's okay too.
+
+</BrowserWindow>
+
+So, to add support to NestJS, we have two ways:
+
+<Tabs groupId="framework-nestjs">
+
+<TabItem value="nestjs-express" label="Express" default>
+
+```typescript title="index.ts"
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { LazyFramework } from '@h4ad/serverless-adapter/lib/frameworks/lazy';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new ExpressAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be express
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+
+const expressFramework = new ExpressFramework();
+// the initialization of nestjs is asynchronous, so you can use the lazy framework.
+const framework = new LazyFramework(expressFramework, bootstrap);
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+</TabItem>
+
+<TabItem value="nestjs-fastify" label="Fastify" default>
+
+```typescript title="index.ts"
+import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { LazyFramework } from '@h4ad/serverless-adapter/lib/frameworks/lazy';
+import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const nestApp = await NestFactory.create(AppModule, new FastifyAdapter());
+
+  // we need to wait until it initializes
+  await nestApp.init();
+
+  // then we get the instance of http adapter, it will be fastify
+  const app = nestApp.getHttpAdapter().getInstance();
+
+  return app;
+}
+
+const fastifyFramework = new FastifyFramework();
+// the initialization of nestjs is asynchronous, so you can use the lazy framework.
+const framework = new LazyFramework(fastifyFramework, bootstrap);
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+</TabItem>
+
+</Tabs>
+

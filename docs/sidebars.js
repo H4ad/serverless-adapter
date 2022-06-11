@@ -91,6 +91,7 @@ const sidebars = {
         'main/frameworks/fastify',
         'main/frameworks/hapi',
         'main/frameworks/koa',
+        'main/frameworks/lazy',
       ],
     },
   ],
