@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { ApiModel } from '@microsoft/api-extractor-model';
 import { CustomMarkdownDocumenter } from './libs/CustomMarkdownDocumenter';
@@ -19,14 +19,12 @@ function build(): void {
 
   markdown.generateFiles();
 
-  const categoryForApiFolder = {
-    label: 'Introduction',
-    position: -1,
-  };
+  const filename = join(outputFolder, 'Introduction.md');
+  const introductionMarkdownContent = readFileSync(filename);
 
-  const filename = join(outputFolder, 'Introduction', '_category_.json');
+  const introductionContent = `---\ntitle: Introduction\nsidebar_position: -1\n---${introductionMarkdownContent}`;
 
-  writeFileSync(filename, JSON.stringify(categoryForApiFolder, null, 2));
+  writeFileSync(filename, introductionContent);
 }
 
 build();

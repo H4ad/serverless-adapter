@@ -320,7 +320,7 @@ export class CustomMarkdownDocumenter {
 
     const filename: string = path.join(
       this._outputFolder,
-      this._getFilenameForApiItem(apiItem),
+      this._getFilenameForApiItem(apiItem, true),
     );
     const stringBuilder: StringBuilder = new StringBuilder();
 
@@ -1155,7 +1155,10 @@ export class CustomMarkdownDocumenter {
     }
   }
 
-  private _getFilenameForApiItem(apiItem: ApiItem): string {
+  private _getFilenameForApiItem(
+    apiItem: ApiItem,
+    nestedWhenSameName: boolean = false,
+  ): string {
     if (apiItem.kind === ApiItemKind.Model) {
       // this file will be ignored, we don't like the old index file.
       return 'ignored.md';
@@ -1184,7 +1187,16 @@ export class CustomMarkdownDocumenter {
         const safeName = CustomUtilities.getSafeFilenameForNameWithCase(
           apiItem.displayName,
         );
-        const filename = safeName + '.md';
+
+        if (breadcrumbs.length === 0) return safeName + '.md';
+
+        const filename =
+          !nestedWhenSameName &&
+          breadcrumbs[breadcrumbs.length - 1] === safeName
+            ? ''
+            : safeName + '.md';
+
+        if (!filename) return breadcrumbs.join('/') + '.md';
 
         return [...breadcrumbs, filename].join('/');
       }
@@ -1219,13 +1231,18 @@ export class CustomMarkdownDocumenter {
     }
 
     // when we don't have name, usually is the package documentation
-    if (!baseName) return 'Introduction/Introduction.md';
+    if (!baseName) return 'Introduction.md';
 
     return baseName + '.md';
   }
 
   private _getLinkFilenameForApiItem(apiItem: ApiItem): string {
-    return '/docs/api/' + this._getFilenameForApiItem(apiItem);
+    return (
+      '/docs/api/' +
+      this._getFilenameForApiItem(apiItem)
+        .replace(/\.md/g, '')
+        .replace(/ /g, '%20')
+    );
   }
 
   private _deleteOldOutputFiles(): void {
