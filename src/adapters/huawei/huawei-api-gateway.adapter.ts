@@ -24,7 +24,7 @@ import {
 /**
  * The options to customize the {@link HuaweiApiGatewayAdapter}
  *
- * @breadcrumb Adapters / Huawei / Api Gateway
+ * @breadcrumb Adapters / Huawei / HuaweiApiGatewayAdapter
  * @public
  */
 export interface HuaweiApiGatewayOptions {
@@ -45,7 +45,7 @@ export interface HuaweiApiGatewayOptions {
  * const adapter = new ApiGatewayAdapter({ stripBasePath });
  * ```
  *
- * @breadcrumb Adapters / Huawei / Api Gateway
+ * @breadcrumb Adapters / Huawei / HuaweiApiGatewayAdapter
  * @public
  *
  * {@link https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137 | Event Reference}
