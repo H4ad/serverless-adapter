@@ -3,4 +3,53 @@ title: AWS Context
 position: 3
 ---
 
-Work in progress.
+:::tip
+
+Don't know what a resolver is? See the [Architecture](../architecture#resolver) section.
+
+:::
+
+:::note Deprecated
+
+From the AWS Documentation, describing the functions used in this resolver: Functions for compatibility with earlier Node.js Runtime v0.10.42. No longer documented, so they are deprecated, but they still work as of the 12.x runtime, so they are not removed from the types.
+
+:::
+
+This resolver only works in AWS and it was created just to be fully compatible with the resolution mode of [@vendia/serverless-express](https://github.com/vendia/serverless-express/blob/mainline/src/make-resolver.js#L9).
+
+When the handler is created with [getHandler](../../api/Contracts/HandlerContract#method-gethandler), it will return void
+and the cloud will wait until the event loop is empty.
+This happens when your framework sends the response and the adapter transforms the response the way your cloud can handle,
+at this point the response will be passed to the functions `succeed` or `fail` that is exposed by `context` object.
+
+You can use this resolver only with AWS.
+
+:::caution AWS
+
+To use this resolver on AWS, you MUST leave [callbackWaitsForEmptyEventLoop](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html) as true, otherwise, AWS will not wait for this resolver to resolve.
+
+:::
+
+# Usage
+
+To use, you can import and call the method [setResolver](../../api/ServerlessAdapter#method-setresolver), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AwsContextResolver } from '@h4ad/serverless-adapter/lib/resolvers/aws-context';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setResolver(new AwsContextResolver())
+  // continue to set the other options here.
+  //.setFramework(new ExpressFramework())
+  //.setHandler(new DefaultHandler())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+

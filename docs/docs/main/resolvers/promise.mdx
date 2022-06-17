@@ -3,4 +3,50 @@ title: Promise
 position: 1
 ---
 
-Work in progress.
+:::tip
+
+Don't know what a resolver is? See the [Architecture](../architecture#resolver) section.
+
+:::
+
+The best and most agnostic resolver is using promise, generally every serverless environment supports asynchronous handlers.
+
+When the handler is created with [getHandler](../../api/Contracts/HandlerContract#method-gethandler), it will return an promise
+which is resolved when your framework send the response and the adapter transform the response in the way of your cloud can handle.
+
+You can use this resolver with any cloud (except Huawei), with any framework or any adapter.
+
+:::caution
+
+Only Huawei doesn't support Promise, or it was buggy in my time, so I suggest you use [Callback Resolver](./callback).
+
+:::
+
+# Usage
+
+To use, you can import and call the method [setResolver](../../api/ServerlessAdapter#method-setresolver), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setResolver(new PromiseResolver())
+  // continue to set the other options here.
+  //.setFramework(new ExpressFramework())
+  //.setHandler(new DefaultHandler())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+To know more about how AWS deals with async handlers, see [NodeJS Handler](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) section.
+
+:::
