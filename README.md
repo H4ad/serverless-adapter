@@ -40,7 +40,7 @@ Why you would use this libray instead of [@vendia/serverless-express](https://gi
 
 # Documentation
 
-See how to use this library [here](https://serverless-adapter.viniciusl.com.br/docs/category/getting-started).
+See how to use this library [here](https://h4ad.github.com/serverless-adapter/docs/category/getting-started).
 
 # Examples
 

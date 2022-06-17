@@ -127,7 +127,7 @@ temp
 !etc/.gitkeep
 
 # docs
-docs/api/*
-!docs/api/.gitkeep
+www/api/*
+!www/api/.gitkeep
 
 .env

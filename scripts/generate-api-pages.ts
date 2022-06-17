@@ -8,7 +8,7 @@ import {
 import { DocNode, DocNodeKind, DocPlainText } from '@microsoft/tsdoc';
 
 const apiModelPath = resolve('.', 'temp', 'serverless-adapter.api.json');
-const outputFile = resolve('.', 'docs', 'sidebar-api-generated.js');
+const outputFile = resolve('.', 'www', 'sidebar-api-generated.js');
 
 type BreadcrumbItem = {
   breadcrumbs: string[];

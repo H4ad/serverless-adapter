@@ -16,7 +16,7 @@ const config = {
   favicon: 'img/favicon.ico',
   organizationName: 'h4ad', // Usually your GitHub org/user name.
   projectName: 'serverless-adapter', // Usually your repo name.
-
+  deploymentBranch: 'gh-pages',
   presets: [
     [
       'classic',
@@ -25,14 +25,12 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/H4ad/serverless-adapter/tree/main/www/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/H4ad/serverless-adapter/tree/main/www/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -75,15 +73,6 @@ const config = {
       footer: {
         style: 'dark',
         links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/main/intro',
-              },
-            ],
-          },
           {
             title: 'Community',
             items: [

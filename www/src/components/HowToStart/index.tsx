@@ -20,11 +20,11 @@ export default function HowToStart(): JSX.Element {
         <div className={styles.exampleContainer}>
           <p>
             And then you can add support, for example, to{' '}
-            <Link to="/docs/Adapters/AWS/ApiGatewayV2Adapter">
+            <Link to="/docs/main/adapters/aws/api-gateway-v2">
               AWS Api Gateway V2
             </Link>
             {' and '}
-            <Link to="/docs/Adapters/AWS/SQSAdapter">AWS SQS</Link> to your
+            <Link to="/docs/main/adapters/aws/sqs">AWS SQS</Link> to your
             Express App with:
           </p>
           <div>

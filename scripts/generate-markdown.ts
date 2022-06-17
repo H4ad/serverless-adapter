@@ -4,7 +4,7 @@ import { ApiModel } from '@microsoft/api-extractor-model';
 import { CustomMarkdownDocumenter } from './libs/CustomMarkdownDocumenter';
 
 const apiModelPath = resolve('.', 'temp', 'serverless-adapter.api.json');
-const outputFolder = resolve('.', 'docs', 'docs', 'api');
+const outputFolder = resolve('.', 'www', 'docs', 'api');
 
 function build(): void {
   const apiModel = new ApiModel();
