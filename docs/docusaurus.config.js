@@ -106,6 +106,15 @@ const config = {
               },
             ],
           },
+          {
+            title: 'Sponsors',
+            items: [
+              {
+                label: 'LIGA',
+                to: 'https://liga.facens.br/',
+              },
+            ],
+          },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Serverless Adapter. Built with Docusaurus.`,
       },

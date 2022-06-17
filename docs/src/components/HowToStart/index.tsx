@@ -45,8 +45,6 @@ export const handler = ServerlessAdapter.new(app)
   .addAdapter(new AlbAdapter())
   .addAdapter(new SQSAdapter())
   .build();
-
-export { handler };
             `}</CodeBlock>
           </div>
         </div>
