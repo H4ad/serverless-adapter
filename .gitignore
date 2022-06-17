@@ -123,6 +123,7 @@ lib/
 
 # tsdoc
 temp
+/etc
 
 # docs
 docs/api/*
