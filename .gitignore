@@ -124,6 +124,7 @@ lib/
 # tsdoc
 temp
 /etc
+!etc/.gitkeep
 
 # docs
 docs/api/*
