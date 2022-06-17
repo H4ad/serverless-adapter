@@ -9,7 +9,7 @@ import { FrameworkContract } from '../../contracts';
 /**
  * The framework that forwards requests to hapi handler
  *
- * @breadcumb Frameworks / HapiFramework
+ * @breadcrumb Frameworks / HapiFramework
  * @public
  */
 export class HapiFramework implements FrameworkContract<Server> {

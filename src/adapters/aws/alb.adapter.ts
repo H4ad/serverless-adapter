@@ -20,7 +20,7 @@ import {
 /**
  * The options to customize the {@link AlbAdapter}
  *
- * @breadcumb Adapters / AWS / AlbAdapter
+ * @breadcrumb Adapters / AWS / AlbAdapter
  * @public
  */
 export interface AlbAdapterOptions {
@@ -43,7 +43,7 @@ export interface AlbAdapterOptions {
  *
  * {@link https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html | Event Reference}
  *
- * @breadcumb Adapters / AWS / AlbAdapter
+ * @breadcrumb Adapters / AWS / AlbAdapter
  * @public
  */
 export class AlbAdapter

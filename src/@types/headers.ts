@@ -6,7 +6,7 @@
  * { 'Accept-Encoding': 'gzip, deflate, br' }
  * ```
  *
- * @breadcumb Types
+ * @breadcrumb Types
  * @public
  */
 export type SingleValueHeaders = Record<string, string | undefined>;
@@ -19,7 +19,7 @@ export type SingleValueHeaders = Record<string, string | undefined>;
  * { 'Accept-Encoding': ['gzip', 'deflate', 'br'] }
  * ```
  *
- * @breadcumb Types
+ * @breadcrumb Types
  * @public
  */
 export type MultiValueHeaders = Record<string, string[] | undefined>;
@@ -32,7 +32,7 @@ export type MultiValueHeaders = Record<string, string[] | undefined>;
  * { 'Accept-Encoding': ['gzip', 'deflate', 'br'], 'Host': 'xyz.execute-api.us-east-1.amazonaws.com' }
  * ```
  *
- * @breadcumb Types
+ * @breadcrumb Types
  * @public
  */
 export type BothValueHeaders = Record<string, string | string[] | undefined>;

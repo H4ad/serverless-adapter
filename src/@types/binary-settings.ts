@@ -1,7 +1,7 @@
 /**
  * The interface representing the binary settings implementation by function
  *
- * @breadcumb Types / BinarySettings
+ * @breadcrumb Types / BinarySettings
  * @public
  */
 export interface BinarySettingsFunction {
@@ -19,7 +19,7 @@ export interface BinarySettingsFunction {
 /**
  * The interface representing the binary settings implementation by looking inside the headers
  *
- * @breadcumb Types / BinarySettings
+ * @breadcrumb Types / BinarySettings
  * @public
  */
 export interface BinarySettingsContentHeaders {
@@ -39,7 +39,7 @@ export interface BinarySettingsContentHeaders {
  *
  * @remarks Encoded as binary means the response body will be converted to base64
  *
- * @breadcumb Types / BinarySettings
+ * @breadcrumb Types / BinarySettings
  * @public
  */
 export type BinarySettings =

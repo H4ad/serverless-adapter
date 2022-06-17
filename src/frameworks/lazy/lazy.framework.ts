@@ -33,7 +33,7 @@ import { ILogger, createDefaultLogger } from '../../core';
  *   .build();
  * ```
  *
- * @breadcumb Frameworks / LazyFramework
+ * @breadcrumb Frameworks / LazyFramework
  * @public
  */
 export class LazyFramework<TApp> implements FrameworkContract<null> {

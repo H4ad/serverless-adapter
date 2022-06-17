@@ -20,7 +20,7 @@ import {
 /**
  * The options to customize the {@link ApiGatewayV1Adapter}
  *
- * @breadcumb Adapters / AWS / ApiGatewayV1Adapter
+ * @breadcrumb Adapters / AWS / ApiGatewayV1Adapter
  * @public
  */
 export interface ApiGatewayV1Options {
@@ -47,7 +47,7 @@ export interface ApiGatewayV1Options {
  *
  * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html | Event Reference}
  *
- * @breadcumb Adapters / AWS / ApiGatewayV1Adapter
+ * @breadcrumb Adapters / AWS / ApiGatewayV1Adapter
  * @public
  */
 export class ApiGatewayV1Adapter

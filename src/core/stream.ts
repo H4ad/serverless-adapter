@@ -9,7 +9,7 @@ import { Readable, Writable } from 'stream';
  *
  * @param stream - The stream
  *
- * @breadcumb Core / Stream
+ * @breadcrumb Core / Stream
  * @public
  */
 export function waitForStreamComplete<TStream extends Readable | Writable>(

@@ -10,8 +10,8 @@ import { DocNode, DocNodeKind, DocPlainText } from '@microsoft/tsdoc';
 const apiModelPath = resolve('.', 'temp', 'serverless-adapter.api.json');
 const outputFile = resolve('.', 'docs', 'sidebar-api-generated.js');
 
-type BreadcumbItem = {
-  breadcumbs: string[];
+type BreadcrumbItem = {
+  breadcrumbs: string[];
   apiMember: ApiItem;
 };
 
@@ -19,8 +19,8 @@ function isPlainTextNode(block: DocNode): block is DocPlainText {
   return block.kind === DocNodeKind.PlainText;
 }
 
-function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
-  const breadcumbs: BreadcumbItem[] = [];
+function getBreadcrumbsWithApiItem(apiModel: ApiModel): BreadcrumbItem[] {
+  const breadcrumbs: BreadcrumbItem[] = [];
 
   for (const apiPackage of apiModel.members) {
     for (const apiEntrypoint of apiPackage.members) {
@@ -29,13 +29,13 @@ function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
 
         if (!apiDocumentedItem.tsdocComment) continue;
 
-        const breadcumb = apiDocumentedItem.tsdocComment.customBlocks.find(
-          block => block.blockTag.tagName === '@breadcumb',
+        const breadcrumb = apiDocumentedItem.tsdocComment.customBlocks.find(
+          block => block.blockTag.tagName === '@breadcrumb',
         );
 
-        if (!breadcumb) continue;
+        if (!breadcrumb) continue;
 
-        const breadcumbContent = breadcumb.content
+        const breadcrumbContent = breadcrumb.content
           .getChildNodes()
           .filter(block => block.kind === DocNodeKind.Paragraph)
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])
@@ -43,8 +43,8 @@ function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
           .map((plainText: DocPlainText) => plainText.text)
           .join('');
 
-        breadcumbs.push({
-          breadcumbs: breadcumbContent
+        breadcrumbs.push({
+          breadcrumbs: breadcrumbContent
             .split('/')
             .map(section => section.trimLeft().trimRight()),
           apiMember,
@@ -53,7 +53,7 @@ function getBreadcumbsWithApiItem(apiModel: ApiModel): BreadcumbItem[] {
     }
   }
 
-  return breadcumbs;
+  return breadcrumbs;
 }
 
 type SidebarItem = {
@@ -73,30 +73,30 @@ function build(): void {
 
   apiModel.loadPackage(apiModelPath);
 
-  const breadcumbsWithApiItems = getBreadcumbsWithApiItem(apiModel);
+  const breadcrumbsWithApiItems = getBreadcrumbsWithApiItem(apiModel);
 
   const pages: Sidebar[] = [];
 
   let level: number = 0;
 
-  for (const breadcumbWithApiItem of breadcumbsWithApiItems) {
+  for (const breadcrumbWithApiItem of breadcrumbsWithApiItems) {
     let lastPage: SidebarItem | undefined;
 
-    for (const breadcumb of breadcumbWithApiItem.breadcumbs) {
+    for (const breadcrumb of breadcrumbWithApiItem.breadcrumbs) {
       level++;
 
       const newPage: SidebarItem = {
         type: 'category',
-        label: breadcumb,
+        label: breadcrumb,
         items: [],
         link: {
-          id: `./api/${breadcumb}`,
+          id: `./api/${breadcrumb}`,
           type: 'doc',
         },
       };
 
       if (lastPage) {
-        let subpage = lastPage.items.find(page => page.label === breadcumb);
+        let subpage = lastPage.items.find(page => page.label === breadcrumb);
 
         if (!subpage) {
           subpage = newPage;
@@ -106,7 +106,7 @@ function build(): void {
 
         lastPage = subpage;
       } else {
-        const oldPage = pages.find(page => page.label === breadcumb);
+        const oldPage = pages.find(page => page.label === breadcrumb);
 
         if (oldPage) lastPage = oldPage;
         else {
@@ -119,13 +119,13 @@ function build(): void {
 
     if (!lastPage) {
       throw new Error(
-        `Breadcumb was configured incorrectly. Error found in ${breadcumbWithApiItem.apiMember.displayName}.`,
+        `Breadcrumb was configured incorrectly. Error found in ${breadcrumbWithApiItem.apiMember.displayName}.`,
       );
     }
 
     lastPage.items.push({
       type: 'category',
-      label: breadcumbWithApiItem.apiMember.displayName,
+      label: breadcrumbWithApiItem.apiMember.displayName,
       items: [],
     });
   }

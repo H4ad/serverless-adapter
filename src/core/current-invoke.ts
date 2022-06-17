@@ -1,7 +1,7 @@
 /**
  * The type that represents the object that handles the references to the event created by the serverless trigger or context created by the serverless environment.
  *
- * @breadcumb Core / Current Invoke
+ * @breadcrumb Core / Current Invoke
  * @public
  */
 export type CurrentInvoke<TEvent, TContext> = {
@@ -36,7 +36,7 @@ const currentInvoke: CurrentInvoke<any, any> = {
  * const { event, context } = getCurrentInvoke<ALBEvent, Context>();
  * ```
  *
- * @breadcumb Core / Current Invoke
+ * @breadcrumb Core / Current Invoke
  * @public
  */
 export function getCurrentInvoke<TEvent = any, TContext = any>(): CurrentInvoke<
@@ -54,7 +54,7 @@ export function getCurrentInvoke<TEvent = any, TContext = any>(): CurrentInvoke<
  * @param event - The event created by the serverless trigger
  * @param context - The context created by the serverless environment
  *
- * @breadcumb Core / Current Invoke
+ * @breadcrumb Core / Current Invoke
  * @public
  */
 export function setCurrentInvoke<TEvent = any, TContext = any>({

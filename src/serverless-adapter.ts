@@ -34,7 +34,7 @@ import {
  *   .build();
  * ```
  *
- * @breadcumb ServerlessAdapter
+ * @breadcrumb ServerlessAdapter
  * @public
  */
 export class ServerlessAdapter<

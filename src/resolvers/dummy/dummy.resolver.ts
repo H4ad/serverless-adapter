@@ -7,7 +7,7 @@ import { Resolver, ResolverContract } from '../../contracts';
 /**
  * The class that represents a dummy resolver that does nothing and can be used by the cloud that doesn't use resolvers.
  *
- * @breadcumb Resolvers / Dummy
+ * @breadcrumb Resolvers / Dummy
  * @public
  */
 export class DummyResolver

@@ -9,7 +9,7 @@ import { FrameworkContract } from '../../contracts';
 /**
  * The framework that forwards requests to fastify handler
  *
- * @breadcumb Frameworks / FastifyFramework
+ * @breadcrumb Frameworks / FastifyFramework
  * @public
  */
 export class FastifyFramework implements FrameworkContract<FastifyInstance> {

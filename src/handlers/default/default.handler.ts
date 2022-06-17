@@ -23,7 +23,7 @@ import { ServerlessResponse } from '../../network';
 /**
  * The class that implements a default serverless handler consisting of a function with event, context and callback parameters respectively
  *
- * @breadcumb Handlers / DefaultHandler
+ * @breadcrumb Handlers / DefaultHandler
  * @public
  */
 export class DefaultHandler<

@@ -9,7 +9,7 @@ import { FrameworkContract } from '../../contracts';
 /**
  * The framework that forwards requests to express handler
  *
- * @breadcumb Frameworks / ExpressFramework
+ * @breadcrumb Frameworks / ExpressFramework
  * @public
  */
 export class ExpressFramework implements FrameworkContract<Express> {

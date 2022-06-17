@@ -1164,12 +1164,12 @@ export class CustomMarkdownDocumenter {
     const apiDocumentedItem = apiItem as ApiDocumentedItem;
 
     if (apiDocumentedItem.tsdocComment) {
-      const breadcumb = apiDocumentedItem.tsdocComment.customBlocks.find(
-        block => block.blockTag.tagName === '@breadcumb',
+      const breadcrumb = apiDocumentedItem.tsdocComment.customBlocks.find(
+        block => block.blockTag.tagName === '@breadcrumb',
       );
 
-      if (breadcumb) {
-        const breadcumbContent = breadcumb.content
+      if (breadcrumb) {
+        const breadcrumbContent = breadcrumb.content
           .getChildNodes()
           .filter(block => block.kind === DocNodeKind.Paragraph)
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])
@@ -1177,7 +1177,7 @@ export class CustomMarkdownDocumenter {
           .map((plainText: DocPlainText) => plainText.text)
           .join('');
 
-        const breadcumbs = breadcumbContent
+        const breadcrumbs = breadcrumbContent
           .split('/')
           .map(section => section.trimLeft().trimRight());
 
@@ -1186,7 +1186,7 @@ export class CustomMarkdownDocumenter {
         );
         const filename = safeName + '.md';
 
-        return [...breadcumbs, filename].join('/');
+        return [...breadcrumbs, filename].join('/');
       }
     }
 

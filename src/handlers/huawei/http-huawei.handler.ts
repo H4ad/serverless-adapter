@@ -19,7 +19,7 @@ import { ILogger, getDefaultIfUndefined } from '../../core';
  *
  * {@link https://support.huaweicloud.com/intl/en-us/ae-ad-1-usermanual-functiongraph/functiongraph_01_1442.html#functiongraph_01_1442__li194597302096 | Reference}
  *
- * @breadcumb Handlers / HttpHuaweiHandler
+ * @breadcrumb Handlers / HttpHuaweiHandler
  * @public
  */
 export const DEFAULT_HUAWEI_LISTEN_PORT: number = 8000;
@@ -27,7 +27,7 @@ export const DEFAULT_HUAWEI_LISTEN_PORT: number = 8000;
 /**
  * The options to customize {@link HttpHuaweiHandler}
  *
- * @breadcumb Handlers / HttpHuaweiHandler
+ * @breadcrumb Handlers / HttpHuaweiHandler
  * @public
  */
 export type HttpHuaweiHandlerOptions = {
@@ -49,7 +49,7 @@ export type HttpHuaweiHandlerOptions = {
  *
  * @see https://support.huaweicloud.com/intl/en-us/ae-ad-1-usermanual-functiongraph/functiongraph_01_1442.html#functiongraph_01_1442__li194597302096
  *
- * @breadcumb Handlers / HttpHuaweiHandler
+ * @breadcrumb Handlers / HttpHuaweiHandler
  * @public
  */
 export class HttpHuaweiHandler<TApp>

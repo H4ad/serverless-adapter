@@ -19,7 +19,7 @@ import { BothValueHeaders } from '../@types';
  * @param separator - The separator used when we join the array of header's value
  * @param lowerCaseKey - Should put all keys in lowercase
  *
- * @breadcumb Core / Headers
+ * @breadcrumb Core / Headers
  * @public
  */
 export function getFlattenedHeadersMap(
@@ -54,7 +54,7 @@ export function getFlattenedHeadersMap(
  *
  * @param headersMap - The initial headers
  *
- * @breadcumb Core / Headers
+ * @breadcrumb Core / Headers
  * @public
  */
 export function getMultiValueHeadersMap(

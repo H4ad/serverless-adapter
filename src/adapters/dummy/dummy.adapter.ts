@@ -8,7 +8,7 @@ import { EmptyResponse, IEmptyResponse } from '../../core';
 /**
  * The class that represents a dummy adapter that does nothing and can be used by the cloud that doesn't use adapters.
  *
- * @breadcumb Adapters / Dummy
+ * @breadcrumb Adapters / Dummy
  * @public
  */
 export class DummyAdapter implements AdapterContract<any, any, void> {

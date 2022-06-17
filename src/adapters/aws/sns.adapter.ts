@@ -14,7 +14,7 @@ import {
 /**
  * The options to customize the {@link SNSAdapter}
  *
- * @breadcumb Adapters / AWS / SNSAdapter
+ * @breadcrumb Adapters / AWS / SNSAdapter
  * @public
  */
 export interface SNSAdapterOptions {
@@ -47,7 +47,7 @@ export interface SNSAdapterOptions {
  * const adapter = new SNSAdapter({ snsForwardPath, snsForwardMethod });
  * ```
  *
- * @breadcumb Adapters / AWS / SNSAdapter
+ * @breadcrumb Adapters / AWS / SNSAdapter
  * @public
  */
 export class SNSAdapter

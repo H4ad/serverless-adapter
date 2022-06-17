@@ -17,7 +17,7 @@ import { ILogger } from './index';
 /**
  * The abstract class that represents the base class for a handler
  *
- * @breadcumb Core
+ * @breadcrumb Core
  * @public
  */
 export abstract class BaseHandler<

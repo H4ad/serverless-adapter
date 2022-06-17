@@ -15,7 +15,7 @@
  * @param value - The value to be checked
  * @param defaultValue - The default value when value is undefined
  *
- * @breadcumb Core
+ * @breadcrumb Core
  * @public
  */
 export function getDefaultIfUndefined<T>(

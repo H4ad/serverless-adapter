@@ -28,7 +28,7 @@ import {
 /**
  * The type alias to indicate where we get the default value of query string to create the request.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export type DefaultQueryString =
@@ -37,7 +37,7 @@ export type DefaultQueryString =
 /**
  * The type alias to indicate where we get the default value of path to create the request.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export type DefaultForwardPath =
@@ -46,7 +46,7 @@ export type DefaultForwardPath =
 /**
  * Represents the body of the new version of Lambda\@edge, which uses the `body` property inside `request` as the body (library) of the request.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export type NewLambdaEdgeBody =
@@ -55,7 +55,7 @@ export type NewLambdaEdgeBody =
 /**
  * Represents the body of the old version of Lambda\@edge supported by \@vendia/serverless-express which returns the `data` property within `body` for the body (library) of the request.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export type OldLambdaEdgeBody = Concrete<
@@ -65,7 +65,7 @@ export type OldLambdaEdgeBody = Concrete<
 /**
  * The list was created based on {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-restrictions.html | these docs} in the "Disallowed Headers" section.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter / Constants
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter / Constants
  * @public
  */
 export const DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS: (string | RegExp)[] = [
@@ -95,7 +95,7 @@ export const DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS: (string | RegExp)[] = [
  *
  * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html | Reference}
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter / Constants
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter / Constants
  * @public
  */
 export const DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 40;
@@ -107,7 +107,7 @@ export const DEFAULT_VIEWER_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 40;
  *
  * {@link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html | Reference}
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter / Constants
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter / Constants
  * @public
  */
 export const DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 1024;
@@ -115,7 +115,7 @@ export const DEFAULT_ORIGIN_MAX_RESPONSE_SIZE_IN_BYTES = 1024 * 1024;
 /**
  * The options to customize the {@link LambdaEdgeAdapter}.
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export interface LambdaEdgeAdapterOptions {
@@ -202,7 +202,7 @@ export interface LambdaEdgeAdapterOptions {
  * const adapter = new LambdaEdgeAdapter({ getPathFromEvent });
  * ```
  *
- * @breadcumb Adapters / AWS / LambdaEdgeAdapter
+ * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
 export class LambdaEdgeAdapter
