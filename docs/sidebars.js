@@ -63,7 +63,7 @@ const sidebars = {
         type: 'generated-index',
       },
       collapsed: false,
-      items: ['main/handlers/default'],
+      items: ['main/handlers/default', 'main/handlers/huawei'],
     },
     {
       type: 'category',

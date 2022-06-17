@@ -1,0 +1,90 @@
+---
+title: Huawei
+position: 2
+description: See more about how to integrate with Huawei.
+---
+
+In Huawei, we added support to FunctionGraphV2 with Http Function and Event Function.
+
+The difference between Http Function and Event Function is that in Http Function you must expose port 8000 and Huawei will proxy Api Gateway requests to your application.
+So, on implementation, this library will create an http server to listen on port 8000 and forward the request to your framework.
+
+In Event Function, you will receive the event from event source in the same way you receive in AWS, an object with some structure, you can see the supported event sources [here](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html).
+
+## Http Function
+
+To integrate your app with Huawei FunctionGrapth with the Http Function type, you must do the following:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { HttpHuaweiHandler } from '@h4ad/serverless-adapter/lib/handlers/huawei';
+import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import { DummyAdapter } from '@h4ad/serverless-adapter/lib/adapters/dummy';
+import app from './app';
+
+// instead exposing handler, you have the dispose function
+// this dispose function is never called
+// but you can to close the http server created with him
+const dispose = ServerlessAdapter.new(app)
+    .setHandler(new HttpHuaweiHandler())
+    .setFramework(new ExpressFramework())
+    // dummy resolver and adapter is used because
+    // they are necessary in the core of the library to build
+    // but is optional to make huawei http function works.
+    .setResolver(new DummyResolver())
+    .addAdapter(new DummyAdapter())
+    .build();
+```
+
+> You don't need to expose a variable called `handler` when you choose Http Function, you just need to call build to the library create a http server.
+
+By the way of Huawei architecture in Http Function, they have no use for Resolvers and Adapters, so you need to use the dummy versions because the library requires it.
+
+:::info ONE IMPORTANT THING
+
+You need to configure a file called `bootstrap` in the root of folder that you upload to Huawei, is like the file `Procfile` but for Huawei.
+
+In my setup, I configure like:
+```
+node /opt/function/code/index.js
+```
+
+The path `/opt/function/code` is where your code is uploaded when you deploy something and `index.js` is the file that contains the `ServerlessAdapter`.
+
+In the end, the structure of the zip file you upload looks like this:
+
+- `bootstrap`
+- `index.js`
+
+:::
+
+## Event Function
+
+With Http Function you need to use [HttpHuaweiHandler](./huawei#http-function),
+but with Event Function you should use [DefaultHandler](./default).
+
+So, to add support to Api Gateway you do the following:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { CallbackResolver } from '@h4ad/serverless-adapter/lib/resolvers/callback';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new CallbackResolver())
+  .addAdapter(new HuaweiApiGatewayAdapter())
+  .build();
+```
+
+:::caution One important thing
+
+You must use the callback resolver because I couldn't get it to work with the PromiseResolver.
+Maybe it's a bug in the library or something specific in Huawei, if you have a hint please create an issue.
+
+:::

@@ -88,7 +88,7 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Twitter',
+                label: 'H4ad Twitter',
                 href: 'https://twitter.com/vinii.joga10',
               },
             ],
