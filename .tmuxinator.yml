@@ -45,15 +45,21 @@ root: ./
 # attach: false
 
 windows:
-  - editor:
+  - lib:
       layout: tilled
       # Synchronize all panes of this window, can be enabled before or after the pane commands run.
       # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
       # synchronize: after
       panes:
         - npm run test:watch
-        - cd docs && npm run start
         - clear
+  - docs:
+      layout: tilled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - cd docs && npm run start
         - cd docs
 #  - api: cd backend && npm run start:debug
 #  - app: cd app && ng serve
