@@ -10,13 +10,14 @@ const config = {
   tagline:
     'Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda, Amazon API Gateway and many other event sources.',
   url: 'https://h4ad.github.io/serverless-adapter',
-  baseUrl: '/',
+  baseUrl: '/serverless-adapter/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'h4ad', // Usually your GitHub org/user name.
   projectName: 'serverless-adapter', // Usually your repo name.
   deploymentBranch: 'gh-pages',
+  trailingSlash: false,
   presets: [
     [
       'classic',
@@ -110,6 +111,29 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+      },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: 'J9AIR51403',
+
+        // Public API key: it is safe to commit it
+        apiKey: '35b54c18239d746fe89e62001814e380',
+
+        indexName: 'serverless-adapter',
+
+        // Optional: see doc section below
+        contextualSearch: true,
+
+        // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
+        // externalUrlRegex: 'external\\.com|domain\\.com',
+
+        // Optional: Algolia search parameters
+        // searchParameters: {},
+
+        // Optional: path for search page that enabled by default (`false` to disable it)
+        searchPagePath: 'search',
+
+        //... other Algolia params
       },
     }),
 };
