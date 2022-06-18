@@ -17,9 +17,6 @@ jobs:
       contents: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
-    defaults:
-      run:
-        working-directory: www
     steps:
       - uses: actions/checkout@v3
 
@@ -36,8 +33,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install Lib Dependencies
+        run: npm ci
+
+      - name: Install Docs Dependencies
+        run: npm ci
+        working-directory: www
+
+      - name: Parse TSDoc Documentation
+        run: npm run docs:generate
+
+      - name: Build Docs
+        run: npm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
