@@ -36,6 +36,9 @@ jobs:
       - name: Install Lib Dependencies
         run: npm ci
 
+      - name: Install Peers Dependencies
+        run: npm run install:peers
+
       - name: Install Docs Dependencies
         run: npm ci
         working-directory: www
