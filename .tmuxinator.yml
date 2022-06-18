@@ -59,7 +59,7 @@ windows:
       # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
       # synchronize: after
       panes:
-        - cd docs && npm run start
-        - cd docs
+        - cd www && npm run start
+        - cd www
 #  - api: cd backend && npm run start:debug
 #  - app: cd app && ng serve
