@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[9853],{719:function(e){e.exports=JSON.parse('{"title":"Resolvers","slug":"/category/resolvers","permalink":"/docs/category/resolvers","navigation":{"previous":{"title":"Huawei","permalink":"/docs/main/handlers/huawei"},"next":{"title":"Promise","permalink":"/docs/main/resolvers/promise"}}}')}}]);

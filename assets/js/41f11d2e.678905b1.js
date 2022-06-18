@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[2562],{8413:function(s){s.exports=JSON.parse('{"allTagsPath":"/blog/tags","name":"serverless-adapter","count":1,"permalink":"/blog/tags/serverless-adapter"}')}}]);
