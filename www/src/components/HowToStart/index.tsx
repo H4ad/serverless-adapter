@@ -42,7 +42,7 @@ export const handler = ServerlessAdapter.new(app)
   .setFramework(new ExpressFramework())
   .setHandler(new DefaultHandler())
   .setResolver(new PromiseResolver())
-  .addAdapter(new AlbAdapter())
+  .addAdapter(new ApiGatewayV2Adapter())
   .addAdapter(new SQSAdapter())
   .build();
             `}</CodeBlock>
