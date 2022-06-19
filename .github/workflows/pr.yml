@@ -19,5 +19,8 @@ jobs:
       - run: npm ci
       - run: npm run install:peers
       - run: npm run build --if-present
+      - name: Override Fastify Version for NodeJS 12.x
+        if: matrix.node-version == '12.x'
+        run: echo "FASTIFY_VERSION=3.x" >> $GITHUB_ENV
       - run: npm test
       - run: npm run coverage
