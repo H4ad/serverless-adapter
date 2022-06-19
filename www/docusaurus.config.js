@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Serverless Adapter',
   tagline:
-    'Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda, Amazon API Gateway and many other event sources.',
+    'Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Huawei and many other clouds.',
   url: 'https://h4ad.github.io/serverless-adapter',
   baseUrl: '/serverless-adapter/',
   onBrokenLinks: 'throw',
