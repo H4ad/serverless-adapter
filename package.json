@@ -90,6 +90,7 @@
     "@types/koa": ">= 2.11.2",
     "express": ">= 4.15.4",
     "fastify": ">= 3.0.0",
+    "fastify-3": "npm:fastify@3.29.0",
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
@@ -112,6 +113,9 @@
       "optional": true
     },
     "@types/koa": {
+      "optional": true
+    },
+    "fastify-3": {
       "optional": true
     }
   },
