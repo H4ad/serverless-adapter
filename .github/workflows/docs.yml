@@ -49,10 +49,11 @@ jobs:
 
       - name: Build Docs
         run: npm run build
+        working-directory: www
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./www/build
