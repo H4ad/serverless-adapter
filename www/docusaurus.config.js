@@ -75,11 +75,15 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Community',
+            title: 'About Maintainer',
             items: [
               {
-                label: 'H4ad Twitter',
-                href: 'https://twitter.com/vinii.joga10',
+                label: 'Twitter',
+                href: 'https://twitter.com/vinii_joga10',
+              },
+              {
+                label: 'Linkedin',
+                href: 'https://www.linkedin.com/in/vinilourenco/',
               },
             ],
           },
