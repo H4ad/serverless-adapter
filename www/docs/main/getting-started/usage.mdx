@@ -1,0 +1,62 @@
+---
+title: Usage
+position: 2
+description: See more about how to use this library.
+---
+
+To start to use, first you need to know what you need to import, let's start showing the [ServerlessAdapter](/docs/api/ServerlessAdapter).
+
+```tsx
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+```
+
+We need to pass to [Serverless Adapter](/docs/api/ServerlessAdapter) the instance of your api, let's look an example with:
+
+- Framework: [Express](../frameworks/express).
+- Adapters: [AWS Api Gateway V2 Adapter](../adapters/aws/api-gateway-v2).
+- Handler: [Default Handler](../handlers/default).
+- Resolver: [Promise Resolver](../resolvers/promise).
+
+```ts
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV2Adapter());
+  // if you need more adapters
+  // just append more `addAdapter` calls
+  .build();
+```
+
+:::tip
+
+To know more about the frameworks that you can use, see [Frameworks Section](../../category/frameworks).
+
+:::
+
+:::tip
+
+To know more about the handlers that you can use, see [Handlers Section](../../category/handlers).
+
+:::
+
+
+:::tip
+
+To know more about the resolvers that you can use, see [Resolvers Section](../../category/resolvers).
+
+:::
+
+
+:::tip
+
+To know more about the adapters that you can use, see [Adapters Section](../../category/adapters).
+
+:::

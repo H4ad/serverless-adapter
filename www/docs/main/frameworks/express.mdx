@@ -1,0 +1,39 @@
+---
+title: Express
+position: 1
+description: See more about how to integrate with Express.
+---
+
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save express
+npm i --save-dev @types/express
+```
+
+Then, you need you just need to use the [ExpressFramework](../../api/Frameworks/ExpressFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::

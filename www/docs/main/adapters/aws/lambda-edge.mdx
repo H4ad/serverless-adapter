@@ -1,0 +1,12 @@
+---
+title: Lambda Edge
+description: See more about how to integrate with AWS Lambda Edge.
+---
+
+Honestly, I added this adapter because @vendia/serverless-adapter had already added support for Lambda Edge, but reading my implementation and @vendia's implementation, I never knew if it actually worked because I didn't test it on AWS.
+
+So at the moment I'm not going to create any documentation and feel free to test this adapter and see how it behaves.
+
+You can read the [source code here](https://github.com/H4ad/serverless-adapter/blob/main/src/adapters/aws/lambda-edge.adapter.ts) to see how the request and response are being assembled, as well as take a look at [LambdaEdgeAdapterOptions](/docs/api/Adapters/AWS/LambdaEdgeAdapter/LambdaEdgeAdapterOptions) to see what options you can pass.
+
+Despite being lazy to create Lambda Edge documentation, in the code I tried to add as many comments as possible to explain each option.

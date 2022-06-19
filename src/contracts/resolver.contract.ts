@@ -7,37 +7,46 @@ import { AdapterContract } from './adapter.contract';
 
 /**
  * The type that represents a resolver used to send the response, error or success, to the client
+ *
+ * @breadcrumb Contracts / ResolverContract
+ * @public
  */
 export type Resolver<TResponse, TReturn> = {
   /**
    * The method that will perform the task of forwarding the request to the framework and waiting for the promise to be resolved with the response
    *
-   * @param task The task to be executed
+   * @param task - The task to be executed
    */
   run(task: () => Promise<TResponse>): TReturn;
 };
 
 /**
  * The type that represents a delegate resolver that is passed to the adapter to handle what to do when an error occurs during forwarding.
+ *
+ * @breadcrumb Contracts / ResolverContract
+ * @public
  */
 export type DelegatedResolver<TResponse> = {
   /**
    * Send the success response to the client
    *
-   * @param success The serverless response
+   * @param success - The serverless response
    */
   succeed: (response: TResponse) => void;
 
   /**
    * Send the error response to the client
    *
-   * @param error The error object
+   * @param error - The error object
    */
   fail: (error: Error) => void;
 };
 
 /**
  * The createResolver contract props
+ *
+ * @breadcrumb Contracts / ResolverContract
+ * @public
  */
 export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
   /**
@@ -73,6 +82,9 @@ export type ResolverProps<TEvent, TContext, TCallback, TResponse> = {
 
 /**
  * The interface that represents the contract used to send the response to the client
+ *
+ * @breadcrumb Contracts / ResolverContract
+ * @public
  */
 export interface ResolverContract<
   TEvent,
@@ -84,7 +96,7 @@ export interface ResolverContract<
   /**
    * Create the resolver based on the context, callback or promise
    *
-   * @param props The props used to create the resolver
+   * @param props - The props used to create the resolver
    */
   createResolver(
     props: ResolverProps<TEvent, TContext, TCallback, TResponse>,

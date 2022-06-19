@@ -11,6 +11,9 @@ import {
 
 /**
  * The default signature of the callback sent by serverless
+ *
+ * @breadcrumb Resolvers / CallbackResolver
+ * @public
  */
 export type ServerlessCallback<TResponse> = (
   error: Error | null,
@@ -20,7 +23,10 @@ export type ServerlessCallback<TResponse> = (
 /**
  * The class that implements the resolver using the callback function sent by serverless
  *
- * @note To use this resolver on AWS, you MUST leave `{@link https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html callbackWaitsForEmptyEventLoop}` as true, otherwise, AWS will not wait for this resolver to resolve.
+ * @remarks To use this resolver on AWS, you MUST leave `{@link https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html | callbackWaitsForEmptyEventLoop}` as true, otherwise, AWS will not wait for this resolver to resolve.
+ *
+ * @breadcrumb Resolvers / CallbackResolver
+ * @public
  */
 export class CallbackResolver<TEvent, TContext, TResponse>
   implements
@@ -33,7 +39,7 @@ export class CallbackResolver<TEvent, TContext, TResponse>
     >
 {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public createResolver({
     callback,

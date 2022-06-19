@@ -1,7 +1,10 @@
 //#region Imports
 
-import { HuaweiApiGatewayEvent, HuaweiContext } from '../../@types/huawei';
-import { HuaweiApiGatewayResponse } from '../../@types/huawei/huawei-api-gateway-response';
+import {
+  HuaweiApiGatewayEvent,
+  HuaweiApiGatewayResponse,
+  HuaweiContext,
+} from '../../@types/huawei';
 import {
   AdapterContract,
   AdapterRequest,
@@ -20,12 +23,15 @@ import {
 
 /**
  * The options to customize the {@link HuaweiApiGatewayAdapter}
+ *
+ * @breadcrumb Adapters / Huawei / HuaweiApiGatewayAdapter
+ * @public
  */
 export interface HuaweiApiGatewayOptions {
   /**
    * Strip base path for custom domains
    *
-   * @default ''
+   * @defaultValue ''
    */
   stripBasePath?: string;
 }
@@ -33,12 +39,16 @@ export interface HuaweiApiGatewayOptions {
 /**
  * The adapter to handle requests from Huawei Api Gateway
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
  * const adapter = new ApiGatewayAdapter({ stripBasePath });
  * ```
  *
- * {@link https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137 Event Reference}
+ * @breadcrumb Adapters / Huawei / HuaweiApiGatewayAdapter
+ * @public
+ *
+ * {@link https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137 | Event Reference}
  */
 export class HuaweiApiGatewayAdapter
   implements
@@ -53,7 +63,7 @@ export class HuaweiApiGatewayAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link HuaweiApiGatewayAdapter}
+   * @param options - The options to customize the {@link HuaweiApiGatewayAdapter}
    */
   constructor(protected readonly options?: HuaweiApiGatewayOptions) {}
 
@@ -62,14 +72,14 @@ export class HuaweiApiGatewayAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return HuaweiApiGatewayAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is HuaweiApiGatewayEvent {
     const apiGatewayEvent = event as Partial<HuaweiApiGatewayEvent>;
@@ -87,7 +97,7 @@ export class HuaweiApiGatewayAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: HuaweiApiGatewayEvent): AdapterRequest {
     const method = event.httpMethod;
@@ -119,7 +129,7 @@ export class HuaweiApiGatewayAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse({
     headers: responseHeaders,
@@ -138,7 +148,7 @@ export class HuaweiApiGatewayAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,
@@ -167,7 +177,7 @@ export class HuaweiApiGatewayAdapter
   /**
    * Get path from event with query strings
    *
-   * @param event The event sent by serverless
+   * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: HuaweiApiGatewayEvent): string {
     const stripBasePath = getDefaultIfUndefined(

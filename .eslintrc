@@ -2,11 +2,12 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "eslint-plugin-tsdoc"
   ],
   "parserOptions": {
     "project": [
-      "./tsconfig.json"
+      "./tsconfig.eslint.json"
     ]
   },
   "extends": [
@@ -20,6 +21,7 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
+    "tsdoc/syntax": "error",
     "prettier/prettier": "warn",
     "comma-dangle": [
       "error",

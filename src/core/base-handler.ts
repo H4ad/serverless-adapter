@@ -16,6 +16,9 @@ import { ILogger } from './index';
 
 /**
  * The abstract class that represents the base class for a handler
+ *
+ * @breadcrumb Core
+ * @public
  */
 export abstract class BaseHandler<
   TApp,
@@ -55,10 +58,10 @@ export abstract class BaseHandler<
   /**
    * Get the adapter to handle a specific event and context
    *
-   * @param event The event sent by serverless
-   * @param context The context sent by serverless
-   * @param adapters The list of adapters
-   * @param log The instance of logger
+   * @param event - The event sent by serverless
+   * @param context - The context sent by serverless
+   * @param adapters - The list of adapters
+   * @param log - The instance of logger
    */
   protected getAdapterByEventAndContext(
     event: TEvent,
@@ -90,7 +93,7 @@ export abstract class BaseHandler<
   /**
    * Get serverless request and response frmo the adapter request
    *
-   * @param requestValues The request values from adapter
+   * @param requestValues - The request values from adapter
    */
   protected getServerlessRequestResponseFromAdapterRequest(
     requestValues: AdapterRequest,

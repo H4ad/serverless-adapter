@@ -9,7 +9,8 @@ import { ILogger, createDefaultLogger } from '../../core';
 /**
  * The framework that asynchronously instantiates your application and forwards the request to the framework as quickly as possible.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * import express from 'express';
  * import { ServerlessAdapter } from '@h4ad/serverless-adapter';
  * import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
@@ -31,6 +32,9 @@ import { ILogger, createDefaultLogger } from '../../core';
  *   // set other configurations and then build
  *   .build();
  * ```
+ *
+ * @breadcrumb Frameworks / LazyFramework
+ * @public
  */
 export class LazyFramework<TApp> implements FrameworkContract<null> {
   //#region Constructor
@@ -77,7 +81,7 @@ export class LazyFramework<TApp> implements FrameworkContract<null> {
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public sendRequest(
     app: null,

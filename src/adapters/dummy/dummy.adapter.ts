@@ -7,24 +7,27 @@ import { EmptyResponse, IEmptyResponse } from '../../core';
 
 /**
  * The class that represents a dummy adapter that does nothing and can be used by the cloud that doesn't use adapters.
+ *
+ * @breadcrumb Adapters / DummyAdapter
+ * @public
  */
 export class DummyAdapter implements AdapterContract<any, any, void> {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(): boolean {
     return true;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return DummyAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(): AdapterRequest {
     return {
@@ -36,14 +39,14 @@ export class DummyAdapter implements AdapterContract<any, any, void> {
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse(): IEmptyResponse {
     return EmptyResponse;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding(props: OnErrorProps<any, void>): void {
     props.delegatedResolver.succeed();

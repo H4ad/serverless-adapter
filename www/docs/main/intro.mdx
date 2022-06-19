@@ -1,0 +1,103 @@
+---
+sidebar_position: 1
+---
+
+# Introduction
+
+This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
+create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
+library layer.
+
+Why you would use this libray instead of [@vendia/serverless-express](https://github.com/vendia/serverless-express)?
+
+- Better APIs to extend library functionality.
+  - You don't need me to release a new version to integrate with the new event source, you can create an adapter and
+    just call the `addAdapter` method when building your handler.
+- All code can be extended, if you want to modify the current behavior you can.
+  - This is important because if you find a bug, you can quickly resolve it by extending the class, _and then you can
+    submit a PR to fix the bug_.
+- All code was written in Typescript.
+- Well documented, any method, class, or interface has comments to explain the behavior.
+- We have >99% coverage.
+
+## Support
+
+:::caution
+
+We are in beta, so some adapters may not work as expected, feel free to create an issue or provide feedback on current behavior.
+
+:::
+
+By design we have these contracts that define the layers of the library: Frameworks, Adapters, Resolvers and Handlers.
+
+:::info
+
+If you don't know what each thing means, see [Architecture](./architecture).
+
+:::
+
+Currently, we support these frameworks:
+
+- [NestJS](https://nestjs.com/), see the [documentation about](./frameworks/nestjs) to know how to integrate.
+- [Express](https://expressjs.com/) by using ([ExpressFramework](./frameworks/express))
+- [Fastify](https://www.fastify.io/) by using ([FastifyFramework](./frameworks/fastify))
+- [Hapi](https://hapi.dev/) by using ([HapiFramework](./frameworks/hapi))
+- [Koa](https://koajs.com/) by using ([KoaFramework](./frameworks/koa))
+- Async Initialization by using ([LazyFramework](./frameworks/lazy))
+  - Use this framework to provide a way to create the instance of your app asynchronously.
+  - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](./frameworks/lazy).
+
+We support these event sources:
+
+- AWS
+  - [AWS Load Balancer](https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html) by
+    using ([AlbAdapter](./adapters/aws/alb))
+  - [AWS Api Gateway V1](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+    by using ([ApiGatewayV1Adapter](./adapters/aws/api-gateway-v1))
+  - [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+    by using ([ApiGatewayV2Adapter](./adapters/aws/api-gateway-v2))
+  - [AWS DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) by
+    using ([DynamoDBAdapter](./adapters/aws/dynamodb))
+  - [AWS Event Bridge / CloudWatch Events](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html)
+    by using ([EventBridgeAdapter](./adapters/aws/event-bridge))
+  - [AWS Lambda Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) by
+    using ([LambdaEdgeAdapter](./adapters/aws/lambda-edge))
+  - [AWS SNS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html) by
+    using ([SNSAdapter](./adapters/aws/sns))
+  - [AWS SQS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html) by
+    using ([SQSAdapter](./adapters/aws/sqs))
+- Huawei
+  - [Http Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1442.html): Look [this section](./handlers/huawei#http-function).
+  - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): Look [this section](./handlers/huawei#event-function).
+  - [Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) by using ([HuaweiApiGatewayAdapter](./adapters/huawei/huawei-api-gateway)).
+- Azure
+  - [The support is coming soon.](https://github.com/H4ad/serverless-adapter/issues/3)
+- Firebase
+  - The support is coming soon.
+- GCP
+  - The support is coming soon.
+
+We support these resolvers:
+
+- Promise by using ([PromiseResolver](./resolvers/promise))
+- Callback by using ([CallbackResolver](./resolvers/callback))
+- AWS Context by using ([AwsContextResolver](./resolvers/aws-context))
+
+We support these handlers:
+
+- Default by using ([DefaultHandler](./handlers/default))
+- Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
+
+## Why you create this library?
+
+The real reason I created this library was because I wanted to add API Gateway and SQS support at the same time to save
+some money. But, [@vendia/serverless-express](https://github.com/vendia/serverless-express) was not supported, so
+I [created a PR](https://github.com/vendia/serverless-express/pull/483) ~~but until I finished this library that PR was never accepted~~ and it was merged but it took so long.
+
+So I build my own library based on that library with better APIs so I never have to wait for the maintainer to accept my
+PR just to extend the library's functionality :)
+
+## Credits
+
+Honestly, I just refactored all the code that the @vendia team and many other contributors wrote, thanks so much to them
+for existing and giving us a brilliant library that is the core of my current company.

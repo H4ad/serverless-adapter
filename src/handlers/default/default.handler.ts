@@ -22,6 +22,9 @@ import { ServerlessResponse } from '../../network';
 
 /**
  * The class that implements a default serverless handler consisting of a function with event, context and callback parameters respectively
+ *
+ * @breadcrumb Handlers / DefaultHandler
+ * @public
  */
 export class DefaultHandler<
   TApp,
@@ -34,7 +37,7 @@ export class DefaultHandler<
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getHandler(
     app: TApp,
@@ -101,11 +104,11 @@ export class DefaultHandler<
   /**
    * The hook executed on receive a request, before the request is being processed
    *
-   * @param log The instance of logger
-   * @param event The event sent by serverless
-   * @param context The context sent by serverless
-   * @param binarySettings The binary settings
-   * @param respondWithErrors Indicates whether the error stack should be included in the response or not
+   * @param log - The instance of logger
+   * @param event - The event sent by serverless
+   * @param context - The context sent by serverless
+   * @param binarySettings - The binary settings
+   * @param respondWithErrors - Indicates whether the error stack should be included in the response or not
    */
   protected onReceiveRequest(
     log: ILogger,
@@ -125,8 +128,8 @@ export class DefaultHandler<
   /**
    * The hook executed after resolve the adapter that will be used to handle the request and response
    *
-   * @param log The instance of logger
-   * @param adapter The adapter resolved
+   * @param log - The instance of logger
+   * @param adapter - The adapter resolved
    */
   protected onResolveAdapter(
     log: ILogger,
@@ -141,8 +144,8 @@ export class DefaultHandler<
   /**
    * The hook executed after resolves the request values that will be sent to the framework
    *
-   * @param log The instance of logger
-   * @param requestValues The request values returned by the adapter
+   * @param log - The instance of logger
+   * @param requestValues - The request values returned by the adapter
    */
   protected onResolveRequestValues(
     log: ILogger,
@@ -164,8 +167,8 @@ export class DefaultHandler<
   /**
    * The hook executed after handling the response sent by the framework
    *
-   * @param log The instance of logger
-   * @param response The response sent by the framework
+   * @param log - The instance of logger
+   * @param response - The response sent by the framework
    */
   protected onResolveForwardedResponseToFramework(
     log: ILogger,
@@ -179,11 +182,11 @@ export class DefaultHandler<
   /**
    * The hook executed before sending response to the serverless
    *
-   * @param log The instance of logger
-   * @param statusCode The status code of the response
-   * @param body The body of the response
-   * @param headers The headers of the response
-   * @param isBase64Encoded Indicates whether the response was encoded as binary or not
+   * @param log - The instance of logger
+   * @param statusCode - The status code of the response
+   * @param body - The body of the response
+   * @param headers - The headers of the response
+   * @param isBase64Encoded - Indicates whether the response was encoded as binary or not
    */
   protected onForwardResponse(
     log: ILogger,
@@ -206,9 +209,9 @@ export class DefaultHandler<
   /**
    * The hook executed before sending response to the serverless with response from adapter
    *
-   * @param log The instance of logger
-   * @param successResponse The success response resolved by the adapter
-   * @param body The body of the response sent by the framework
+   * @param log - The instance of logger
+   * @param successResponse - The success response resolved by the adapter
+   * @param body - The body of the response sent by the framework
    */
   protected onForwardResponseAdapterResponse(
     log: ILogger,
@@ -228,13 +231,13 @@ export class DefaultHandler<
   /**
    * The function to forward the event to the framework
    *
-   * @param app The instance of the app (express, hapi, etc...)
-   * @param framework The framework that will process requests
-   * @param event The event sent by serverless
-   * @param context The context sent by serverless
-   * @param adapter The adapter resolved to this event
-   * @param log The instance of logger
-   * @param binarySettings The binary settings
+   * @param app - The instance of the app (express, hapi, etc...)
+   * @param framework - The framework that will process requests
+   * @param event - The event sent by serverless
+   * @param context - The context sent by serverless
+   * @param adapter - The adapter resolved to this event
+   * @param log - The instance of logger
+   * @param binarySettings - The binary settings
    */
   protected async forwardRequestToFramework(
     app: TApp,
@@ -264,11 +267,11 @@ export class DefaultHandler<
   /**
    * The function to forward the response back to the serverless
    *
-   * @param event The event sent by serverless
-   * @param response The response of the framework
-   * @param adapter The adapter resolved to this event
-   * @param binarySettings The binary settings
-   * @param log The instance of logger
+   * @param event - The event sent by serverless
+   * @param response - The response of the framework
+   * @param adapter - The adapter resolved to this event
+   * @param binarySettings - The binary settings
+   * @param log - The instance of logger
    */
   protected forwardResponse(
     event: TEvent,

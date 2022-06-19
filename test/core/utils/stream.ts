@@ -1,8 +1,5 @@
 // credits to: https://github.com/b4nst/stream-mock/pull/64/files#diff-52aee274967f2fcfa3ffa78ebba2f510dd23d176aa92ccf8c0ad4843373f5ce7
 
-/**
- * @module readable
- */
 import { Readable, ReadableOptions } from 'stream';
 import { IReadableMock } from 'stream-mock';
 
@@ -17,15 +14,16 @@ import { IReadableMock } from 'stream-mock';
  * reader.on("data", () => console.log('not called'));
  * reader.on("error", e => console.log('called'));
  * ```
+ *
+ * @internal
  */
 export default class ErrorReadableMock
   extends Readable
   implements IReadableMock
 {
   /**
-   *
-   * @param expectedError error to be passed on callback.
-   * @param options Readable stream options.
+   * @param expectedError - error to be passed on callback.
+   * @param options - Readable stream options.
    */
   constructor(expectedError: Error, options: ReadableOptions = {}) {
     super(options);

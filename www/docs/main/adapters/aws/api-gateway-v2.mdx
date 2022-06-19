@@ -1,0 +1,135 @@
+---
+title: Api Gateway V2
+description: See more about how to integrate with AWS API Gateway V2.
+---
+
+The adapter to handle requests from [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html).
+
+:::info
+
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 status WITH error stack in the response.
+
+:::
+
+:::tip Reducing Costs
+
+Not sure when to use AWS ALB instead of API Gateway? See [this article](https://serverless-training.com/articles/save-money-by-replaceing-api-gateway-with-application-load-balancer/) from Serverless Training to learn more.
+
+:::
+
+## About the adapter
+
+This adapter transforms every request coming from API Gateway V2 into an HTTP request to your framework.
+
+```json title="api-gateway-v2-event-example.json"
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/my/path",
+  "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
+  "cookies": [
+    "cookie1",
+    "cookie2"
+  ],
+  "headers": {
+    "header1": "value1",
+    "header2": "value1,value2"
+  },
+  "queryStringParameters": {
+    "parameter1": "value1,value2",
+    "parameter2": "value"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "api-id",
+    "authentication": {
+      "clientCert": {
+        "clientCertPem": "CERT_CONTENT",
+        "subjectDN": "www.example.com",
+        "issuerDN": "Example issuer",
+        "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
+        "validity": {
+          "notBefore": "May 28 12:30:02 2019 GMT",
+          "notAfter": "Aug  5 09:36:04 2021 GMT"
+        }
+      }
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "claim1": "value1",
+          "claim2": "value2"
+        },
+        "scopes": [
+          "scope1",
+          "scope2"
+        ]
+      }
+    },
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "http": {
+      "method": "POST",
+      "path": "/my/path",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "IP",
+      "userAgent": "agent"
+    },
+    "requestId": "id",
+    "routeKey": "$default",
+    "stage": "$default",
+    "time": "12/Mar/2020:19:03:58 +0000",
+    "timeEpoch": 1583348638390
+  },
+  "body": "Hello from Lambda",
+  "pathParameters": {
+    "parameter1": "value1"
+  },
+  "isBase64Encoded": false,
+  "stageVariables": {
+    "stageVariable1": "value1",
+    "stageVariable2": "value2"
+  }
+}
+```
+
+So, to add support to the above request, we must have registered the `/my/path` route as `POST` and when API Gateway sends this event, you will get:
+
+- `body`: `Hello from Lambda`
+- `queryString`: `parameter1=value1&parameter1=value2&parameter2=value`
+
+## Customizing
+
+You can strip base path with the option `stripBasePath` inside [ApiGatewayV2Options](/docs/api/Adapters/AWS/ApiGatewayV2Adapter/ApiGatewayV2Options).
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should either send the request in the path `/prod/my/path` or set `stripBasePath` to `/prod`.
+
+:::
+
+## Usage
+
+To add support to AWS API Gateway V2 you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV2Adapter())
+  // customizing:
+  // .addAdapter(new ApiGatewayV2Adapter({ stripBasePath: '/prod' }))
+  .build();
+```
+
+:::danger
+
+As per [know issues](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html), we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+
+:::

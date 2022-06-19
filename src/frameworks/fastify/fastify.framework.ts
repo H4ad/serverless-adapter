@@ -8,10 +8,13 @@ import { FrameworkContract } from '../../contracts';
 
 /**
  * The framework that forwards requests to fastify handler
+ *
+ * @breadcrumb Frameworks / FastifyFramework
+ * @public
  */
 export class FastifyFramework implements FrameworkContract<FastifyInstance> {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public sendRequest(
     app: FastifyInstance,

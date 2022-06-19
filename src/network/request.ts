@@ -6,14 +6,45 @@ import { NO_OP } from '../core';
 
 const HTTPS_PORT = 443;
 
+/**
+ * The properties to create a {@link ServerlessRequest}
+ *
+ * @breadcrumb Network / ServerlessRequest
+ * @public
+ */
 export interface ServerlessRequestProps {
+  /**
+   * The HTTP Method of the request
+   */
   method: string;
+
+  /**
+   * The URL requested
+   */
   url: string;
+
+  /**
+   * The headers from the event source
+   */
   headers: SingleValueHeaders;
+
+  /**
+   * The body from the event source
+   */
   body?: Buffer;
+
+  /**
+   * The IP Address from caller
+   */
   remoteAddress?: string;
 }
 
+/**
+ * The class that represents an {@link http#IncomingMessage} created by the library to represent an actual request to the framework.
+ *
+ * @breadcrumb Network / ServerlessRequest
+ * @public
+ */
 export class ServerlessRequest extends IncomingMessage {
   constructor({
     method,

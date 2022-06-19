@@ -7,15 +7,20 @@ import { BothValueHeaders } from '../@types';
 /**
  * Transform a header map and make sure the value is not an array
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'accept-encoding': 'gzip', 'accept-language': ['en-US', 'en;q=0.9'] };
  * const flattenedHeaders = getFlattenedHeadersMap(headers, ',', true);
  * console.log(flattenedHeaders);
  * // { 'accept-encoding': 'gzip', 'accept-language': 'en-US,en;q=0.9' }
  * ```
- * @param headersMap The initial headers
- * @param separator The separator used when we join the array of header's value
- * @param lowerCaseKey Should put all keys in lowercase
+ *
+ * @param headersMap - The initial headers
+ * @param separator - The separator used when we join the array of header's value
+ * @param lowerCaseKey - Should put all keys in lowercase
+ *
+ * @breadcrumb Core / Headers
+ * @public
  */
 export function getFlattenedHeadersMap(
   headersMap: BothValueHeaders,
@@ -39,13 +44,18 @@ export function getFlattenedHeadersMap(
 /**
  * Transforms a header map into a multi-value map header.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const headers = { 'accept-encoding': 'gzip', 'connection': ['keep-alive'] };
  * const multiValueHeaders = getMultiValueHeadersMap(headers);
  * console.log(multiValueHeaders);
  * // { 'accept-encoding': ['gzip'], 'connection': ['keep-alive'] }
  * ```
- * @param headersMap The initial headers
+ *
+ * @param headersMap - The initial headers
+ *
+ * @breadcrumb Core / Headers
+ * @public
  */
 export function getMultiValueHeadersMap(
   headersMap: BothValueHeaders,

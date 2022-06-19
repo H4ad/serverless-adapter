@@ -1,0 +1,40 @@
+---
+title: Huawei Api Gateway
+description: See more about how to integrate with Api Gateway.
+---
+
+This adapter add support to [Huawei Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) inside [Huawei Function Graph](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0101.html).
+
+## About the Adapter
+
+When you receive an `POST` request inside path `/users`, this adapter will forward that request to your framework,
+so you can just plug this adapter and doesn't need any configuration to work.
+
+To see which options you can customize, see the [HuaweiApiGatewayOptions](/docs/api/Adapters/Huawei/HuaweiApiGatewayAdapter/HuaweiApiGatewayOptions) interface.
+
+## Usage
+
+To add support to Api Gateway you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { CallbackResolver } from '@h4ad/serverless-adapter/lib/resolvers/callback';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new CallbackResolver())
+  .addAdapter(new HuaweiApiGatewayAdapter())
+  .build();
+```
+
+:::caution One important thing
+
+You must use the callback resolver because I couldn't get it to work with the PromiseResolver.
+Maybe it's a bug in the library or something specific in Huawei, if you have a hint please create an issue.
+
+:::

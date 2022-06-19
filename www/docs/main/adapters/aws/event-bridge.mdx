@@ -1,0 +1,114 @@
+---
+title: EventBridge (CloudWatch Events)
+description: See more about how to integrate with AWS EventBridge.
+---
+
+The adapter to handle requests from [AWS EventBridge](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html).
+
+:::info
+
+The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
+
+:::
+
+## Typescript
+
+To correctly type your `body` when receiving the AWS EventBridge request, you must install `aws-lambda`:
+
+```bash
+npm i --save-dev @types/aws-lambda
+```
+
+So when getting the `body` you should use this type:
+
+```ts title="eventbridge.controller.ts"
+import type { EventBridgeEvent } from 'aws-lambda';
+```
+
+## About the adapter
+
+In AWS EventBridge, you don't have requests, you just receive the info from Cloudwatch Events within `event` property of the handler.
+
+So, in order to handle this adapter, by default we create a `POST` request to `/eventbridge` with the `body` being the `event` property as JSON.
+
+```json title="rds-eventbridge-event-example.json"
+{
+    "version": "0",
+    "id": "fe8d3c65-xmpl-c5c3-2c87-81584709a377",
+    "detail-type": "RDS DB Instance Event",
+    "source": "aws.rds",
+    "account": "123456789012",
+    "time": "2020-04-28T07:20:20Z",
+    "region": "us-east-2",
+    "resources": [
+        "arn:aws:rds:us-east-2:123456789012:db:rdz6xmpliljlb1"
+    ],
+    "detail": {
+        "EventCategories": [
+            "backup"
+        ],
+        "SourceType": "DB_INSTANCE",
+        "SourceArn": "arn:aws:rds:us-east-2:123456789012:db:rdz6xmpliljlb1",
+        "Date": "2020-04-28T07:20:20.112Z",
+        "Message": "Finished DB Instance backup",
+        "SourceIdentifier": "rdz6xmpliljlb1"
+    }
+}
+```
+
+And one example with [Schedule expression](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents-expressions.html):
+
+```json title="scheduled-eventbridge-event-example.json"
+{
+  "version": "0",
+  "account": "123456789012",
+  "region": "us-east-2",
+  "detail": {},
+  "detail-type": "Scheduled Event",
+  "source": "aws.events",
+  "time": "2019-03-01T01:23:45Z",
+  "id": "cdc73f9d-aea9-11e3-9d5a-835b769c0d9c",
+  "resources": [
+    "arn:aws:events:us-east-2:123456789012:rule/my-schedule"
+  ]
+}
+```
+
+Normally, your framework will parse this JSON and return the parsed values as javascript objects.
+
+## Customizing
+
+You can change the HTTP Method and Path that will be used to create the request by sending `eventBridgeForwardMethod` and `eventBridgeForwardPath` inside [EventBridgeOptions](/docs/api/Adapters/AWS/EventBridgeAdapter/EventBridgeOptions).
+
+## Usage
+
+To add support to AWS EventBridge you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { EventBridgeAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new EventBridgeAdapter())
+  // customizing:
+  // .addAdapter(new EventBridgeAdapter({ eventBridgeForwardPath: '/prod/eventbridge', eventBridgeForwardMethod: 'PUT' }))
+  .build();
+```
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should set `eventBridgeForwardPath` as `/prod/eventbridge` instead leave as default `/eventbridge`.
+
+:::
+
+## Security
+
+You **MUST** check if the header `Host` contains the value of `events.amazonaws.com`.
+
+Without checking this header, if you add this adapter and [AWS API Gateway V2](./api-gateway-v2) adapter, you will be vulnerable to attacks
+because anyone can create a `POST` request to `/eventbridge`.

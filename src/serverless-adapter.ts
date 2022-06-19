@@ -20,7 +20,8 @@ import {
 /**
  * The class used to build the serverless handler.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const app = express();
  * export const handler = ServerlessAdapter.new(app)
  *   .setFramework(new ExpressFramework())
@@ -32,6 +33,9 @@ import {
  *   .addAdapter(new SNSAdapter())
  *   .build();
  * ```
+ *
+ * @breadcrumb ServerlessAdapter
+ * @public
  */
 export class ServerlessAdapter<
   TApp,
@@ -66,7 +70,7 @@ export class ServerlessAdapter<
   /**
    * Settings for whether the response should be treated as binary or not
    *
-   * @default `contentEncodings` and `contentTypes` are set with {@link DEFAULT_BINARY_ENCODINGS} and {@link DEFAULT_BINARY_CONTENT_TYPES}, respectively.
+   * @defaultValue `contentEncodings` and `contentTypes` are set with {@link DEFAULT_BINARY_ENCODINGS} and {@link DEFAULT_BINARY_CONTENT_TYPES}, respectively.
    */
   protected binarySettings: BinarySettings = {
     contentEncodings: DEFAULT_BINARY_ENCODINGS,
@@ -76,8 +80,8 @@ export class ServerlessAdapter<
   /**
    * Indicates whether the error stack should be included in the response or not
    *
-   * @note These errors will only be included when an error occurs while forwarding the event to the framework
-   * @default True when NODE_ENV is equal to `development`
+   * @remarks These errors will only be included when an error occurs while forwarding the event to the framework
+   * @defaultValue True when NODE_ENV is equal to `development`
    */
   protected respondWithErrors: boolean = process.env.NODE_ENV === 'development';
 
@@ -126,7 +130,7 @@ export class ServerlessAdapter<
   /**
    * Creates a new instance of the builder with app (express, hapi, koa, etc...)
    *
-   * @param app The instance of the app
+   * @param app - The instance of the app
    */
   public static new<
     TApp,
@@ -148,7 +152,7 @@ export class ServerlessAdapter<
   /**
    * Defines the handler that will get the event, context and callback and pass it to the adapter and framework
    *
-   * @param handler The implementation of the handler contract
+   * @param handler - The implementation of the handler contract
    */
   public setHandler(
     handler: HandlerContract<
@@ -171,7 +175,7 @@ export class ServerlessAdapter<
   /**
    * Defines the resolver that aims to resolve the response to serverless and stop its execution when the request ends
    *
-   * @param resolver The implementation of the resolver contract
+   * @param resolver - The implementation of the resolver contract
    */
   public setResolver(
     resolver: ResolverContract<TEvent, TContext, TCallback, TResponse, TReturn>,
@@ -187,7 +191,7 @@ export class ServerlessAdapter<
   /**
    * Defines the framework that will process requests
    *
-   * @param framework The implementation of the framework contract
+   * @param framework - The implementation of the framework contract
    */
   public setFramework(
     framework: FrameworkContract<TApp>,
@@ -206,7 +210,7 @@ export class ServerlessAdapter<
   /**
    * Defines the logger service used during the execution of the handler
    *
-   * @param logger The implementation of the logger
+   * @param logger - The implementation of the logger
    */
   public setLogger(logger: ILogger): Omit<this, 'setLogger'> {
     this.log = logger;
@@ -217,7 +221,7 @@ export class ServerlessAdapter<
   /**
    * Defines the binary settings for whether the response should be treated as binary or not
    *
-   * @param binarySettings The binary settings
+   * @param binarySettings - The binary settings
    */
   public setBinarySettings(
     binarySettings: BinarySettings,
@@ -230,7 +234,7 @@ export class ServerlessAdapter<
   /**
    * Defines the responseWithErrors, a property that indicates whether the error stack should be included in the response or not
    *
-   * @param respondWithErrors Should include or not the errors in response
+   * @param respondWithErrors - Should include or not the errors in response
    */
   public setRespondWithErrors(
     respondWithErrors: boolean,
@@ -243,7 +247,7 @@ export class ServerlessAdapter<
   /**
    * Add an adapter to the adapters list to handle the event coming from any serverless event source
    *
-   * @param adapter The implementation of the adapter contract
+   * @param adapter - The implementation of the adapter contract
    */
   public addAdapter(
     adapter: AdapterContract<TEvent, TContext, TResponse>,

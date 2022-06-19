@@ -1,0 +1,94 @@
+---
+title: SQS
+description: See more about how to integrate with AWS SQS.
+---
+
+The adapter to handle requests from [AWS SQS](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html).
+
+:::info
+
+The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
+
+:::
+
+## Typescript
+
+To correctly type your `body` when receiving the AWS SQS request, you must install `aws-lambda`:
+
+```bash
+npm i --save-dev @types/aws-lambda
+```
+
+So when getting the `body` you should use this type:
+
+```ts title="sqs.controller.ts"
+import type { SQSEvent } from 'aws-lambda';
+```
+
+## About the adapter
+
+In AWS SQS, you don't have requests, you just receive the records from the queue in the `event` property of the handler.
+
+So, in order to handle this adapter, by default we create a `POST` request to `/sqs` with the `body` being the `event` property as JSON.
+
+```json title="sqs-event-example.json"
+{
+    "Records": [
+        {
+            "messageId": "059f36b4-87a3-44ab-83d2-661975830a7d",
+            "receiptHandle": "AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...",
+            "body": "Test message.",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1545082649183",
+                "SenderId": "AIDAIENQZJOLO23YVJ4VO",
+                "ApproximateFirstReceiveTimestamp": "1545082649185"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-2:123456789012:my-queue",
+            "awsRegion": "us-east-2"
+        }
+    ]
+}
+```
+
+Normally, your framework will parse this JSON and return the parsed values as javascript objects.
+
+## Customizing
+
+You can change the HTTP Method and Path that will be used to create the request by sending `sqsForwardMethod` and `sqsForwardPath` inside [SQSAdapterOptions](/docs/api/Adapters/AWS/SQSAdapter/SQSAdapterOptions).
+
+## Usage
+
+To add support to AWS SQS you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { SQSAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new SQSAdapter())
+  // customizing:
+  // .addAdapter(new SQSAdapter({ sqsForwardPath: '/prod/sqs', sqsForwardMethod: 'PUT' }))
+  .build();
+```
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should set `sqsForwardPath` as `/prod/sqs` instead leave as default `/sqs`.
+
+:::
+
+## Security
+
+You **MUST** check if the header `Host` contains the value of `sqs.amazonaws.com`.
+
+Without checking this header, if you add this adapter and [AWS API Gateway V2](./api-gateway-v2) adapter, you will be vulnerable to attacks
+because anyone can create a `POST` request to `/sqs`.

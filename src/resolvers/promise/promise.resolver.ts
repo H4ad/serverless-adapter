@@ -11,13 +11,16 @@ import {
 
 /**
  * The class that implements the resolver using the promise object sent by this library
+ *
+ * @breadcrumb Resolvers / PromiseResolver
+ * @public
  */
 export class PromiseResolver<TEvent, TContext, TCallback, TResponse, TReturn>
   implements
     ResolverContract<TEvent, TContext, TCallback, TResponse, Promise<any>>
 {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public createResolver({
     event,

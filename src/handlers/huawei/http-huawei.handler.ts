@@ -17,16 +17,22 @@ import { ILogger, getDefaultIfUndefined } from '../../core';
 /**
  * The default port that huawei will proxy the request to your framework
  *
- * {@link https://support.huaweicloud.com/intl/en-us/ae-ad-1-usermanual-functiongraph/functiongraph_01_1442.html#functiongraph_01_1442__li194597302096 Reference}
+ * {@link https://support.huaweicloud.com/intl/en-us/ae-ad-1-usermanual-functiongraph/functiongraph_01_1442.html#functiongraph_01_1442__li194597302096 | Reference}
+ *
+ * @breadcrumb Handlers / HttpHuaweiHandler
+ * @public
  */
 export const DEFAULT_HUAWEI_LISTEN_PORT: number = 8000;
 
 /**
  * The options to customize {@link HttpHuaweiHandler}
+ *
+ * @breadcrumb Handlers / HttpHuaweiHandler
+ * @public
  */
 export type HttpHuaweiHandlerOptions = {
   /**
-   * @default {@link DEFAULT_HUAWEI_LISTEN_PORT}
+   * @defaultValue {@link DEFAULT_HUAWEI_LISTEN_PORT}
    */
   port?: number;
 
@@ -42,6 +48,9 @@ export type HttpHuaweiHandlerOptions = {
  * In this Handler, you don't need to specific resolver and adapter, so you can use DummyAdapter and DummyResolver instead.
  *
  * @see https://support.huaweicloud.com/intl/en-us/ae-ad-1-usermanual-functiongraph/functiongraph_01_1442.html#functiongraph_01_1442__li194597302096
+ *
+ * @breadcrumb Handlers / HttpHuaweiHandler
+ * @public
  */
 export class HttpHuaweiHandler<TApp>
   implements HandlerContract<TApp, void, void, void, void, Promise<void>>
@@ -58,7 +67,7 @@ export class HttpHuaweiHandler<TApp>
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getHandler(
     app: TApp,
@@ -106,7 +115,7 @@ export class HttpHuaweiHandler<TApp>
   /**
    * The method that creates the instance of http server
    *
-   * @param requestListener O método que lidará com as requisições recebidas
+   * @param requestListener - O método que lidará com as requisições recebidas
    */
   protected createHttpServer(requestListener: RequestListener): http.Server {
     return http.createServer(requestListener);

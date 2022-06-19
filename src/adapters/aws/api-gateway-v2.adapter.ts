@@ -20,12 +20,15 @@ import {
 
 /**
  * The options to customize the {@link ApiGatewayV2Adapter}
+ *
+ * @breadcrumb Adapters / AWS / ApiGatewayV2Adapter
+ * @public
  */
 export interface ApiGatewayV2Options {
   /**
    * Strip base path for custom domains
    *
-   * @default ''
+   * @defaultValue ''
    */
   stripBasePath?: string;
 }
@@ -33,14 +36,18 @@ export interface ApiGatewayV2Options {
 /**
  * The adapter to handle requests from AWS Api Gateway V2
  *
- * As per {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html know issues}, we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+ * As per {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html | know issues}, we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const stripBasePath = '/any/custom/base/path'; // default ''
  * const adapter = new ApiGatewayV2Adapter({ stripBasePath });
  * ```
  *
- * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html Event Reference}
+ * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html | Event Reference}
+ *
+ * @breadcrumb Adapters / AWS / ApiGatewayV2Adapter
+ * @public
  */
 export class ApiGatewayV2Adapter
   implements
@@ -55,7 +62,7 @@ export class ApiGatewayV2Adapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link ApiGatewayV2Adapter}
+   * @param options - The options to customize the {@link ApiGatewayV2Adapter}
    */
   constructor(protected readonly options?: ApiGatewayV2Options) {}
 
@@ -64,14 +71,14 @@ export class ApiGatewayV2Adapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return ApiGatewayV2Adapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is APIGatewayProxyEventV2 {
     const apiGatewayEvent = event as Partial<APIGatewayProxyEventV2> & {
@@ -84,7 +91,7 @@ export class ApiGatewayV2Adapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: APIGatewayProxyEventV2): AdapterRequest {
     const method = event.requestContext.http.method;
@@ -118,7 +125,7 @@ export class ApiGatewayV2Adapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse({
     headers: responseHeaders,
@@ -162,7 +169,7 @@ export class ApiGatewayV2Adapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,
@@ -194,7 +201,7 @@ export class ApiGatewayV2Adapter
   /**
    * Get path from event with query strings
    *
-   * @param event The event sent by serverless
+   * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEventV2): string {
     const stripBasePath = getDefaultIfUndefined(

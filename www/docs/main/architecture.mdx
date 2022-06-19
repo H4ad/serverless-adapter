@@ -1,0 +1,57 @@
+---
+sidebar_position: 2
+---
+
+# Architecture
+
+The main purpose of this library is to allow the developer to add support for any cloud and as many event sources as he
+wants, without having to create an issue to request the feature or copy the library code because the library doesn't
+expose good APIs for you to extend its functionality
+
+So I refactored [@vendia/serverless-express](https://github.com/vendia/serverless-express) with 4 layers of abstraction:
+Framework, Handler, Resolver and Adapter.
+
+## Framework
+
+The [FrameworkContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/framework.contract.ts) is responsible for forwarding
+to [IncomingMessage](https://nodejs.org/api/http.html#class-httpincomingmessage)
+and [ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse) for your application instance.
+
+With this abstraction you can implement any framework you want, they just need to accept both parameters and
+call [end](https://nodejs.org/api/http.html#class-httpserverresponse)
+in [ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse), so the library knows when to continue
+and return the response.
+
+## Handler
+
+The [HandlerContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/handler.contract.ts) is responsible to get the input from the serverless and then
+manage to call each layer of abstraction to return a response.
+
+With this abstraction, you can implement different ways
+to receive input from your serverless environment.
+
+They usually have the same structure, but if you need to deal with a
+very different cloud, you can use this abstraction to add support for that cloud.
+
+:::tip
+
+Handler is a good choice for implementing (~~monsters~~) ways to receive input.
+For example, we can create an http server as its handler to test our serverless code without having to launch the framework. Because? I don't know, but you can.
+
+:::
+
+## Resolver
+
+The [ResolverContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/resolver.contract.ts) is responsible for waiting for the framework to handle the
+request and then returning the response to the cloud. Using AWS for example, you have three ways to wait for the
+response: returning a promise, calling the callback, and ~~using in-context methods~~, each option has its own benefits,
+but generally the promise option will be the better because any good cloud provider will support promises.
+
+## Adapter
+
+Finally, the masterpiece of this library, the [AdapterContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/adapter.contract.ts) is responsible for
+handling the received event, transforming the request in a way that your application can understand and then
+transforming the response in a way your cloud can understand.
+
+Well, with these four contracts, you'll be able to add support to any cloud that exists (no more excuses not to use
+cloud X with NodeJS).

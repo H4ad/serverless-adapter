@@ -1,0 +1,46 @@
+---
+title: Default
+position: 1
+description: See more about how to integrate with common serverless environments.
+---
+
+:::tip
+
+Don't know what a handler is? See the [Architecture](../architecture#handler) section.
+
+:::
+
+This is a serverless handler implementation that will return a function that expect to receive the following arguments: event, context and callback, respectively.
+
+```js
+function(event, context, callback) {...}
+```
+
+If your cloud's serverless handler signature is the same, you can use this handler.
+
+This is usually enough to add support for clouds like: AWS, Azure, Huawei and others.
+
+# Usage
+
+To use, you can import and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // continue to set the other options here.
+  //.setResolver(new AwsContextResolver())
+  //.setFramework(new ExpressFramework())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+  "tagDefinitions": [
+    {
+      "tagName": "@breadcrumb",
+      "syntaxKind": "block",
+      "allowMultiple": false
+    }
+  ],
+  "noStandardTags": false
+}

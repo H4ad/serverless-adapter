@@ -1,7 +1,8 @@
 /**
  * Return the defaultValue whether the value is undefined, otherwise, return the value.
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const value1 = getDefaultIfUndefined(undefined, true);
  * const value2 = getDefaultIfUndefined(false, true);
  *
@@ -11,8 +12,11 @@
  * // false
  * ```
  *
- * @param value The value to be checked
- * @param defaultValue The default value when value is undefined
+ * @param value - The value to be checked
+ * @param defaultValue - The default value when value is undefined
+ *
+ * @breadcrumb Core
+ * @public
  */
 export function getDefaultIfUndefined<T>(
   value: T | undefined,

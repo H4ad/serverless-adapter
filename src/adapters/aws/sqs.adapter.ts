@@ -13,19 +13,22 @@ import {
 
 /**
  * The options to customize the {@link SQSAdapter}
+ *
+ * @breadcrumb Adapters / AWS / SQSAdapter
+ * @public
  */
 export interface SQSAdapterOptions {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
-   * @default /sqs
+   * @defaultValue /sqs
    */
   sqsForwardPath?: string;
 
   /**
    * The http method that will be used to create a request to be forwarded to the framework.
    *
-   * @default POST
+   * @defaultValue POST
    */
   sqsForwardMethod?: string;
 }
@@ -35,13 +38,17 @@ export interface SQSAdapterOptions {
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html Event Reference}
+ * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sqs.html | Event Reference}
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const sqsForwardPath = '/your/route/sqs'; // default /sqs
  * const sqsForwardMethod = 'POST'; // default POST
  * const adapter = new SQSAdapter({ sqsForwardPath, sqsForwardMethod });
  * ```
+ *
+ * @breadcrumb Adapters / AWS / SQSAdapter
+ * @public
  */
 export class SQSAdapter
   implements AdapterContract<SQSEvent, Context, IEmptyResponse>
@@ -51,7 +58,7 @@ export class SQSAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link SQSAdapter}
+   * @param options - The options to customize the {@link SQSAdapter}
    */
   constructor(protected readonly options?: SQSAdapterOptions) {}
 
@@ -60,14 +67,14 @@ export class SQSAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return SQSAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is SQSEvent {
     const sqsEvent = event as Partial<SQSEvent>;
@@ -80,7 +87,7 @@ export class SQSAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: SQSEvent): AdapterRequest {
     const path = getDefaultIfUndefined(this.options?.sqsForwardPath, '/sqs');
@@ -109,14 +116,14 @@ export class SQSAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse(): IEmptyResponse {
     return EmptyResponse;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,

@@ -8,10 +8,13 @@ import { FrameworkContract } from '../../contracts';
 
 /**
  * The framework that forwards requests to express handler
+ *
+ * @breadcrumb Frameworks / ExpressFramework
+ * @public
  */
 export class ExpressFramework implements FrameworkContract<Express> {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public sendRequest(
     app: Express,

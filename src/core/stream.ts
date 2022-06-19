@@ -7,7 +7,10 @@ import { Readable, Writable } from 'stream';
 /**
  * Wait asynchronous the stream to complete
  *
- * @param stream The stream
+ * @param stream - The stream
+ *
+ * @breadcrumb Core / Stream
+ * @public
  */
 export function waitForStreamComplete<TStream extends Readable | Writable>(
   stream: TStream,
@@ -19,7 +22,7 @@ export function waitForStreamComplete<TStream extends Readable | Writable>(
     return Promise.resolve(stream);
 
   return new Promise<TStream>((resolve, reject) => {
-    // Reading the {@link https://github.com/nodejs/node/blob/v12.22.9/lib/events.js#L262 emit source code},
+    // Reading the {@link https://github.com/nodejs/node/blob/v12.22.9/lib/events.js#L262 | emit source code},
     // it's almost impossible to complete being called twice because the emit function runs synchronously and removes the other listeners,
     // but I'll leave it at that because I didn't write that code, so I couldn't figure out what the author thought when he wrote this.
     let isComplete = false;

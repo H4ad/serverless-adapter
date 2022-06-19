@@ -13,19 +13,22 @@ import {
 
 /**
  * The options to customize the {@link DynamoDBAdapter}
+ *
+ * @breadcrumb Adapters / AWS / DynamoDBAdapter
+ * @public
  */
 export interface DynamoDBAdapterOptions {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
-   * @default /dynamo
+   * @defaultValue /dynamo
    */
   dynamoDBForwardPath?: string;
 
   /**
    * The http method that will be used to create a request to be forwarded to the framework.
    *
-   * @default POST
+   * @defaultValue POST
    */
   dynamoDBForwardMethod?: string;
 }
@@ -35,13 +38,17 @@ export interface DynamoDBAdapterOptions {
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html Event Reference}
+ * {@link https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html | Event Reference}
  *
- * @example```typescript
+ * @example
+ * ```typescript
  * const dynamoDBForwardPath = '/your/route/dynamo'; // default /dynamo
  * const dynamoDBForwardMethod = 'POST'; // default POST
  * const adapter = new DynamoDBAdapter({ dynamoDBForwardPath, dynamoDBForwardMethod });
  * ```
+ *
+ * @breadcrumb Adapters / AWS / DynamoDBAdapter
+ * @public
  */
 export class DynamoDBAdapter
   implements AdapterContract<DynamoDBStreamEvent, Context, IEmptyResponse>
@@ -51,7 +58,7 @@ export class DynamoDBAdapter
   /**
    * Default constructor
    *
-   * @param options The options to customize the {@link DynamoDBAdapter}
+   * @param options - The options to customize the {@link DynamoDBAdapter}
    */
   constructor(protected readonly options?: DynamoDBAdapterOptions) {}
 
@@ -60,14 +67,14 @@ export class DynamoDBAdapter
   //#region Public Methods
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getAdapterName(): string {
     return DynamoDBAdapter.name;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public canHandle(event: unknown): event is DynamoDBStreamEvent {
     const dynamoDBevent = event as Partial<DynamoDBStreamEvent>;
@@ -80,7 +87,7 @@ export class DynamoDBAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getRequest(event: DynamoDBStreamEvent): AdapterRequest {
     const path = getDefaultIfUndefined(
@@ -112,14 +119,14 @@ export class DynamoDBAdapter
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public getResponse(): IEmptyResponse {
     return EmptyResponse;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public onErrorWhileForwarding({
     error,

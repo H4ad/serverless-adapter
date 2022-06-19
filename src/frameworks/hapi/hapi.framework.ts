@@ -8,10 +8,13 @@ import { FrameworkContract } from '../../contracts';
 
 /**
  * The framework that forwards requests to hapi handler
+ *
+ * @breadcrumb Frameworks / HapiFramework
+ * @public
  */
 export class HapiFramework implements FrameworkContract<Server> {
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public sendRequest(
     app: Server,
