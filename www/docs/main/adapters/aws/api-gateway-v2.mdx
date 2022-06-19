@@ -7,7 +7,13 @@ The adapter to handle requests from [AWS Api Gateway V2](https://docs.aws.amazon
 
 :::info
 
-When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 error in the response.
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 status WITH error stack in the response.
+
+:::
+
+:::tip Reducing Costs
+
+Not sure when to use AWS ALB instead of API Gateway? See [this article](https://serverless-training.com/articles/save-money-by-replaceing-api-gateway-with-application-load-balancer/) from Serverless Training to learn more.
 
 :::
 

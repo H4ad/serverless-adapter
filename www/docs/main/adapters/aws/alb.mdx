@@ -1,5 +1,89 @@
 ---
 title: ALB
+description: See more about how to integrate with AWS Application Load Balancer.
 ---
 
-Work in progress.
+The adapter to handle requests from [AWS Application Load Balancer](https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html).
+
+:::info
+
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 status WITH error stack in the response.
+
+:::
+
+:::tip Reducing Costs
+
+Not sure when to use AWS ALB instead of API Gateway? See [this article](https://serverless-training.com/articles/save-money-by-replaceing-api-gateway-with-application-load-balancer/) from Serverless Training to learn more.
+
+:::
+
+## About the adapter
+
+This adapter turns every request coming from AWS ALB into an HTTP request to your framework.
+
+```json title="alb-event-example.json"
+{
+    "requestContext": {
+        "elb": {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:123456789012:targetgroup/lambda-279XGJDqGZ5rsrHC2Fjr/49e9d65c45c6791a"
+        }
+    },
+    "httpMethod": "POST",
+    "path": "/lambda",
+    "queryStringParameters": {
+        "query": "1234ABCD"
+    },
+    "headers": {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "accept-encoding": "gzip",
+        "accept-language": "en-US,en;q=0.9",
+        "connection": "keep-alive",
+        "host": "lambda-alb-123578498.us-east-2.elb.amazonaws.com",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+        "x-amzn-trace-id": "Root=1-5c536348-3d683b8b04734faae651f476",
+        "x-forwarded-for": "72.12.164.125",
+        "x-forwarded-port": "80",
+        "x-forwarded-proto": "http",
+        "x-imforwards": "20"
+    },
+    "body": "Banana",
+    "isBase64Encoded": false
+}
+```
+
+So, to add support to the above request, we must have registered the `/lambda` route as `POST` and when API Gateway sends this event, you will get:
+
+- `body`: `Banana`
+- `queryString`: `query=1234ABCD`
+
+## Customizing
+
+You can remove some base path with the `stripBasePath` option inside [AlbAdapterOptions](/docs/api/Adapters/AWS/AlbAdapter/AlbAdapterOptions).
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should either send the request in the path `/prod/lambda` or set `stripBasePath` to `/prod`.
+
+:::
+
+## Usage
+
+To add support to AWS ALB you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AlbAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new AlbAdapter())
+  // customizing:
+  // .addAdapter(new AlbAdapter({ stripBasePath: '/prod' }))
+  .build();
+```
+
