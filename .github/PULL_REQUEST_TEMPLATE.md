@@ -34,7 +34,7 @@
 - [ ] `npm run test` passes with this change
 - [ ] This pull request links relevant issues as `Fixes #0000`
 - [ ] There are new or updated unit tests validating the change
-- [ ] Added documentation inside `docs/docs/main` folder.
+- [ ] Added documentation inside `www/docs/main` folder.
 - [ ] Included new files inside `index.doc.ts`.
 - [ ] The new commits follow conventions outlined in the [conventional commit spec](https://www.conventionalcommits.org/en/v1.0.0/)
 
