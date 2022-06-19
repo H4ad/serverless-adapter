@@ -19,6 +19,12 @@ To correctly type your `body` when receiving the AWS SQS request, you must insta
 npm i --save-dev @types/aws-lambda
 ```
 
+So when getting the `body` you should use this type:
+
+```ts title="sqs.controller.ts"
+import type { SQSEvent } from 'aws-lambda';
+```
+
 ## About the adapter
 
 In AWS SQS, you don't have requests, you just receive the records from the queue in the `event` property of the handler.
@@ -50,19 +56,9 @@ So, in order to handle this adapter, by default we create a `POST` request to `/
 
 Normally, your framework will parse this JSON and return the parsed values as javascript objects.
 
-:::tip
-
-To correctly type your body, you can use:
-
-```ts
-import type { SQSEvent } from 'aws-lambda';
-```
-
-:::
-
 ## Customizing
 
-You can change the HTTP Method and Path that will be used to create the request by sending `sqsForwardMethod` and `sqsForwardPath` inside [SQSAdapter](/docs/api/Adapters/AWS/SQSAdapter).
+You can change the HTTP Method and Path that will be used to create the request by sending `sqsForwardMethod` and `sqsForwardPath` inside [SQSAdapterOptions](/docs/api/Adapters/AWS/SQSAdapter/SQSAdapterOptions).
 
 ## Usage
 

@@ -19,6 +19,12 @@ To correctly type your `body` when receiving the AWS SNS request, you must insta
 npm i --save-dev @types/aws-lambda
 ```
 
+So when getting the `body` you should use this type:
+
+```ts title="sns.controller.ts"
+import type { SNSEvent } from 'aws-lambda';
+```
+
 ## About the adapter
 
 In AWS SNS, you don't have requests, you just receive the records in the `event` property of the handler.
@@ -61,19 +67,9 @@ So, to be able to handle this adapter, by default we create a `POST` request to 
 
 Normally, your framework will parse this JSON and return the parsed values as javascript objects.
 
-:::tip
-
-To correctly type your body, you can use:
-
-```ts
-import type { SNSEvent } from 'aws-lambda';
-```
-
-:::
-
 ## Customizing
 
-You can change the HTTP Method and Path that will be used to create the request by sending `snsForwardMethod` and `snsForwardPath` inside [SNSAdapter](/docs/api/Adapters/AWS/SNSAdapter).
+You can change the HTTP Method and Path that will be used to create the request by sending `snsForwardMethod` and `snsForwardPath` inside [SNSAdapterOptions](/docs/api/Adapters/AWS/SNSAdapter/SNSAdapterOptions).
 
 ## Usage
 

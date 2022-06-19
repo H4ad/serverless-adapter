@@ -1,5 +1,140 @@
 ---
 title: Api Gateway V1
+description: See more about how to integrate with AWS API Gateway V1.
 ---
 
-Work in progress.
+The adapter to handle requests from [AWS Api Gateway V1](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html).
+
+:::info
+
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 error in the response.
+
+:::
+
+## About the adapter
+
+This adapter turns every request coming from API Gateway V1 into an HTTP request to your framework.
+
+```json title="api-gateway-v1-event-example.json"
+{
+  "version": "1.0",
+  "resource": "/my/path",
+  "path": "/my/path",
+  "httpMethod": "GET",
+  "headers": {
+    "header1": "value1",
+    "header2": "value2"
+  },
+  "multiValueHeaders": {
+    "header1": [
+      "value1"
+    ],
+    "header2": [
+      "value1",
+      "value2"
+    ]
+  },
+  "queryStringParameters": {
+    "parameter1": "value1",
+    "parameter2": "value"
+  },
+  "multiValueQueryStringParameters": {
+    "parameter1": [
+      "value1",
+      "value2"
+    ],
+    "parameter2": [
+      "value"
+    ]
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "id",
+    "authorizer": {
+      "claims": null,
+      "scopes": null
+    },
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "extendedRequestId": "request-id",
+    "httpMethod": "GET",
+    "identity": {
+      "accessKey": null,
+      "accountId": null,
+      "caller": null,
+      "cognitoAuthenticationProvider": null,
+      "cognitoAuthenticationType": null,
+      "cognitoIdentityId": null,
+      "cognitoIdentityPoolId": null,
+      "principalOrgId": null,
+      "sourceIp": "IP",
+      "user": null,
+      "userAgent": "user-agent",
+      "userArn": null,
+      "clientCert": {
+        "clientCertPem": "CERT_CONTENT",
+        "subjectDN": "www.example.com",
+        "issuerDN": "Example issuer",
+        "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
+        "validity": {
+          "notBefore": "May 28 12:30:02 2019 GMT",
+          "notAfter": "Aug  5 09:36:04 2021 GMT"
+        }
+      }
+    },
+    "path": "/my/path",
+    "protocol": "HTTP/1.1",
+    "requestId": "id=",
+    "requestTime": "04/Mar/2020:19:15:17 +0000",
+    "requestTimeEpoch": 1583349317135,
+    "resourceId": null,
+    "resourcePath": "/my/path",
+    "stage": "$default"
+  },
+  "pathParameters": null,
+  "stageVariables": null,
+  "body": "Hello from Lambda!",
+  "isBase64Encoded": false
+}
+```
+
+So, to add support to the above request, we must have registered the `/my/path` route as `POST` and when API Gateway sends this event, you will get:
+
+- `body`: `Hello from Lambda`
+- `queryString`: `parameter1=value1&parameter1=value2&parameter2=value`
+
+## Customizing
+
+You can remove some base path with the `stripBasePath` option inside [ApiGatewayV1Options](/docs/api/Adapters/AWS/ApiGatewayV1Adapter/ApiGatewayV1Options).
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should either send the request in the path `/prod/my/path` or set `stripBasePath` to `/prod`.
+
+:::
+
+## Usage
+
+To add support to AWS API Gateway V1 you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ApiGatewayV1Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV1Adapter())
+  // customizing:
+  // .addAdapter(new ApiGatewayV1Adapter({ stripBasePath: '/prod' }))
+  .build();
+```
+
+:::danger
+
+As per [know issues](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html), we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+
+:::

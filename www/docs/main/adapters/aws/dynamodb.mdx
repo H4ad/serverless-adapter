@@ -3,7 +3,6 @@ title: DynamoDB
 description: See more about how to integrate with AWS DynamoDB.
 ---
 
-
 The adapter to handle requests from [AWS DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html).
 
 :::info
@@ -18,6 +17,12 @@ To correctly type your `body` when receiving the AWS DynamoDB request, you must 
 
 ```bash
 npm i --save-dev @types/aws-lambda
+```
+
+So when getting the `body` you should use this type:
+
+```ts title="dynamodb.controller.ts"
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 ```
 
 ## About the adapter
@@ -61,19 +66,9 @@ So, in order to handle this adapter, by default we create a `POST` request to `/
 
 Normally, your framework will parse this JSON and return the parsed values as javascript objects.
 
-:::tip
-
-To correctly type your body, you can use:
-
-```ts
-import type { DynamoDBStreamEvent } from 'aws-lambda';
-```
-
-:::
-
 ## Customizing
 
-You can change the HTTP Method and Path that will be used to create the request by sending `dynamoDBForwardMethod` and `dynamoDBForwardPath` inside [DynamoDBAdapter](/docs/api/Adapters/AWS/DynamoDBAdapter).
+You can change the HTTP Method and Path that will be used to create the request by sending `dynamoDBForwardMethod` and `dynamoDBForwardPath` inside [DynamoDBAdapterOptions](/docs/api/Adapters/AWS/DynamoDBAdapter/DynamoDBAdapterOptions).
 
 ## Usage
 
