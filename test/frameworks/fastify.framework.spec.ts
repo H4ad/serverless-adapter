@@ -17,6 +17,22 @@ function createHandler(
   };
 }
 
+jest.mock('fastify', () => {
+  const packages = {
+    '3.x': 'fastify-3',
+    latest: 'fastify',
+  };
+  const version = process.env.FASTIFY_VERSION || 'latest';
+
+  // Require the original module.
+  const originalModule = jest.requireActual(packages[version]);
+
+  return {
+    __esModule: true,
+    ...originalModule,
+  };
+});
+
 describe(FastifyFramework.name, () => {
   createTestSuiteFor(
     () => new FastifyFramework(),
