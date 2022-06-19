@@ -8,7 +8,7 @@ on:
       - '.github/workflows/deploy.yml'
       - 'www/**'
       - 'src/**'
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   deploy:
