@@ -11,6 +11,7 @@ import {
 import {
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
+  getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
 } from '../../core';
@@ -87,8 +88,8 @@ export class ApiGatewayV1Adapter
       partialEventV1.version !== '2.0' &&
       partialEventV1.headers &&
       partialEventV1.multiValueHeaders &&
-      (partialEventV1.queryStringParameters ===
-        partialEventV1.multiValueQueryStringParameters ||
+      ((partialEventV1.queryStringParameters === null &&
+        partialEventV1.multiValueQueryStringParameters === null) ||
         (partialEventV1.queryStringParameters &&
           partialEventV1.multiValueQueryStringParameters))
     );
@@ -99,7 +100,7 @@ export class ApiGatewayV1Adapter
    */
   public getRequest(event: APIGatewayProxyEvent): AdapterRequest {
     const method = event.httpMethod;
-    const headers = event.headers;
+    const headers = getFlattenedHeadersMap(event.headers, ',', true);
     const path = this.getPathFromEvent(event);
 
     let body: Buffer | undefined;
