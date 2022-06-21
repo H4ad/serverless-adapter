@@ -42,6 +42,8 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
+      expect(result.headers).not.toHaveProperty('Accept');
+      expect(result.headers).toHaveProperty('accept');
 
       expect(result).toHaveProperty('body');
       expect(result.body).toBeInstanceOf(Buffer);
