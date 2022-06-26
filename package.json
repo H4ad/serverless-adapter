@@ -96,6 +96,11 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
+    "@deepkit/app": ">= 1.0.1-alpha.16",
+    "@deepkit/core": ">= 1.0.1-alpha.16",
+    "@deepkit/framework": "^1.0.1-alpha.16",
+    "@deepkit/http": ">= 1.0.1-alpha.16",
+    "@deepkit/logger": "^1.0.1-alpha.65",
     "@hapi/hapi": ">= 20.0.0",
     "@types/aws-lambda": "^8.10.92",
     "@types/express": ">= 4.15.4",
@@ -104,13 +109,26 @@
     "express": ">= 4.15.4",
     "fastify": ">= 3.0.0",
     "fastify-3": "npm:fastify@3.29.0",
-    "koa": ">= 2.5.1"
+    "koa": ">= 2.5.1",
+    "reflect-metadata": "^0.1.13"
   },
   "peerDependenciesMeta": {
-    "@types/aws-lambda": {
+    "@deepkit/app": {
+      "optional": true
+    },
+    "@deepkit/core": {
+      "optional": true
+    },
+    "@deepkit/framework": {
+      "optional": true
+    },
+    "@deepkit/http": {
       "optional": true
     },
     "@hapi/hapi": {
+      "optional": true
+    },
+    "@types/aws-lambda": {
       "optional": true
     },
     "express": {
