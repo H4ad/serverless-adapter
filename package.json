@@ -53,7 +53,8 @@
     "node.js",
     "http",
     "huawei",
-    "functiongraph"
+    "functiongraph",
+    "trpc"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"
@@ -97,7 +98,8 @@
   },
   "peerDependencies": {
     "@hapi/hapi": ">= 20.0.0",
-    "@types/aws-lambda": "^8.10.92",
+    "@trpc/server": ">= 9.0.0",
+    "@types/aws-lambda": ">= 8.10.92",
     "@types/express": ">= 4.15.4",
     "@types/hapi": ">= 18.0.7",
     "@types/koa": ">= 2.11.2",
@@ -107,10 +109,13 @@
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
-    "@types/aws-lambda": {
+    "@hapi/hapi": {
       "optional": true
     },
-    "@hapi/hapi": {
+    "@trpc/server": {
+      "optional": true
+    },
+    "@types/aws-lambda": {
       "optional": true
     },
     "express": {
