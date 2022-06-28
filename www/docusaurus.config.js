@@ -118,10 +118,10 @@ const config = {
       },
       algolia: {
         // The application ID provided by Algolia
-        appId: 'J9AIR51403',
+        appId: 'G7D9713FAL',
 
         // Public API key: it is safe to commit it
-        apiKey: '35b54c18239d746fe89e62001814e380',
+        apiKey: '935039e719649426185a3272f7875e62',
 
         indexName: 'serverless-adapter',
 
