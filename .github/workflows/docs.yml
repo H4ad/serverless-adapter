@@ -49,25 +49,3 @@ jobs:
       - name: Build Docs
         run: npm run build
         working-directory: www
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/main' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./www/build
-
-      # We don't know when the site will be deployed, we just wait a few seconds
-      # Better solutions can be found
-      - name: Sleep for 30s
-        run: sleep 30
-
-      - name: Github-pages-MAIN => Algolia crawler creation and recrawl (Push on Main branch)
-        uses: algolia/algoliasearch-crawler-github-actions@v1
-        id: crawler_push
-        with:
-          crawler-user-id: ${{ secrets.CRAWLER_USER_ID }}
-          crawler-api-key: ${{ secrets.CRAWLER_API_KEY }}
-          algolia-app-id: ${{ secrets.ALGOLIA_APP_ID }}
-          algolia-api-key: ${{ secrets.ALGOLIA_API_KEY }}
-          site-url: 'https://viniciusl.com.br/serverless-adapter/'
