@@ -83,10 +83,10 @@ Need more examples? See more examples [here](https://github.com/H4ad/serverless-
 
 This framework is a little special when dealing with request URLs because of the structure of tRPC.
 
-So when you integrate with an adapter like [SQSAdapter](../../adapters/aws/sqs), when you receive an event, the adapter will forward the request to `/sqs` by default
+So when you integrate with an adapter like [SQSAdapter](/docs/main/adapters/aws/sqs), when you receive an event, the adapter will forward the request to `/sqs` by default
 but because of the structure of tRPC, the framework will change the request URL to just `sqs`.
 
-With this behavior, to integrate with [SQSAdapter](../../adapters/aws/sqs), you will create the following mutation:
+With this behavior, to integrate with [SQSAdapter](/docs/main/adapters/aws/sqs), you will create the following mutation:
 
 ```typescript title="index.ts"
 import type { SQSEvent } from 'aws-lambda';
