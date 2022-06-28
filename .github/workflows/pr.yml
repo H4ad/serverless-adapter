@@ -1,6 +1,6 @@
 name: Pull Request
 
-on: [pull_request]
+on: [ pull_request ]
 
 jobs:
   build:
@@ -8,19 +8,75 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x]
+        node-version: [ 12.x, 14.x, 16.x, 18.x ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run install:peers
-      - run: npm run build --if-present
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      - name: Install Lib Dependencies
+        run: npm ci
+
+      - name: Install Peers Dependencies
+        run: npm run install:peers
+
+      - name: Build
+        run: npm run build --if-present
+
       - name: Override Fastify Version for NodeJS 12.x
         if: matrix.node-version == '12.x'
         run: echo "FASTIFY_VERSION=3.x" >> $GITHUB_ENV
-      - run: npm test
-      - run: npm run coverage
+
+      - name: Run tests
+        run: npm test
+
+      - name: Get Coverage Info
+        run: npm run coverage
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.x'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Lib Dependencies
+        run: npm ci
+
+      - name: Install Peers Dependencies
+        run: npm run install:peers
+
+      - name: Install Docs Dependencies
+        run: npm ci
+        working-directory: www
+
+      - name: Parse TSDoc Documentation
+        run: npm run docs:generate
+
+      - name: Build Docs
+        run: npm run build
+        working-directory: www
