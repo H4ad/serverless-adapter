@@ -107,6 +107,7 @@ const sidebars = {
         'main/frameworks/hapi',
         'main/frameworks/koa',
         'main/frameworks/lazy',
+        'main/frameworks/trpc',
       ],
     },
   ],
