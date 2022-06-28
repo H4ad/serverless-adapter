@@ -10,6 +10,7 @@ export * from './frameworks/fastify';
 export * from './frameworks/koa';
 export * from './frameworks/hapi';
 export * from './frameworks/lazy';
+export * from './frameworks/trpc';
 export * from './handlers/default';
 export * from './handlers/huawei';
 export * from './network';
