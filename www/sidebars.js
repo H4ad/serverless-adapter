@@ -77,7 +77,7 @@ const sidebars = {
       link: {
         type: 'generated-index',
       },
-      collapsed: false,
+      collapsed: true,
       items: ['main/handlers/default', 'main/handlers/huawei'],
     },
     {
@@ -86,11 +86,11 @@ const sidebars = {
       link: {
         type: 'generated-index',
       },
-      collapsed: false,
+      collapsed: true,
       items: [
-        'main/resolvers/promise',
-        'main/resolvers/callback',
         'main/resolvers/aws-context',
+        'main/resolvers/callback',
+        'main/resolvers/promise',
       ],
     },
     {
@@ -102,11 +102,11 @@ const sidebars = {
       collapsed: false,
       items: [
         'main/frameworks/express',
-        'main/frameworks/nestjs',
         'main/frameworks/fastify',
         'main/frameworks/hapi',
         'main/frameworks/koa',
         'main/frameworks/lazy',
+        'main/frameworks/nestjs',
         'main/frameworks/trpc',
       ],
     },
