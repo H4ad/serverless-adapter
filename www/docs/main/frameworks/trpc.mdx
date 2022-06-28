@@ -103,7 +103,13 @@ const appRouter = trpc
     input: z.object({
       Records: z.array(z.any()),
     }),
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
+      if (ctx.getHeader('host') !== 'sqs.amazonaws.com')
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Wrong host.',
+        });
+
       const event = input as SQSEvent;
 
       // Do whatever you want
@@ -111,6 +117,12 @@ const appRouter = trpc
     },
   });
 ```
+
+:::warning About another adapters
+
+Never forget to check the host header as you could introduce a security hole when adding support for AWS Api Gateway and other adapters.
+
+:::
 
 :::tip
 
