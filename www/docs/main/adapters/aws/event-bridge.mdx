@@ -25,6 +25,12 @@ So when getting the `body` you should use this type:
 import type { EventBridgeEvent } from 'aws-lambda';
 ```
 
+If you want to integrate with Scheduled Expression, you can use this type:
+
+```ts title="eventbridge.controller.ts"
+import type { ScheduledEvent } from 'aws-lambda';
+```
+
 ## About the adapter
 
 In AWS EventBridge, you don't have requests, you just receive the info from Cloudwatch Events within `event` property of the handler.
@@ -56,7 +62,11 @@ So, in order to handle this adapter, by default we create a `POST` request to `/
 }
 ```
 
-And one example with [Schedule expression](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents-expressions.html):
+Normally, your framework will parse this JSON and return the parsed values as javascript objects.
+
+### Schedule Expression
+
+With [Schedule Expression](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents-expressions.html), you have the following JSON when the event is triggered:
 
 ```json title="scheduled-eventbridge-event-example.json"
 {
@@ -74,7 +84,72 @@ And one example with [Schedule expression](https://docs.aws.amazon.com/lambda/la
 }
 ```
 
-Normally, your framework will parse this JSON and return the parsed values as javascript objects.
+It's good enough if you want to integrate with just one cron job, but what if you want more?
+
+One option is to check the `resources` property, but I don't like that solution, so I'll introduce it to you in a way.
+
+When selecting the target as AWS Lambda, you can configure in `Additional Settings` the `input target` as [Input Transformer](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html),
+with this option you can modify the above JSON into something different or add new properties.
+
+After clicking `Configure Input Transformer`, you can choose the `Scheduled Event` in the sample event to get an idea of what the event will look like after the transformation.
+
+In the `Input Path` inside the Target Input Transformer you will put this json:
+
+```json title="input-path.json"
+{
+  "account": "$.account",
+  "detail-type": "$.detail-type",
+  "id": "$.id",
+  "region": "$.region",
+  "resources": "$.resources",
+  "source": "$.source",
+  "time": "$.time",
+  "version": "$.version"
+}
+```
+
+And inside `Template`, you will put this json:
+
+```json
+{
+  "version": "<version>",
+  "id": "<id>",
+  "detail-type": "<detail-type>",
+  "source": "<source>",
+  "account": "<account>",
+  "time": "<time>",
+  "region": "<region>",
+  "resources": [],
+  "detail": {
+    "action": "my_25min_cron"
+  }
+}
+```
+
+Did you see the `action` inside the details? This property will be added when the event comes from Schedule Expression,
+with this property you can differentiate which cron was called.
+
+Inside your controller, you can write code like this:
+
+```ts title="event-bridge.controller.ts"
+import type { ScheduledEvent } from 'aws-lambda';
+
+// inside your controller method
+type ScheduleEventWithAction = ScheduledEvent<{ action: 'my_25min_cron' | 'my_50min_cron' }>;
+const scheduleEvent = request.body as unknown as ScheduleEventWithAction;
+
+switch(scheduleEvent.detail.action) {
+  case 'my_25min_cron':
+    console.log('Your 25 min schedule expression was called.');
+    break;
+  case 'my_50min_cron':
+    console.log('Your 50 min schedule expression was called.');
+    break;
+  default:
+    console.error('The action was not recognized.');
+    break;
+}
+```
 
 ## Customizing
 
