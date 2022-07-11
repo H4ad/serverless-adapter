@@ -97,6 +97,8 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
+    "@azure/functions": ">= 2.0.0",
+    "@azure/functions-v3": "npm:@azure/functions@2.0.0",
     "@hapi/hapi": ">= 20.0.0",
     "@trpc/server": ">= 9.0.0",
     "@types/aws-lambda": ">= 8.10.92",
@@ -109,6 +111,12 @@
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
+    "@azure/functions": {
+      "optional": true
+    },
+    "@azure/functions-v3": {
+      "optional": true
+    },
     "@hapi/hapi": {
       "optional": true
     },
