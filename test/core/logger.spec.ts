@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
-import { createDefaultLogger } from '../../src';
+import {
+  LogLevels,
+  NO_OP,
+  createDefaultLogger,
+  isInternalLogger,
+} from '../../src';
 import FunctionPropertyNames = jest.FunctionPropertyNames;
 import SpyInstance = jest.SpyInstance;
 
@@ -124,5 +129,39 @@ describe('createDefaultLogger', () => {
     expect(global.console.info).toHaveBeenCalledWith('info');
     expect(global.console.debug).toHaveBeenNthCalledWith(1, 'verbose');
     expect(global.console.debug).toHaveBeenNthCalledWith(2, 'debug');
+  });
+});
+
+describe('isInternalLogger', () => {
+  const logLevelRecord: Record<Exclude<LogLevels, 'none'>, true> = {
+    debug: true,
+    info: true,
+    verbose: true,
+    warn: true,
+    error: true,
+  };
+
+  const logLevels = Object.keys(logLevelRecord) as LogLevels[];
+
+  for (const logLevel of logLevels) {
+    it(`instance created by createDefaultLogger with logLevel: ${logLevel} should return true`, () => {
+      const logger = createDefaultLogger({
+        level: logLevel,
+      });
+
+      expect(isInternalLogger(logger)).toBe(true);
+    });
+  }
+
+  it('random isntance of ILogger should not return true', () => {
+    expect(
+      isInternalLogger({
+        debug: NO_OP,
+        info: NO_OP,
+        verbose: NO_OP,
+        warn: NO_OP,
+        error: NO_OP,
+      }),
+    ).toBe(false);
   });
 });
