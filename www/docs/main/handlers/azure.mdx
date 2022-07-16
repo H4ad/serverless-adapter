@@ -74,7 +74,7 @@ import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise'
 import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/lib/adapters/azure';
 import app from './app';
 
-export const handler = ServerlessAdapter.new(app)
+export default ServerlessAdapter.new(app)
   .setHandler(new AzureHandler())
   .setResolver(new PromiseResolver())
   // continue to set the other options here.
@@ -82,6 +82,13 @@ export const handler = ServerlessAdapter.new(app)
   .addAdapter(new HttpTriggerV4Adapter())
   .build();
 ```
+
+:::caution
+
+Be careful when exporting the handler because in azure you must `export default` and in [DefaultHandler](./default)
+you must `export const handler`.
+
+:::
 
 The above code will add support for Azure Http Trigger V4, to learn more about Http Trigger, see the [adapter docs](../adapters/azure/http-trigger-v4).
 

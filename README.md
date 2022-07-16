@@ -20,7 +20,7 @@
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
 Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi, 
-Fastify and tRPC), on top of AWS Lambda, Huawei and many other clouds.
+Fastify and tRPC), on top of AWS Lambda, Azure, Huawei and many other clouds.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
 create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
