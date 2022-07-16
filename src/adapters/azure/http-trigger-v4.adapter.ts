@@ -84,10 +84,16 @@ export class HttpTriggerV4Adapter
 
     return !!(
       maybeEvent &&
+      maybeEvent.method &&
+      maybeEvent.headers &&
+      maybeEvent.url &&
+      maybeEvent.query &&
       maybeContext &&
       maybeContext.traceContext &&
       maybeContext.bindingDefinitions &&
-      typeof maybeEvent.parseFormBody === 'function'
+      maybeContext.log &&
+      maybeContext.log.info &&
+      maybeContext.bindingData
     );
   }
 
