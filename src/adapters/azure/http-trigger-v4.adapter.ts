@@ -239,7 +239,7 @@ export class HttpTriggerV4Adapter
         const sanitizedValue = value && value.trim();
 
         if (index === 0) {
-          azureCookieObject.name = sanitizedKey;
+          azureCookieObject.name = key;
           azureCookieObject.value = sanitizedValue;
 
           return azureCookieObject;

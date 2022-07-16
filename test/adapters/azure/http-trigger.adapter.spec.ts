@@ -186,9 +186,9 @@ describe(HttpTriggerV4Adapter.name, () => {
 
       const event = createHttpTriggerEvent(method, path, requestBody, {
         'set-cookie': [
-          'id=a3fWa; Expires=Thu, 31 Oct 2021 07:28:00 GMT;',
+          'Id=a3fWa; Expires=Thu, 31 Oct 2021 07:28:00 GMT;',
           'id=a3fWa; Expires=Thu, 21 Oct 2021 07:28:00 GMT; Secure; HttpOnly',
-          'mykey=myvalue; SameSite=Strict',
+          'MyKey=myvalue; SameSite=Strict',
           'lu=Rg3vHJZnehYLjVg7qi3bZjzg; Expires=Tue, 15 Jan 2013 21:47:38 GMT; Path=/; Domain=.example.com; HttpOnly',
           'made_write_conn=1295214458; Path=/; Domain=.example.com; Max-Age=1209600',
           'reg_fb_gate=deleted; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; Domain=.example.com; HttpOnly',
@@ -212,7 +212,7 @@ describe(HttpTriggerV4Adapter.name, () => {
       expect(result).toHaveProperty('enableContentNegotiation', false);
       expect(result.cookies).toStrictEqual([
         {
-          name: 'id',
+          name: 'Id',
           value: 'a3fWa',
           expires: new Date('Thu, 31 Oct 2021 07:28:00 GMT'),
         },
@@ -224,7 +224,7 @@ describe(HttpTriggerV4Adapter.name, () => {
           httpOnly: true,
         },
         {
-          name: 'mykey',
+          name: 'MyKey',
           value: 'myvalue',
           sameSite: 'Strict',
         },
