@@ -19,8 +19,8 @@
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi and
-Fastify), on top of AWS Lambda, Huawei and many other clouds.
+Run REST APIs and other web applications using your existing Node.js application framework (Express, Koa, Hapi, 
+Fastify and tRPC), on top of AWS Lambda, Azure, Huawei and many other clouds.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
 create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
@@ -37,6 +37,41 @@ Why you would use this libray instead of [@vendia/serverless-express](https://gi
 - All code was written in Typescript.
 - Well documented, any method, class, or interface has comments to explain the behavior.
 - We have >99% coverage.
+
+# Usage
+
+To start to use, first you need to know what you need to import, let's start showing the [ServerlessAdapter](/docs/api/ServerlessAdapter).
+
+```tsx
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+```
+
+We need to pass to [Serverless Adapter](/docs/api/ServerlessAdapter) the instance of your api, let's look an example with:
+
+- Framework: [Express](../frameworks/express).
+- Adapters: [AWS Api Gateway V2 Adapter](../adapters/aws/api-gateway-v2).
+- Handler: [Default Handler](../handlers/default).
+- Resolver: [Promise Resolver](../resolvers/promise).
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+
+const express = require('express');
+
+const app = express();
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV2Adapter())
+  // if you need more adapters
+  // just append more `addAdapter` calls
+  .build();
+```
 
 # Documentation
 

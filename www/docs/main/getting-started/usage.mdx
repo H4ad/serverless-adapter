@@ -18,9 +18,11 @@ We need to pass to [Serverless Adapter](/docs/api/ServerlessAdapter) the instanc
 - Resolver: [Promise Resolver](../resolvers/promise).
 
 ```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
 import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
 import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
 
 const express = require('express');
 
@@ -29,7 +31,7 @@ export const handler = ServerlessAdapter.new(app)
   .setFramework(new ExpressFramework())
   .setHandler(new DefaultHandler())
   .setResolver(new PromiseResolver())
-  .addAdapter(new ApiGatewayV2Adapter());
+  .addAdapter(new ApiGatewayV2Adapter())
   // if you need more adapters
   // just append more `addAdapter` calls
   .build();

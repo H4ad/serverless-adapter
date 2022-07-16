@@ -1,6 +1,7 @@
 export * from './@types';
 export * from './@types/huawei';
 export * from './adapters/aws';
+export * from './adapters/azure';
 export * from './adapters/dummy';
 export * from './adapters/huawei';
 export * from './contracts';
@@ -11,6 +12,7 @@ export * from './frameworks/koa';
 export * from './frameworks/hapi';
 export * from './frameworks/lazy';
 export * from './frameworks/trpc';
+export * from './handlers/azure';
 export * from './handlers/default';
 export * from './handlers/huawei';
 export * from './network';

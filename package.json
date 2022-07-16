@@ -1,7 +1,7 @@
 {
   "name": "@h4ad/serverless-adapter",
   "version": "0.0.0-development",
-  "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Huawei and many other clouds.",
+  "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Huawei and many other clouds.",
   "main": "./lib/index.js",
   "files": [
     "lib/**/*"
@@ -54,7 +54,10 @@
     "http",
     "huawei",
     "functiongraph",
-    "trpc"
+    "trpc",
+    "azure",
+    "azure-functions",
+    "http-trigger-v4"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"
@@ -97,6 +100,7 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
+    "@azure/functions": ">= 2.0.0",
     "@hapi/hapi": ">= 20.0.0",
     "@trpc/server": ">= 9.0.0",
     "@types/aws-lambda": ">= 8.10.92",
@@ -109,6 +113,9 @@
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
+    "@azure/functions": {
+      "optional": true
+    },
     "@hapi/hapi": {
       "optional": true
     },

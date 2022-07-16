@@ -1,6 +1,6 @@
 ---
 title: Default
-position: 1
+position: 2
 description: See more about how to integrate with common serverless environments.
 ---
 
@@ -18,9 +18,9 @@ function(event, context, callback) {...}
 
 If your cloud's serverless handler signature is the same, you can use this handler.
 
-This is usually enough to add support for clouds like: AWS, Azure, Huawei and others.
+This is usually enough to add support for clouds like: AWS, Huawei and others.
 
-# Usage
+## Usage
 
 To use, you can import and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
 
@@ -34,7 +34,7 @@ const app = express();
 export const handler = ServerlessAdapter.new(app)
   .setHandler(new DefaultHandler())
   // continue to set the other options here.
-  //.setResolver(new AwsContextResolver())
+  //.setResolver(new PromiseResolver())
   //.setFramework(new ExpressFramework())
   //.addAdapter(new AlbAdapter())
   //.addAdapter(new SQSAdapter())
@@ -43,4 +43,6 @@ export const handler = ServerlessAdapter.new(app)
   .build();
 ```
 
+## Examples
 
+You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).

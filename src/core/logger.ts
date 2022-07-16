@@ -44,6 +44,14 @@ export type LoggerFN = (message: any, ...additional: any[]) => void;
 export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
 
 /**
+ * The symbol used to check against an ILogger instace to verify if that ILogger was created by this library
+ *
+ * @breadcrumb Core / Logger
+ * @public
+ */
+const InternalLoggerSymbol = Symbol('InternalLogger');
+
+/**
  * The method used to create a simple logger instance to use in this library.
  *
  * @remarks Behind the scenes, this simple logger sends the message to the `console` methods.
@@ -70,6 +78,7 @@ export function createDefaultLogger(
   const verboseLogLevel = ['debug', 'verbose'];
 
   return {
+    [InternalLoggerSymbol]: true,
     error: (message, ...additional) => {
       if (!errorLogLevel.includes(level)) return;
 
@@ -95,5 +104,17 @@ export function createDefaultLogger(
 
       console.debug(message, ...additional);
     },
-  };
+  } as ILogger;
+}
+
+/**
+ * The method used to chck if logger was created by this library, or it was defined by the user.
+ *
+ * @param logger - The instance of the logger to check
+ *
+ * @breadcrumb Core / Logger
+ * @public
+ */
+export function isInternalLogger(logger: ILogger): boolean {
+  return !!logger[InternalLoggerSymbol];
 }
