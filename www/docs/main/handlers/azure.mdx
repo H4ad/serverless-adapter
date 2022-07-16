@@ -1,0 +1,96 @@
+---
+title: Azure
+position: 1
+description: See more about how to integrate with Azure Function.
+---
+
+:::tip
+
+Don't know what a handler is? See the [Architecture](../architecture#handler) section.
+
+:::
+
+This is a implementation that will return a function that expect to receive the following arguments: context and event, respectively.
+
+```js
+function(context, event) {...}
+```
+
+## Requirements
+
+First, install the types for this adapter:
+
+```bash
+npm i --save-dev @azure/functions@3.x
+```
+
+## Customize
+
+By default we use [log property](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2-v3-v4-export%2Cv2-v3-v4-done%2Cv2%2Cv2-log-custom-telemetry%2Cv2-accessing-request-and-response%2Cwindows-setting-the-node-version#contextlog-method) inside `Context` as default logger for this library .
+
+We detect when the log instance is created with [createDefaultLogger](../../api/Core/Logger/createDefaultLogger) and then
+replace this instance with the instance inside `Context`.
+
+If you want to log using the original instance [createDefaultLogger](../../api/Core/Logger/createDefaultLogger),
+you can set the `useContextLogWhenInternalLogger` option to `false` for [AzureHandlerOptions](../../api/Handlers/AzureHandler/AzureHandlerOptions).
+
+```typescript
+import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
+
+const handler = new AzureHandler({
+  useContextLogWhenInternalLogger: false,
+});
+```
+
+## Usage
+
+First, you need to configure your `function.json` to be able to receive all requests from Azure.
+
+```json title="function.json"
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "route": "{*segments}"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    }
+  ]
+}
+```
+
+Then, you can import and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/lib/adapters/azure';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new AzureHandler())
+  .setResolver(new PromiseResolver())
+  // continue to set the other options here.
+  // .setFramework(new ExpressFramework())
+  .addAdapter(new HttpTriggerV4Adapter())
+  .build();
+```
+
+The above code will add support for Azure Http Trigger V4, to learn more about Http Trigger, see the [adapter docs](../adapters/azure/http-trigger-v4).
+
+:::caution Attention
+
+You `MUST` use [PromiseResolver](../resolvers/promise) to integrate with `AzureHandler`, other resolvers didn't work with Azure.
+
+:::
+
+## Examples
+
+You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).
