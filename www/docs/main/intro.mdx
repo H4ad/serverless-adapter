@@ -68,7 +68,7 @@ We support these event sources:
 - Azure
   - [Http Trigger V4](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=in-process&pivots=programming-language-javascript) by using ([HttpTriggerV4Adapter](./adapters/azure/http-trigger-v4)).
 - Firebase
-  - The support is coming soon.
+  - [Http Events](https://firebase.google.com/docs/functions/http-events) using ([HttpFirebaseHandler](./handlers/firebase)).
 - GCP
   - The support is coming soon.
 
@@ -82,6 +82,7 @@ We support these handlers:
 
 - Azure by using ([AzureHandler](./handlers/azure))
 - Default by using ([DefaultHandler](./handlers/default))
+- Firebase by using ([HttpFirebaseHandler](./handlers/firebase))
 - Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
 
 ## Why you create this library?

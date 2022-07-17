@@ -98,4 +98,39 @@ describe(AzureHandler.name, () => {
       undefined,
     );
   });
+
+  it('should prefer default log method when send false to useContextLogWhenInternalLogger option', () => {
+    const event = createHttpTriggerEvent('GET', '/');
+    const context = createHttpTriggerContext('GET', '/');
+
+    const defaultServerlessHandler = jest.fn(() => Promise.resolve(response));
+    const defaultGetHandler = jest
+      .spyOn(DefaultHandler.prototype, 'getHandler')
+      .mockImplementation(() => defaultServerlessHandler);
+
+    const log = createDefaultLogger();
+
+    const getHandlerArguments = [
+      app,
+      mockFramework,
+      adapters,
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      log,
+    ] as const;
+
+    const azureHandler = new AzureHandler({
+      useContextLogWhenInternalLogger: false,
+    }).getHandler(...getHandlerArguments);
+
+    expect(azureHandler(context, event)).resolves.toBe(response);
+
+    expect(defaultGetHandler).toHaveBeenCalledWith(...getHandlerArguments);
+    expect(defaultServerlessHandler).toHaveBeenCalledWith(
+      event,
+      context,
+      undefined,
+    );
+  });
 });

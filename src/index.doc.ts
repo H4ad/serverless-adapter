@@ -14,6 +14,7 @@ export * from './frameworks/lazy';
 export * from './frameworks/trpc';
 export * from './handlers/azure';
 export * from './handlers/default';
+export * from './handlers/firebase';
 export * from './handlers/huawei';
 export * from './network';
 export * from './resolvers/aws-context';
