@@ -19,10 +19,10 @@ function createHandler(
 
 jest.mock('fastify', () => {
   const packages = {
-    '3.x': 'fastify-3',
+    '12.x': 'fastify-3',
     latest: 'fastify',
   };
-  const version = process.env.FASTIFY_VERSION || 'latest';
+  const version = process.env.TEST_NODE_VERSION || 'latest';
 
   // Require the original module.
   const originalModule = jest.requireActual(packages[version]);

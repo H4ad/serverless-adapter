@@ -3,6 +3,22 @@ import { ServerlessRequest } from '../../src';
 import { HttpFirebaseHandler } from '../../src/handlers/firebase';
 import { FrameworkMock } from '../mocks/framework.mock';
 
+jest.mock('firebase-admin', () => {
+  const packages = {
+    '12.x': 'firebase-admin-8',
+    latest: 'firebase-admin',
+  };
+  const version = process.env.TEST_NODE_VERSION || 'latest';
+
+  // Require the original module.
+  const originalModule = jest.requireActual(packages[version]);
+
+  return {
+    __esModule: true,
+    ...originalModule,
+  };
+});
+
 describe(HttpFirebaseHandler.name, () => {
   it('should forward correctly the request to framework', async () => {
     const handlerFactory = new HttpFirebaseHandler();

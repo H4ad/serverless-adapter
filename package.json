@@ -114,6 +114,7 @@
     "fastify": ">= 3.0.0",
     "fastify-3": "npm:fastify@3.29.0",
     "firebase-admin": ">= 8.0.0",
+    "firebase-admin-8": "npm:firebase-admin@^8.0.0",
     "firebase-functions": ">= 3.0.0",
     "koa": ">= 2.5.1"
   },
@@ -149,6 +150,9 @@
       "optional": true
     },
     "firebase-admin": {
+      "optional": true
+    },
+    "firebase-admin-8": {
       "optional": true
     },
     "firebase-functions": {
