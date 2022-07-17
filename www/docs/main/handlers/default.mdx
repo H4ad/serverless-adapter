@@ -27,10 +27,8 @@ To use, you can import and call the method [setHandler](../../api/ServerlessAdap
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
 
-const express = require('express');
-
-const app = express();
 export const handler = ServerlessAdapter.new(app)
   .setHandler(new DefaultHandler())
   // continue to set the other options here.

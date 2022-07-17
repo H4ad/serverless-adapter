@@ -57,7 +57,10 @@
     "trpc",
     "azure",
     "azure-functions",
-    "http-trigger-v4"
+    "http-trigger-v4",
+    "firebase",
+    "firebase-functions",
+    "firebase-http-events"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"
