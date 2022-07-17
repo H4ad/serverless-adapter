@@ -1,5 +1,8 @@
-import { ServerlessResponse, waitForStreamComplete } from '../../lib';
-import { ServerlessRequest } from '../../src';
+import {
+  ServerlessRequest,
+  ServerlessResponse,
+  waitForStreamComplete,
+} from '../../src';
 import { HttpFirebaseHandler } from '../../src/handlers/firebase';
 import { FrameworkMock } from '../mocks/framework.mock';
 
