@@ -110,6 +110,8 @@
     "express": ">= 4.15.4",
     "fastify": ">= 3.0.0",
     "fastify-3": "npm:fastify@3.29.0",
+    "firebase-admin": ">= 8.0.0",
+    "firebase-functions": ">= 3.0.0",
     "koa": ">= 2.5.1"
   },
   "peerDependenciesMeta": {
@@ -125,15 +127,6 @@
     "@types/aws-lambda": {
       "optional": true
     },
-    "express": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
-    "koa": {
-      "optional": true
-    },
     "@types/express": {
       "optional": true
     },
@@ -143,7 +136,22 @@
     "@types/koa": {
       "optional": true
     },
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
     "fastify-3": {
+      "optional": true
+    },
+    "firebase-admin": {
+      "optional": true
+    },
+    "firebase-functions": {
+      "optional": true
+    },
+    "koa": {
       "optional": true
     }
   },
