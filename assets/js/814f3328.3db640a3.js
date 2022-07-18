@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[2535],{5641:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Updates and Releases","permalink":"/serverless-adapter/blog/updates-and-releases"},{"title":"The Beginning","permalink":"/serverless-adapter/blog/the-beginning"}]}')}}]);
