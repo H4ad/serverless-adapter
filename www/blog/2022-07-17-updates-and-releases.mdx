@@ -1,0 +1,60 @@
+---
+slug: updates-and-releases
+title: Updates and Releases
+authors: [h4ad]
+tags: [serverless-adapter, trpc, azure, firebase]
+image: https://images.unsplash.com/photo-1636819488524-1f019c4e1c44
+---
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+![To the moon!](https://images.unsplash.com/photo-1636819488524-1f019c4e1c44)
+
+Now we have more Handlers, Frameworks and Adapters, let's see what's new.
+
+> From [v2.3.2](https://github.com/H4ad/serverless-adapter/tree/v2.3.2) to [v2.6.0](https://github.com/H4ad/serverless-adapter/tree/v2.6.0),
+compare the changes [here](https://github.com/H4ad/serverless-adapter/compare/v2.3.2...v2.6.0).
+
+## Changes
+
+42 commits, 6905 lines added, 601 lines deleted, that's the size of the changes since [The Beginning](/blog/the-beginning).
+
+I'm very proud of how things are going, I learned a lot by studying to implement these new things.
+
+But, let's learn what's new in all these releases.
+
+## Azure and Firebase
+
+You can now use this library to deploy your apps to [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/create-first-function-vs-code-node)
+and [Firebase Functions](https://firebase.google.com/docs/functions/http-events).
+
+More specifically, you can integrate with Http Trigger V4 on Azure and Http Events on Firebase.
+
+These integrations are just to open the door of possibilities, in the future I want to add support for more triggers in these clouds.
+
+Check out the [Azure](/docs/main/handlers/azure) and [Firebase](/docs/main/handlers/firebase) docs for how to integrate.
+
+I also added examples for the cloud in the [serverless-adapter-examples](https://github.com/H4ad/serverless-adapter-examples) repository.
+
+## tRPC
+
+<BrowserWindow url="https://trpc.io/docs/">
+  tRPC allows you to easily build & consume fully typesafe APIs, without schemas or code generation.
+</BrowserWindow>
+
+tRPC is a framework that brings a new way of thinking about APIs, instead of REST or GraphQL, you can build typesafe APIs and easily
+can integrate with the client, seems to be very promising.
+
+So now you can deploy applications developed with tRPC to any cloud that this library supports, have a look at [docs](/docs/main/frameworks/trpc)
+to learn more about how to use it.
+
+## That's all folks!
+
+I have two more weeks to work in this library without worrying because I'm on vacation at the university,
+so probably my next efforts will be to bring more articles to this blog to show the full power of this library.
+
+Giving some spoilers for those of you that make it this far, I'll start by showing you the benefits of using AWS Lambda integrated with
+API Gateway and SQS, I used it in a project of my company and I managed to reduce a lot of stress on the database and now
+we are able to process 500k votes in minutes without spending 15% CPU using a PostgreSQL database on a t2.micro instance.
+
+That's all for today, thank you!
