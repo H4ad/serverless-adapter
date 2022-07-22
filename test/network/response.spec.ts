@@ -59,6 +59,13 @@ describe('ServerlessResponse', () => {
       body: '{"test": true}' as any,
     });
 
+    const requestWithUintArray = new ServerlessRequest({
+      ...defaultParams,
+      body: Uint8Array.from(
+        Array.from('{"test": true}').map(c => c.charCodeAt(0)),
+      ),
+    });
+
     const requestHead = new ServerlessRequest({
       ...defaultParams,
       method: 'HEAD',
@@ -72,6 +79,7 @@ describe('ServerlessResponse', () => {
       [request, 0, true],
       [requestWithBody, requestWithBody.body!.length, true],
       [requestWithBodyString, requestWithBodyString.body!.length, true],
+      [requestWithUintArray, requestWithUintArray.body!.length, true],
       [requestHead, 0, false],
     ];
 
@@ -107,9 +115,16 @@ describe('ServerlessResponse', () => {
   });
 
   it('should can pipe response and return correct data', async () => {
-    const options: [value: string | Buffer, expectedValue: string][] = [
+    const options: [
+      value: string | Buffer | Uint8Array,
+      expectedValue: string,
+    ][] = [
       ['test', 'test'],
       [Buffer.from('{"yo": true}', 'utf-8'), '{"yo": true}'],
+      [
+        Uint8Array.from(Array.from('{"test": true}').map(c => c.charCodeAt(0))),
+        '{"test": true}',
+      ],
     ];
 
     for (const [testedData, expectedValue] of options) {
@@ -163,7 +178,11 @@ describe('ServerlessResponse', () => {
   });
 
   it('should call correctly the callback with valid data in response', () => {
-    const options = ['test', Buffer.from('testB', 'utf-8')];
+    const options = [
+      'test',
+      Buffer.from('testB', 'utf-8'),
+      Uint8Array.from(Array.from('{"test": true}').map(c => c.charCodeAt(0))),
+    ];
 
     for (const testedData of options) {
       const response = new ServerlessResponse({

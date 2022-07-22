@@ -31,7 +31,7 @@ export interface ServerlessRequestProps {
   /**
    * The body from the event source
    */
-  body?: Buffer;
+  body?: Buffer | Uint8Array;
 
   /**
    * The IP Address from caller
@@ -81,5 +81,5 @@ export class ServerlessRequest extends IncomingMessage {
   }
 
   ip?: string;
-  body?: Buffer;
+  body?: Buffer | Uint8Array;
 }
