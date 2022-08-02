@@ -1,0 +1,114 @@
+---
+title: Http Trigger V4
+description: See more about how to integrate with Azure Http Trigger V4
+---
+
+:::caution Attention
+
+Check the [AzureHandler](../../handlers/azure) docs to make sure you have all the necessary settings to work with this adapter.
+
+:::
+
+The adapter to handle requests from [Azure Http Trigger V4](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=in-process%2Cfunctionsv2&pivots=programming-language-javascript).
+
+:::info
+
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 status WITH error stack in the response.
+
+:::
+
+## Requirements
+
+This adapter was created to work with runtine 4.x, [see the docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions?tabs=azure-cli%2Cin-process%2Cv4&pivots=programming-language-javascript#changing-version-of-apps-in-azure)
+to know more about how to check and change the version if you need.
+
+In theory, this adapter works with runtime 3.x but I haven't tested it.
+
+## About the adapter
+
+This adapter transforms every request coming from Azure Http Trigger V4 into an HTTP request to your framework.
+
+```json title="azure-http-trigger-event-example.json"
+{
+  "method":"POST",
+  "url":"https://serverless-adapter.azurewebsites.net/api/test-serverless-adapter/events?code=sE_d8h7XJ4YYsGJ7mgVta_t-32323%253D%253D",
+  "headers":{
+    "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding":"gzip, deflate, br",
+    "accept-language":"pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7,bg;q=0.6",
+    "cache-control":"max-age=0",
+    "host":"serverless-adapter.azurewebsites.net",
+    "user-agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
+    "sec-ch-ua":"\".Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"103\", \"Chromium\";v=\"103\"",
+    "sec-ch-ua-mobile":"?0",
+    "sec-ch-ua-platform":"\"Linux\"",
+    "client-ip":"2.3.3.3:30750",
+    "x-forwarded-proto":"https",
+    "x-appservice-proto":"https",
+    "x-arr-ssl":"2048|256|CN=Microsoft Azure TLS Issuing CA 01, O=Microsoft Corporation, C=US|CN=*.azurewebsites.net, O=Microsoft Corporation, L=Redmond, S=WA, C=US",
+    "x-forwarded-tlsversion":"1.2",
+    "x-forwarded-for":"3.3.3.3:49196",
+    "x-original-url":"/api/test-serverless-adapter?code=sE_d8h7XJ4YYsGJ7mgVta_t-32323%3D%3D",
+    "x-waws-unencoded-url":"/api/test-serverless-adapter?code=sE_d8h7XJ4YYsGJ7mgVta_t-32323%3D%3D",
+    "disguised-host":"serverless-adapter.azurewebsites.net"
+  },
+  "query":{
+    "code":"sE_d8h7XJ4YYsGJ7mgVta_t-32323%3D%3D"
+  },
+  "params":{},
+  "body":{
+    "name":"H4ad Event"
+  },
+  "rawBody":"{\"name\":\"H4ad Event\"}",
+  "user":null
+}
+```
+
+So, to add support to the above request, we must have registered the `/api/test-serverless-adapter/events` route as `POST` and when Http Trigger sends this event, you will get:
+
+- `body`: `{"name":"H4ad Event"}`
+- `queryString`: `code=sE_d8h7XJ4YYsGJ7mgVta_t-32323%3D%3D`
+
+## Customizing
+
+You can strip base path with the option `stripBasePath` inside [HttpTriggerV4AdapterOptions](/docs/api/Adapters/Azure/HttpTriggerV4Adapter/HttpTriggerV4AdapterOptions).
+
+:::tip
+
+You can configure this option based on your api base url like: `/api/test-serverless-adapter`, then the request coming from `/api/test-serverless-adapter/events`
+will be transformed into `/events`.
+
+:::
+
+## Usage
+
+To add support to Azure Http Trigger you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/lib/adapters/azure';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new AzureHandler())
+  // .setFramework(new ExpressFramework())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new HttpTriggerV4Adapter())
+  // customizing:
+  // .addAdapter(new HttpTriggerV4Adapter({ stripBasePath: '/api/test-serverless-adapter' }))
+  .build();
+```
+
+:::caution
+
+You MUST use the [PromiseResolver](../../resolvers/promise) combined with [AzureHandler](../../handlers/azure) to make this adapter work.
+
+:::
+
+## Credits
+
+This handler was created inspired by code written by [@Shamshiel](https://github.com/Shamshiel) and [@zachabney](https://github.com/zachabney),
+thank you very much to them!
+

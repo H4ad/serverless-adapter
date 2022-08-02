@@ -30,7 +30,11 @@ export class HttpDeepkitFramework implements FrameworkContract<HttpKernel> {
       request.method,
     ).headers(flattenedHeaders);
 
-    if (request.body) requestBuilder = requestBuilder.body(request.body);
+    if (request.body) {
+      requestBuilder = Buffer.isBuffer(request.body)
+        ? requestBuilder.body(request.body)
+        : requestBuilder.body(Buffer.from(request.body));
+    }
 
     const httpRequest = requestBuilder.build();
     const httpResponse = Object.assign(

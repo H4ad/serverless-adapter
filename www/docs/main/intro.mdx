@@ -22,12 +22,6 @@ Why you would use this libray instead of [@vendia/serverless-express](https://gi
 
 ## Support
 
-:::caution
-
-We are in beta, so some adapters may not work as expected, feel free to create an issue or provide feedback on current behavior.
-
-:::
-
 By design we have these contracts that define the layers of the library: Frameworks, Adapters, Resolvers and Handlers.
 
 :::info
@@ -38,7 +32,6 @@ If you don't know what each thing means, see [Architecture](./architecture).
 
 Currently, we support these frameworks:
 
-- [NestJS](https://nestjs.com/), see the [documentation about](./frameworks/nestjs) to know how to integrate.
 - [Express](https://expressjs.com/) by using ([ExpressFramework](./frameworks/express))
 - [Fastify](https://www.fastify.io/) by using ([FastifyFramework](./frameworks/fastify))
 - [Hapi](https://hapi.dev/) by using ([HapiFramework](./frameworks/hapi))
@@ -46,6 +39,8 @@ Currently, we support these frameworks:
 - Async Initialization by using ([LazyFramework](./frameworks/lazy))
   - Use this framework to provide a way to create the instance of your app asynchronously.
   - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](./frameworks/lazy).
+- [NestJS](https://nestjs.com/), see the [documentation about](./frameworks/nestjs) to know how to integrate.
+- [tRPC](https://trpc.io/), see the [documentation about](./frameworks/trpc) to know how to integrate.
 
 We support these event sources:
 
@@ -69,11 +64,11 @@ We support these event sources:
 - Huawei
   - [Http Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1442.html): Look [this section](./handlers/huawei#http-function).
   - [Event Function](https://support.huaweicloud.com/intl/en-us/usermanual-functiongraph/functiongraph_01_1441.html): Look [this section](./handlers/huawei#event-function).
-  - [Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) by using ([HuaweiApiGatewayAdapter](./adapters/huawei/huawei-api-gateway)).
+    - [Api Gateway](https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137) by using ([HuaweiApiGatewayAdapter](./adapters/huawei/huawei-api-gateway)).
 - Azure
-  - [The support is coming soon.](https://github.com/H4ad/serverless-adapter/issues/3)
+  - [Http Trigger V4](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=in-process&pivots=programming-language-javascript) by using ([HttpTriggerV4Adapter](./adapters/azure/http-trigger-v4)).
 - Firebase
-  - The support is coming soon.
+  - [Http Events](https://firebase.google.com/docs/functions/http-events) using ([HttpFirebaseHandler](./handlers/firebase)).
 - GCP
   - The support is coming soon.
 
@@ -85,7 +80,9 @@ We support these resolvers:
 
 We support these handlers:
 
+- Azure by using ([AzureHandler](./handlers/azure))
 - Default by using ([DefaultHandler](./handlers/default))
+- Firebase by using ([HttpFirebaseHandler](./handlers/firebase))
 - Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
 
 ## Why you create this library?

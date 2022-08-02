@@ -1,0 +1,186 @@
+---
+title: tRPC
+position: 7
+description: See more about how to integrate with tRPC.
+---
+
+:::info
+
+The following examples only work with tRPC over HTTP, you cannot use this framework to support websocket or subscriptions.
+
+:::
+
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save @trpc/server
+```
+
+Then, you need you just need to use the [TrpcFramework](../../api/Frameworks/TrpcFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import * as trpc from '@trpc/server';
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions, BufferToJSObjectTransformer } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { z } from 'zod';
+
+type CustomContext = { currentDate: Date };
+type TrpcContext = TrpcAdapterContext<CustomContext>;
+
+const appRouter = trpc
+  .router<TrpcContext>()
+  .transformer(new BufferToJSObjectTransformer())
+  .query('getUser', {
+    input: z.string(),
+    async resolve(req) {
+      req.input; // string
+      return { id: req.input, name: 'Bilbo' };
+    },
+  })
+  .mutation('createUser', {
+    // validate input with Zod
+    input: z.object({ name: z.string().min(5) }),
+    async resolve({ input }) {
+      return {
+        created: true,
+        newName: input.name,
+      };
+    },
+  });
+
+const frameworkOptions: TrpcFrameworkOptions<CustomContext> = {
+  createContext: () => ({ currentDate: new Date() }),
+};
+
+const framework = new TrpcFramework<CustomContext>(frameworkOptions);
+
+export const handler = ServerlessAdapter.new(appRouter)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::warning
+
+Always add the [BufferToJSObjectTransformer](../../api/Frameworks/TrpcFramework/BufferToJSObjectTransformer) because the input can be a buffer
+when you sent some JSON inside `body` on mutation, so this transformer will be responsible to convert back to JS Object.
+
+:::
+
+:::tip
+
+Need more examples? See more examples [here](https://github.com/H4ad/serverless-adapter-examples#trpc).
+
+:::
+
+## Integrating with Adapters
+
+This framework is a little special when dealing with request URLs because of the structure of tRPC.
+
+So when you integrate with an adapter like [SQSAdapter](/docs/main/adapters/aws/sqs), when you receive an event, the adapter will forward the request to `/sqs` by default
+but because of the structure of tRPC, the framework will change the request URL to just `sqs`.
+
+With this behavior, to integrate with [SQSAdapter](/docs/main/adapters/aws/sqs), you will create the following mutation:
+
+```typescript title="index.ts"
+import type { SQSEvent } from 'aws-lambda';
+import * as trpc from '@trpc/server';
+import { TrpcAdapterContext, BufferToJSObjectTransformer } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { z } from 'zod';
+
+type TrpcContext = TrpcAdapterContext<unknown>;
+
+const appRouter = trpc
+  .router<TrpcContext>()
+  .transformer(new BufferToJSObjectTransformer())
+  .mutation('sqs', {
+    input: z.object({
+      Records: z.array(z.any()),
+    }),
+    async resolve({ input, ctx }) {
+      if (ctx.getHeader('host') !== 'sqs.amazonaws.com')
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Wrong host.',
+        });
+
+      const event = input as SQSEvent;
+
+      // Do whatever you want
+      // and you dont need to return nothing
+    },
+  });
+```
+
+:::warning About another adapters
+
+Never forget to check the host header as you could introduce a security hole when adding support for AWS Api Gateway and other adapters.
+
+:::
+
+:::tip
+
+You can see a working example [here](https://github.com/H4ad/serverless-adapter-examples/tree/master/src/trpc/aws/api-gateway-v2-and-sqs.entry.ts).
+
+:::
+
+## Default Context and Custom context
+
+By default, we provide you with a few methods to get information from the request and modify the response,
+to learn more, take a look at [TrpcAdapterBaseContext](../../api/Frameworks/TrpcFramework/TrpcAdapterBaseContext).
+
+Also, you can pass new properties to the context by setting the `createContext` function inside the options,
+like the code below:
+
+```typescript title="index.ts"
+import * as trpc from '@trpc/server';
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { TrpcFramework, TrpcAdapterContext, BufferToJSObjectTransformer, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+
+type CustomContext = { potato: boolean };
+type TrpcContext = TrpcAdapterContext<CustomContext>;
+
+const appRouter = trpc
+  .router<TrpcContext>()
+  .transformer(new BufferToJSObjectTransformer())
+  .mutation('add', {
+    async resolve({ ctx }) {
+      // get the request url
+      const requestUrl = ctx.getUrl();
+
+      // this will change the status code of the request to 204.
+      ctx.setStatus(204);
+    },
+  });
+
+const frameworkOptions: TrpcFrameworkOptions<TrpcContext> = {
+  // you can return a promise
+  createContext: () => Promise.resolve({ potato: true }),
+  // createContext: () => ({ potato: false }),
+};
+
+const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
+
+export const handler = ServerlessAdapter.new(appRouter)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::

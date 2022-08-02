@@ -1,7 +1,7 @@
 {
   "name": "@h4ad/serverless-adapter",
   "version": "0.0.0-development",
-  "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Huawei and many other clouds.",
+  "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Huawei and many other clouds.",
   "main": "./lib/index.js",
   "files": [
     "lib/**/*"
@@ -53,13 +53,24 @@
     "node.js",
     "http",
     "huawei",
-    "functiongraph"
+    "functiongraph",
+    "trpc",
+    "azure",
+    "azure-functions",
+    "http-trigger-v4",
+    "firebase",
+    "firebase-functions",
+    "firebase-http-events"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"
   },
   "homepage": "https://github.com/H4ad/serverless-adapter#readme",
   "devDependencies": {
+    "@deepkit/app": "^1.0.1-alpha.74",
+    "@deepkit/framework": "^1.0.1-alpha.74",
+    "@deepkit/http": "^1.0.1-alpha.74",
+    "@hapi/hapi": "^20.2.2",
     "@microsoft/api-documenter": "7.17.16",
     "@microsoft/api-extractor": "7.24.2",
     "@microsoft/api-extractor-model": "7.17.3",
@@ -67,7 +78,10 @@
     "@rushstack/node-core-library": "^3.45.2",
     "@types/aws-lambda": "^8.10.92",
     "@types/body-parser": "^1.19.2",
+    "@types/express": "^4.17.13",
+    "@types/hapi": "^18.0.7",
     "@types/jest": "^27.4.0",
+    "@types/koa": "^2.13.5",
     "@types/node": "12.20.43",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
@@ -83,8 +97,11 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
+    "express": "^4.18.1",
+    "fastify": "^4.3.0",
     "husky": "^6.0.0",
     "jest": "^27.5.1",
+    "koa": "^2.13.4",
     "lint-staged": "^10.5.4",
     "prettier": "^2.5.1",
     "semantic-release": "^19.0.3",
@@ -96,30 +113,25 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
-    "@deepkit/app": ">= 1.0.1-alpha.16",
-    "@deepkit/core": ">= 1.0.1-alpha.16",
-    "@deepkit/framework": "^1.0.1-alpha.16",
-    "@deepkit/http": ">= 1.0.1-alpha.16",
-    "@deepkit/logger": "^1.0.1-alpha.65",
+    "@azure/functions": ">= 2.0.0",
+    "@deepkit/http": ">= 1.0.1-alpha.74",
     "@hapi/hapi": ">= 20.0.0",
-    "@types/aws-lambda": "^8.10.92",
+    "@trpc/server": ">= 9.0.0",
+    "@types/aws-lambda": ">= 8.10.92",
     "@types/express": ">= 4.15.4",
     "@types/hapi": ">= 18.0.7",
     "@types/koa": ">= 2.11.2",
     "express": ">= 4.15.4",
     "fastify": ">= 3.0.0",
     "fastify-3": "npm:fastify@3.29.0",
+    "firebase-admin": ">= 8.0.0",
+    "firebase-admin-8": "npm:firebase-admin@^8.0.0",
+    "firebase-functions": ">= 3.0.0",
     "koa": ">= 2.5.1",
     "reflect-metadata": "^0.1.13"
   },
   "peerDependenciesMeta": {
-    "@deepkit/app": {
-      "optional": true
-    },
-    "@deepkit/core": {
-      "optional": true
-    },
-    "@deepkit/framework": {
+    "@azure/functions": {
       "optional": true
     },
     "@deepkit/http": {
@@ -128,16 +140,10 @@
     "@hapi/hapi": {
       "optional": true
     },
+    "@trpc/server": {
+      "optional": true
+    },
     "@types/aws-lambda": {
-      "optional": true
-    },
-    "express": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
-    "koa": {
       "optional": true
     },
     "@types/express": {
@@ -149,7 +155,25 @@
     "@types/koa": {
       "optional": true
     },
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
     "fastify-3": {
+      "optional": true
+    },
+    "firebase-admin": {
+      "optional": true
+    },
+    "firebase-admin-8": {
+      "optional": true
+    },
+    "firebase-functions": {
+      "optional": true
+    },
+    "koa": {
       "optional": true
     }
   },
