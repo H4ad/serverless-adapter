@@ -8,11 +8,13 @@ module.exports = {
     '!<rootDir>/src/**/index.doc.ts',
     '!<rootDir>/src/**/index.ts',
   ],
-  resolver: '@deepkit/framework/resolve',
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+  resolver: "<rootDir>/node_modules/@deepkit/framework/resolve",
   globals: {
     'ts-jest': {
       diagnostics: false,
-      isolatedModules: true,
     },
   },
 };

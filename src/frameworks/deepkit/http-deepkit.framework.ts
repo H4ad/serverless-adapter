@@ -37,11 +37,7 @@ export class HttpDeepkitFramework implements FrameworkContract<HttpKernel> {
     }
 
     const httpRequest = requestBuilder.build();
-    const httpResponse = Object.assign(
-      new HttpResponse({ method: httpRequest.getMethod() } as any),
-      response,
-    );
 
-    app.handleRequest(httpRequest, httpResponse);
+    app.handleRequest(httpRequest, response as HttpResponse);
   }
 }

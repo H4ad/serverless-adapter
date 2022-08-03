@@ -1,52 +1,71 @@
-import { createTestingApp } from '@deepkit/framework';
-import { HttpRequest, JSONResponse, http } from '@deepkit/http';
+import { App } from '@deepkit/app';
+import {
+  FrameworkModule,
+  TestingFacade,
+  createTestingApp,
+} from '@deepkit/framework';
+import {
+  HttpBody,
+  HttpKernel,
+  HttpModule,
+  HttpRequest,
+  HttpRouterRegistry,
+  JSONResponse,
+} from '@deepkit/http';
+import { HttpDeepkitFramework } from '../../src/frameworks/deepkit';
+import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
-// [
-//   // ['get', '/users', 200, [{ name: 'Joga10' }]],
-//   // ['get', '/users/list', 200, []],
-//   // ['get', '/users/1', 404, { didntFind: 'entity' }],
-//   ['get', '/users/2', 404, { notFound: true }],
-//   ['post', '/empty/route', 204, undefined, ''],
-//   ['post', '/users/error', 401, { unathorized: true }],
-//   ['post', '/users', 201, { success: true }],
-//   ['put', '/users/1', 201, { updated: true }],
-//   ['put', '/users/2', 404, { notFound: true }],
-//   ['put', '/users/3', 404, { didntFind: 'entity' }],
-//   ['delete', '/users/1', 200, { deleted: true }],
-//   ['delete', '/users/noreturn', 204, undefined, ''],
-//   ['delete', '/users/2', 401, { unathorized: true }],
-//   ['get', '/bad-gateway', 503, { error: true }],
-// ];
+function createHandler(
+  method: 'get' | 'post' | 'delete' | 'put',
+): TestRouteBuilderHandler<TestingFacade<App<any>>> {
+  return (app, path, handler) => {
+    const router = app.app.get(HttpRouterRegistry);
 
-test('http controller', async () => {
-  class TestController {
-    @http.GET('/users')
-    getUsers200() {
-      return { name: 'Joga10' };
-    }
+    router[method](path, (request: HttpRequest, body: HttpBody<any>) => {
+      const [statusCode, resultBody, headers] = handler(request.headers, body);
 
-    @http.GET('/users/list')
-    getUsersList200() {
-      return [];
-    }
+      const response = new JSONResponse(resultBody, statusCode);
 
-    @http.GET('/users/1')
-    getUser1() {
-      return new JSONResponse({ didntFind: 'entity' }, 404);
-    }
-  }
+      for (const header of Object.keys(headers))
+        response.header(header, headers[header]);
 
-  const testing = createTestingApp({ controllers: [TestController] });
-  await testing.startServer();
+      return response;
+    });
+  };
+}
 
-  const response = await testing.request(
-    HttpRequest.GET('/users')
-      .header('accept', 'application/json')
-      .query({ text: 'world' }),
+describe(HttpDeepkitFramework.name, () => {
+  createTestSuiteFor(
+    () => {
+      return new HttpDeepkitFramework();
+    },
+    async () => {
+      const testingApp = createTestingApp({
+        imports: [
+          new HttpModule({ debug: true }),
+          new FrameworkModule({ debug: true, httpLog: true }),
+        ],
+      });
+
+      await testingApp.startServer();
+
+      // testingApp.app
+      //   .get(HttpRouterRegistry)
+      //   .any('/users', (request: HttpRequest, response: HttpResponse) => {
+      //     console.log(request, response);
+      //   });
+
+      return testingApp;
+    },
+    {
+      get: createHandler('get'),
+      delete: createHandler('delete'),
+      post: createHandler('post'),
+      put: createHandler('put'),
+    },
+    app => app.app.get(HttpKernel),
+    async app => await app.stopServer(),
   );
-
-  expect(response.body.toString()).toBe('hello world');
-  expect(response.getHeader('content-type')).toBe('text/plain; charset=utf-8');
 });
 
 //

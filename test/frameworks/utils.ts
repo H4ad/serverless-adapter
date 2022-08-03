@@ -34,22 +34,22 @@ export const frameworkTestOptions: [
   ['get', '/users/list', 200, []],
   ['get', '/users/1', 404, { didntFind: 'entity' }],
   ['get', '/users/2', 404, { notFound: true }],
-  ['post', '/empty/route', 204, undefined, ''],
   ['post', '/users/error', 401, { unathorized: true }],
   ['post', '/users', 201, { success: true }],
   ['put', '/users/1', 201, { updated: true }],
   ['put', '/users/2', 404, { notFound: true }],
   ['put', '/users/3', 404, { didntFind: 'entity' }],
   ['delete', '/users/1', 200, { deleted: true }],
-  ['delete', '/users/noreturn', 204, undefined, ''],
   ['delete', '/users/2', 401, { unathorized: true }],
   ['get', '/bad-gateway', 503, { error: true }],
 ];
 
-export function createTestSuiteFor<TApp>(
-  frameworkFactory: () => FrameworkContract<TApp>,
-  appFactory: () => TApp,
+export function createTestSuiteFor<TApp, TFrameworkApp = TApp>(
+  frameworkFactory: () => FrameworkContract<TFrameworkApp>,
+  appFactory: () => TApp | Promise<TApp>,
   routeBuilder: TestRouteBuilder<TApp>,
+  appToFrameworkApp?: (TApp) => TFrameworkApp,
+  tearDown?: (app: TApp) => Promise<void>,
 ): void {
   for (const [
     method,
@@ -59,7 +59,7 @@ export function createTestSuiteFor<TApp>(
     expectedValue,
   ] of frameworkTestOptions) {
     it(`${method}${path}: should forward request and receive response correctly`, async () => {
-      const app = appFactory();
+      const app = await appFactory();
 
       routeBuilder[method](app, path, (requestHeaders, requestBody) => {
         expect(requestHeaders).toHaveProperty('request-header', 'true');
@@ -99,19 +99,25 @@ export function createTestSuiteFor<TApp>(
         method: method.toUpperCase(),
       });
 
-      framework.sendRequest(app, request, response);
+      const frameworkApp = appToFrameworkApp
+        ? appToFrameworkApp(app)
+        : (app as unknown as TFrameworkApp);
+
+      framework.sendRequest(frameworkApp, request, response);
 
       await waitForStreamComplete(response);
 
+      if (tearDown) await tearDown(app);
+
       const resultBody = ServerlessResponse.body(response);
 
+      expect(resultBody.toString('utf-8')).toEqual(
+        expectedValue !== undefined ? expectedValue : JSON.stringify(body),
+      );
       expect(response.statusCode).toBe(statusCode);
       expect(ServerlessResponse.headers(response)).toHaveProperty(
         'response-header',
         'true',
-      );
-      expect(resultBody.toString('utf-8')).toEqual(
-        expectedValue !== undefined ? expectedValue : JSON.stringify(body),
       );
     });
   }
