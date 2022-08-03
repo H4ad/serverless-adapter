@@ -29,9 +29,6 @@ jobs:
       - name: Install Lib Dependencies
         run: npm ci
 
-      - name: Install Peers Dependencies
-        run: npm run install:peers
-
       - name: Build
         run: npm run build --if-present
 
