@@ -50,6 +50,7 @@ export function createTestSuiteFor<TApp, TFrameworkApp = TApp>(
   routeBuilder: TestRouteBuilder<TApp>,
   appToFrameworkApp?: (TApp) => TFrameworkApp,
   tearDown?: (app: TApp) => Promise<void>,
+  skip?: boolean,
 ): void {
   for (const [
     method,
@@ -58,67 +59,75 @@ export function createTestSuiteFor<TApp, TFrameworkApp = TApp>(
     body,
     expectedValue,
   ] of frameworkTestOptions) {
-    it(`${method}${path}: should forward request and receive response correctly`, async () => {
-      const app = await appFactory();
+    const itFn = skip ? it.skip : it;
 
-      routeBuilder[method](app, path, (requestHeaders, requestBody) => {
-        expect(requestHeaders).toHaveProperty('request-header', 'true');
+    itFn(
+      `${method}${path}: should forward request and receive response correctly`,
+      async () => {
+        const app = await appFactory();
 
-        if ((method === 'post' || method === 'put') && requestBody !== NO_OP) {
-          const parsedRequestBody =
-            requestBody instanceof Buffer
-              ? JSON.parse(requestBody.toString('utf-8'))
-              : requestBody;
+        routeBuilder[method](app, path, (requestHeaders, requestBody) => {
+          expect(requestHeaders).toHaveProperty('request-header', 'true');
 
-          expect(parsedRequestBody || null).toEqual(body || null);
-        }
+          if (
+            (method === 'post' || method === 'put') &&
+            requestBody !== NO_OP
+          ) {
+            const parsedRequestBody =
+              requestBody instanceof Buffer
+                ? JSON.parse(requestBody.toString('utf-8'))
+                : requestBody;
 
-        return [statusCode, body, { 'response-header': 'true' }];
-      });
+            expect(parsedRequestBody || null).toEqual(body || null);
+          }
 
-      const stringBody = body ? JSON.stringify(body) : body;
-      const [bufferBody, bodyLength] = stringBody
-        ? getEventBodyAsBuffer(stringBody, false)
-        : [undefined, 0];
+          return [statusCode, body, { 'response-header': 'true' }];
+        });
 
-      const framework = frameworkFactory();
-      const request = new ServerlessRequest({
-        method: method.toUpperCase(),
-        url: path,
-        headers: {
-          'content-length': String(bodyLength),
-          'request-header': 'true',
-          ...(body && {
-            'content-type': 'application/json',
-          }),
-        },
-        body: bufferBody,
-      });
+        const stringBody = body ? JSON.stringify(body) : body;
+        const [bufferBody, bodyLength] = stringBody
+          ? getEventBodyAsBuffer(stringBody, false)
+          : [undefined, 0];
 
-      const response = new ServerlessResponse({
-        method: method.toUpperCase(),
-      });
+        const framework = frameworkFactory();
+        const request = new ServerlessRequest({
+          method: method.toUpperCase(),
+          url: path,
+          headers: {
+            'content-length': String(bodyLength),
+            'request-header': 'true',
+            ...(body && {
+              'content-type': 'application/json',
+            }),
+          },
+          body: bufferBody,
+        });
 
-      const frameworkApp = appToFrameworkApp
-        ? appToFrameworkApp(app)
-        : (app as unknown as TFrameworkApp);
+        const response = new ServerlessResponse({
+          method: method.toUpperCase(),
+        });
 
-      framework.sendRequest(frameworkApp, request, response);
+        const frameworkApp = appToFrameworkApp
+          ? appToFrameworkApp(app)
+          : (app as unknown as TFrameworkApp);
 
-      await waitForStreamComplete(response);
+        framework.sendRequest(frameworkApp, request, response);
 
-      if (tearDown) await tearDown(app);
+        await waitForStreamComplete(response);
 
-      const resultBody = ServerlessResponse.body(response);
+        if (tearDown) await tearDown(app);
 
-      expect(resultBody.toString('utf-8')).toEqual(
-        expectedValue !== undefined ? expectedValue : JSON.stringify(body),
-      );
-      expect(response.statusCode).toBe(statusCode);
-      expect(ServerlessResponse.headers(response)).toHaveProperty(
-        'response-header',
-        'true',
-      );
-    });
+        const resultBody = ServerlessResponse.body(response);
+
+        expect(resultBody.toString('utf-8')).toEqual(
+          expectedValue !== undefined ? expectedValue : JSON.stringify(body),
+        );
+        expect(response.statusCode).toBe(statusCode);
+        expect(ServerlessResponse.headers(response)).toHaveProperty(
+          'response-header',
+          'true',
+        );
+      },
+    );
   }
 }
