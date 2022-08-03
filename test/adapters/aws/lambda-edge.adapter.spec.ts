@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { CloudFrontRequest } from 'aws-lambda/common/cloudfront';
 import type { CloudFrontHeaders } from 'aws-lambda/common/cloudfront';
 import type {
   CloudFrontRequestEvent,
@@ -187,19 +188,19 @@ describe(LambdaEdgeAdapter.name, () => {
           log: {} as ILogger,
           statusCode: 200,
           isBase64Encoded: false,
-        });
+        }) as CloudFrontRequest;
 
         expect(result).toBeDefined();
 
         expect(result).toHaveProperty('headers');
-        expect(result!.headers).toHaveProperty(
+        expect(result.headers).toHaveProperty(
           'host',
           cloudFrontRequest.headers['host'],
         );
 
         expect(result).toHaveProperty('clientIp', cloudFrontRequest.clientIp);
         expect(result).toHaveProperty('method', cloudFrontRequest.method);
-        expect(result).toHaveProperty('origin', cloudFrontRequest.origin);
+        expect(result.origin).toEqual(cloudFrontRequest.origin);
         expect(result).toHaveProperty(
           'querystring',
           cloudFrontRequest.querystring,

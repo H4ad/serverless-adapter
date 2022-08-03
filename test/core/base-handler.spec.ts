@@ -122,7 +122,7 @@ describe(BaseHandler.name, () => {
     expect(request).toHaveProperty('url', adapterRequest.path);
     expect(request).toHaveProperty('headers', adapterRequest.headers);
     expect(request).toHaveProperty('body', adapterRequest.body);
-    expect(request).toHaveProperty(
+    expect(request.socket).toHaveProperty(
       'remoteAddress',
       adapterRequest.remoteAddress,
     );

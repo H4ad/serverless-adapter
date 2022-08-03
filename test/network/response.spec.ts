@@ -255,18 +255,4 @@ describe('ServerlessResponse', () => {
     expect(response.getHeaders()).not.toHaveProperty('test2', 'value');
     expect(response.headers).toHaveProperty('test2', 'value');
   });
-
-  it('should received error when statusCode is falsy', () => {
-    const request = new ServerlessRequest({
-      method: 'GET',
-      url: '/users',
-      headers: {},
-    });
-
-    request.statusCode = undefined;
-
-    expect(() => ServerlessResponse.from(request)).toThrowError(
-      'Invalid status code',
-    );
-  });
 });
