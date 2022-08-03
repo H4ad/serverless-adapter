@@ -148,7 +148,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       expect(result).toHaveProperty('statusCode', 200);
       expect(result).toHaveProperty('body', resultBody);
-      expect(result).toHaveProperty('headers', undefined);
+      expect(result).not.toHaveProperty('headers');
       expect(result).toHaveProperty('multiValueHeaders', responseHeaders);
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });
