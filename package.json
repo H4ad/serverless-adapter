@@ -60,7 +60,9 @@
     "http-trigger-v4",
     "firebase",
     "firebase-functions",
-    "firebase-http-events"
+    "firebase-http-events",
+    "deepkit",
+    "deepkit http"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"

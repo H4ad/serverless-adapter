@@ -1,0 +1,63 @@
+---
+title: Deepkit
+description: See more about how to integrate with deepkit.
+---
+
+:::info
+
+The following examples only work with deepkit over HTTP, you cannot use this framework to support websocket or rpc.
+
+:::
+
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save @deepkit/app @deepkit/core @deepkit/framework @deepkit/http @deepkit/type @deepkit/type-compiler
+```
+
+Then, you need you just need to use the [HttpDeepkitFramework](../../api/Frameworks/HttpDeepkitFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import { App } from '@deepkit/app';
+import { FrameworkModule } from '@deepkit/framework';
+import { HtmlResponse, HttpKernel, HttpModule, HttpRouterRegistry } from '@deepkit/http';
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { HttpDeepkitFramework } from '@h4ad/serverless-adapter/lib/frameworks/deepkit';
+
+const app = new App({
+  controllers: [],
+  module: [new HttpModule(), new FrameworkModule({
+    port: +process.env.PORT,
+  })],
+});
+
+const router = app.get(HttpRouterRegistry);
+
+router.get('/', () => {
+  return new HtmlResponse('<h1>Sample in Deepkit Project</h1>');
+});
+
+const httpKernel = app.get(HttpKernel);
+
+export const handler = ServerlessAdapter.new(httpKernel)
+  .setFramework(new HttpDeepkitFramework())
+  // .setHandler(new DefaultHandler())
+  // .setResolver(new PromiseResolver())
+  // .addAdapter(new AlbAdapter())
+  // .addAdapter(new SQSAdapter())
+  // .addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Need more examples? See more examples [here](https://github.com/H4ad/serverless-adapter-examples#deepkit).
+
+:::
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::
