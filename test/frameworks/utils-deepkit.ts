@@ -12,7 +12,12 @@ import {
   HttpRouterRegistry,
   JSONResponse,
 } from '@deepkit/http';
-import { HttpDeepkitFramework } from '../../lib/frameworks/deepkit';
+import {
+  ServerlessRequest,
+  ServerlessResponse,
+  waitForStreamComplete,
+} from '../../src';
+import { HttpDeepkitFramework } from '../../src/frameworks/deepkit';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 export function createDeepkitHandler(
@@ -36,6 +41,37 @@ export function createDeepkitHandler(
 
 export const runDeepkitTest = () => {
   describe(HttpDeepkitFramework.name, () => {
+    it('should convert correctly when the value is not an buffer', async () => {
+      const framework = new HttpDeepkitFramework();
+      const kernel: Partial<HttpKernel> = {
+        handleRequest: jest.fn((request, response) => {
+          request.pipe(response);
+
+          return void 0 as any;
+        }),
+      };
+      const textCodes = 'test'.split('').map(c => c.charCodeAt(0));
+
+      const request = new ServerlessRequest({
+        body: Uint8Array.of(...textCodes),
+        url: '/test',
+        method: 'POST',
+        headers: {},
+      });
+      const response = new ServerlessResponse({
+        method: 'POST',
+      });
+
+      framework.sendRequest(kernel as HttpKernel, request, response);
+
+      await waitForStreamComplete(response);
+
+      const resultBody = ServerlessResponse.body(response);
+
+      expect(resultBody).toBeInstanceOf(Buffer);
+      expect(resultBody.toString()).toEqual('test');
+    });
+
     createTestSuiteFor(
       () => {
         return new HttpDeepkitFramework();
