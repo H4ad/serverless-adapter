@@ -86,7 +86,7 @@ describe(ApiGatewayV2Adapter.name, () => {
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
-      expect(result.headers).toHaveProperty('cookie', undefined);
+      expect(result.headers).not.toHaveProperty('cookie');
 
       expect(result).toHaveProperty('body');
       expect(result.body).not.toBeInstanceOf(Buffer);
@@ -170,7 +170,7 @@ describe(ApiGatewayV2Adapter.name, () => {
       expect(result).toHaveProperty('statusCode', 200);
       expect(result).toHaveProperty('body', resultBody);
       expect(result).toHaveProperty('headers');
-      expect(result.headers).toHaveProperty('set-cookie', undefined);
+      expect(result.headers).not.toHaveProperty('set-cookie');
       expect(result).toHaveProperty('cookies', [resultCookies]);
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });
@@ -212,7 +212,7 @@ describe(ApiGatewayV2Adapter.name, () => {
       expect(result).toHaveProperty('statusCode', 200);
       expect(result).toHaveProperty('body', resultBody);
       expect(result).toHaveProperty('headers');
-      expect(result.headers).toHaveProperty('set-cookie', undefined);
+      expect(result.headers).not.toHaveProperty('set-cookie');
       expect(result).toHaveProperty('cookies', resultCookies);
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });

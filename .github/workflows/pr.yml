@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Update NPM Version
+        run: npm i -g npm
+
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
@@ -29,15 +32,16 @@ jobs:
       - name: Install Lib Dependencies
         run: npm ci
 
-      - name: Install Peers Dependencies
-        run: npm run install:peers
-
       - name: Build
         run: npm run build --if-present
 
       - name: Override Packages Versions for NodeJS 12.x
         if: matrix.node-version == '12.x'
         run: echo "TEST_NODE_VERSION=12.x" >> $GITHUB_ENV
+
+      - name: Skip Deepkit Tests for 12.x
+        if: matrix.node-version == '12.x'
+        run: echo "SKIP_DEEPKIT=true" >> $GITHUB_ENV
 
       - name: Run tests
         run: npm test

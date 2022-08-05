@@ -6,6 +6,7 @@ export * from './adapters/dummy';
 export * from './adapters/huawei';
 export * from './contracts';
 export * from './core';
+export * from './frameworks/deepkit';
 export * from './frameworks/express';
 export * from './frameworks/fastify';
 export * from './frameworks/koa';
