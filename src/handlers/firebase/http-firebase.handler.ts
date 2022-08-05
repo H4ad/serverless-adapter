@@ -3,6 +3,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { https } from 'firebase-functions';
 import { FrameworkContract, HandlerContract } from '../../contracts';
+import { ServerlessRequest } from '../../network';
 
 //#endregion
 
@@ -29,7 +30,19 @@ export class HttpFirebaseHandler<TApp>
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
     return https.onRequest(
       (request: IncomingMessage, response: ServerResponse) => {
-        return framework.sendRequest(app, request, response);
+        const serverlessRequest = request as ServerlessRequest;
+
+        if (
+          serverlessRequest.body &&
+          typeof serverlessRequest.body === 'object'
+        ) {
+          serverlessRequest.body = Buffer.from(
+            JSON.stringify(serverlessRequest.body),
+            'utf-8',
+          );
+        }
+
+        return framework.sendRequest(app, serverlessRequest, response);
       },
     );
   }

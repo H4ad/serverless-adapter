@@ -1,4 +1,9 @@
 import {
+  AdapterContract,
+  FrameworkContract,
+  createDefaultLogger,
+} from '../../lib';
+import {
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
@@ -58,5 +63,44 @@ describe(HttpFirebaseHandler.name, () => {
     expect(ServerlessResponse.body(response).toString()).toStrictEqual(
       JSON.stringify(responseBody),
     );
+  });
+
+  it('should handle weird body types', () => {
+    const handlerFactory = new HttpFirebaseHandler();
+
+    const method = 'POST';
+    const url = '/users/batata';
+    const headers = { 'Content-Type': 'application/json' };
+    const remoteAddress = '168.16.0.1';
+    const options = [{ potato: true }, [{ test: true }]];
+
+    for (const option of options) {
+      const request = new ServerlessRequest({
+        method,
+        url,
+        headers,
+        remoteAddress,
+        body: option as any,
+      });
+
+      const response = new ServerlessResponse({
+        method,
+      });
+
+      const framework: FrameworkContract<unknown> = {
+        sendRequest: jest.fn(),
+      };
+
+      const handler = handlerFactory.getHandler(null, framework);
+
+      handler(request, response);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(framework.sendRequest).toHaveBeenCalledWith(
+        null,
+        expect.objectContaining({ body: Buffer.from(JSON.stringify(option)) }),
+        response,
+      );
+    }
   });
 });
