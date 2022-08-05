@@ -26,9 +26,10 @@ import { HttpDeepkitFramework } from '@h4ad/serverless-adapter/lib/frameworks/de
 
 const app = new App({
   controllers: [],
-  module: [new HttpModule(), new FrameworkModule({
-    port: +process.env.PORT,
-  })],
+  module: [
+    new HttpModule(),
+    new FrameworkModule()
+  ],
 });
 
 const router = app.get(HttpRouterRegistry);
@@ -61,3 +62,32 @@ Need more examples? See more examples [here](https://github.com/H4ad/serverless-
 Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
 
 :::
+
+## About AWS
+
+I was only able to get Deepkit working when you deploy using NodeJS 16.x and using the `x86_64` architecture.
+
+Also, I tried using the `serverless-offline` package and it throws an error about `could not find handler`, not sure why
+I changed the deployment configuration to upload code manually. So if you like to use `serverless framework`, know
+that you will have problems trying to test locally.
+
+### FAQ
+
+### ERR_DLOPEN_FAILED
+
+Error message: /var/task/node_modules/turbo-net/build/Release/turbo_net.node: cannot open shared object file: No such file or directory
+Solution: Change your lambda architecture to `x86_64`.
+
+### ENOENT
+
+Error message: no such file or directory, mkdir 'var/debug/'
+Solution:
+
+```ts
+// change these options
+new HttpModule({ debug: true }),
+new FrameworkModule({ debug: true, httpLog: true }),
+// for
+new HttpModule({ debug: false }),
+new FrameworkModule({ debug: false, httpLog: false }),
+```
