@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/**'
       - 'www/**'
       - 'src/**'
       - 'scripts/**'
@@ -35,9 +36,6 @@ jobs:
 
       - name: Install Lib Dependencies
         run: npm ci
-
-      - name: Install Peers Dependencies
-        run: npm run install:peers
 
       - name: Install Docs Dependencies
         run: npm ci
