@@ -7,7 +7,6 @@
     "lib/**/*"
   ],
   "scripts": {
-    "install:peers": "npx npm-install-peers",
     "prepare": "husky install",
     "build": "tsc -p tsconfig.build.json",
     "build:docs": "tsc -p tsconfig.doc.json",
