@@ -50,7 +50,7 @@ const expressFramework = new ExpressFramework();
 // the initialization of nestjs is asynchronous, so you can use the lazy framework.
 const framework = new LazyFramework(expressFramework, bootstrap);
 
-export const handler = ServerlessAdapter.new(app)
+export const handler = ServerlessAdapter.new(null)
   .setFramework(framework)
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
@@ -89,7 +89,7 @@ const fastifyFramework = new FastifyFramework();
 // the initialization of nestjs is asynchronous, so you can use the lazy framework.
 const framework = new LazyFramework(fastifyFramework, bootstrap);
 
-export const handler = ServerlessAdapter.new(app)
+export const handler = ServerlessAdapter.new(null)
   .setFramework(framework)
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
