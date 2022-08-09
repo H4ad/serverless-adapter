@@ -35,7 +35,7 @@ async function boostrap() {
 const expressFramework = new ExpressFramework();
 const framework = new LazyFramework(expressFramework, boostrap);
 
-export const handler = ServerlessAdapter.new(app)
+export const handler = ServerlessAdapter.new(null)
   .setFramework(framework)
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
