@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://h4ad.github.io/serverless-adapter/serverless-adapter/blog</id>
+    <id>https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog</id>
     <title>Serverless Adapter Blog</title>
     <updated>2022-07-17T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://h4ad.github.io/serverless-adapter/serverless-adapter/blog"/>
+    <link rel="alternate" href="https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog"/>
     <subtitle>Serverless Adapter Blog</subtitle>
-    <icon>https://h4ad.github.io/serverless-adapter/serverless-adapter/img/favicon.ico</icon>
+    <icon>https://viniciusl.com.br/serverless-adapter/serverless-adapter/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[Updates and Releases]]></title>
         <id>updates-and-releases</id>
-        <link href="https://h4ad.github.io/serverless-adapter/serverless-adapter/blog/updates-and-releases"/>
+        <link href="https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog/updates-and-releases"/>
         <updated>2022-07-17T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[To the moon!]]></summary>
         <content type="html"><![CDATA[<p><img loading="lazy" src="https://images.unsplash.com/photo-1636819488524-1f019c4e1c44" alt="To the moon!" class="img_ev3q"></p><p>Now we have more Handlers, Frameworks and Adapters, let's see what's new.</p><blockquote><p>From <a href="https://github.com/H4ad/serverless-adapter/tree/v2.3.2" target="_blank" rel="noopener noreferrer">v2.3.2</a> to <a href="https://github.com/H4ad/serverless-adapter/tree/v2.6.0" target="_blank" rel="noopener noreferrer">v2.6.0</a>,
@@ -33,7 +33,7 @@ we are able to process 500k votes in minutes without spending 15% CPU using a Po
     <entry>
         <title type="html"><![CDATA[The Beginning]]></title>
         <id>the-beginning</id>
-        <link href="https://h4ad.github.io/serverless-adapter/serverless-adapter/blog/the-beginning"/>
+        <link href="https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog/the-beginning"/>
         <updated>2022-06-17T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Hello, welcome to my new library to help you integrate your API with the serverless world.]]></summary>
         <content type="html"><![CDATA[<p>Hello, welcome to my new library to help you integrate your API with the serverless world.</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="the-development">The development<a class="hash-link" href="#the-development" title="Direct link to heading">​</a></h2><p>It took me almost 5 months to build this library, refactoring was easy and testing was challenging, but documenting this library was the hardest part.</p><p>It took me almost 2 weeks to refactor <a href="https://github.com/vendia/serverless-express" target="_blank" rel="noopener noreferrer">@vendia/serverless-express</a>,

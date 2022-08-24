@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
         <title>Serverless Adapter Blog</title>
-        <link>https://h4ad.github.io/serverless-adapter/serverless-adapter/blog</link>
+        <link>https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog</link>
         <description>Serverless Adapter Blog</description>
         <lastBuildDate>Sun, 17 Jul 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
@@ -10,7 +10,7 @@
         <language>en</language>
         <item>
             <title><![CDATA[Updates and Releases]]></title>
-            <link>https://h4ad.github.io/serverless-adapter/serverless-adapter/blog/updates-and-releases</link>
+            <link>https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog/updates-and-releases</link>
             <guid>updates-and-releases</guid>
             <pubDate>Sun, 17 Jul 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[To the moon!]]></description>
@@ -29,7 +29,7 @@ we are able to process 500k votes in minutes without spending 15% CPU using a Po
         </item>
         <item>
             <title><![CDATA[The Beginning]]></title>
-            <link>https://h4ad.github.io/serverless-adapter/serverless-adapter/blog/the-beginning</link>
+            <link>https://viniciusl.com.br/serverless-adapter/serverless-adapter/blog/the-beginning</link>
             <guid>the-beginning</guid>
             <pubDate>Fri, 17 Jun 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hello, welcome to my new library to help you integrate your API with the serverless world.]]></description>
