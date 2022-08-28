@@ -48,8 +48,7 @@ export class DigitalOceanHandler<
       log,
     );
 
-    return (event: DigitalOceanHttpEvent) => {
-      return defaultHandler(event, undefined, undefined);
-    };
+    return (event: DigitalOceanHttpEvent) =>
+      defaultHandler(event, undefined, undefined);
   }
 }
