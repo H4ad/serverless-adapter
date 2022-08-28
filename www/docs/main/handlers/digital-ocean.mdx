@@ -1,0 +1,121 @@
+---
+title: Digital Ocean
+description: See more about how to integrate with DigitalOcean Functions.
+---
+
+:::tip
+
+Don't know what a handler is? See the [Architecture](../architecture#handler) section.
+
+:::
+
+## Requirements
+
+When you work with DigitalOcean Functions, in the root of your repository you will have a file called `project.yml` which is used
+to determine the structure of your functions and will be used to deploy your code to DigitalOcean.
+
+To this library understand the requests coming from DigitalOcean, you need to modify the default code of `project.yml`:
+
+```diff
+packages:
+  - name: [name-of-your-api]
+    functions:
+      - name: 'prod'
+        main: ''
+        runtime: 'nodejs:18'
+-        web: true
++        web: 'raw'
+```
+
+Also, you will need `doctl`, the DigitalOcean CLI, see [how to install](https://docs.digitalocean.com/reference/doctl/how-to/install/) before proceeding.
+
+## Usage
+
+Import and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { DigitalOceanHandler } from '@h4ad/serverless-adapter/lib/handlers/digital-ocean';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { HttpFunctionAdapter } from '@h4ad/serverless-adapter/lib/adapters/digital-ocean';
+import app from './app';
+
+export const main = ServerlessAdapter.new(app)
+  .setHandler(new DigitalOceanHandler())
+  .setResolver(new PromiseResolver())
+  // continue to set the other options here.
+  // .setFramework(new ExpressFramework())
+  .addAdapter(new HttpFunctionAdapter())
+  .build();
+```
+
+:::caution
+
+Be careful when exporting the handler because in DigitalOcean you must `export const main`.
+
+:::
+
+## Integrating with Existing API
+
+:::info
+
+This configuration is meant to be used for one API/function only, if you want to have multiple APIs and functions inside
+in the same repository, you can skip this section.
+
+:::
+
+So, let's assume you're a good developer and like to follow best practices, and your api's folder structure looks like this:
+
+- package.json
+- package-lock.json
+- tsconfig.json
+- src
+  - index.ts
+
+The first thing we need to do is create the `packages` folder and the `function` folder for the DigitalOcean:
+
+- packages
+  - `[name-of-your-package]`
+    - api
+
+Change `[name-of-your-package]` to your project name, like: `joe-book-store`. In the final, DigitalOcean will create a DNS as
+`https://faas-nyc1-<id>.doserverless.co/api/v1/web/<namespace>/joe-book-store/api`.
+
+Okay, with the folders created, let's create a file called `.include` inside the `api` folder with the following content:
+
+```text title=".include"
+deploy.zip
+```
+
+By default, `doctl` which is DigitalOcean CLI already packs your code inside `packages/[your-package-name]/api`, but I want to have a better configuration and use my own library,
+[node-modules-packer](https://github.com/H4ad/node-modules-packer) which packs all the code faster than running `doctl` and also can minify your code.
+
+Okay, after configure `.include`, let's modify your `project.yml` to be able to deploy your API:
+
+```diff title="project.yml"
+packages:
+  - name: [name-of-your-package]
+    functions:
+      - name: 'api'
+-       main: ''
++       main: 'dist/index.main' # if you put the code of ServerlessAdapter in different file, you should change here.
+        runtime: 'nodejs:18'
+-       web: true
++       web: 'raw'
+```
+
+Finally, let's now add some scripts to be able to deploy our code using [node-modules-packer](https://github.com/H4ad/node-modules-packer), inside `package.json`, add these scripts:
+
+```json title="package.json"
+"zip": "npx @h4ad/node-modules-packer ./ --include dist --output-path packages/[name-of-your-package]/prod",
+"update-function": "doctl serverless deploy .",
+"deploy": "npm run build && npm run zip && npm run update-function"
+```
+
+> If you want to know more configurations of node-modules-packer, see [here](https://github.com/H4ad/node-modules-packer#examples).
+
+To deploy, just run `npm run deploy` and that's it! Your API will be available for you to use.
+
+## Examples
+
+You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).

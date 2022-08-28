@@ -1,0 +1,104 @@
+---
+title: Http Function
+description: See more about how to integrate with DigitalOcean Functions
+---
+
+:::caution Attention
+
+Check the [DigitalOceanHandler](../../handlers/digital-ocean) docs to make sure you have all the necessary settings to work with this adapter.
+
+:::
+
+The adapter to handle requests from [DigitalOcean Functions](https://docs.digitalocean.com/products/functions/quickstart/sample-functions/).
+
+:::info
+
+When an error is thrown during forwarding and the `responseWithErrors` option is `true`, we return a 500 status WITH error stack in the response.
+
+:::
+
+## Requirements
+
+When you work with DigitalOcean Functions, in the root of your repository you will have a file called `project.yml` which is used
+to determine the structure of your functions and will be used to deploy your code to DigitalOcean.
+
+To this library understand the requests coming from DigitalOcean, you need to modify the default code of `project.yml`:
+
+```diff
+packages:
+  - name: [name-of-your-api]
+    functions:
+      - name: 'prod'
+        main: ''
+        runtime: 'nodejs:18'
+-        web: true
++        web: 'raw'
+```
+
+## About the adapter
+
+This adapter transforms every request coming from DigitalOcean Functions into an HTTP request to your framework.
+
+```json title="digital-ocean-http-function-event-example.json"
+{
+  "__ow_method": "post",
+  "__ow_query": "potato=true",
+  "__ow_body": "{\"test\":true}",
+  "__ow_headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip",
+    "cdn-loop": "cloudflare",
+    "cf-connecting-ip": "45.444.444.444",
+    "cf-ipcountry": "BR",
+    "cf-ray": "xxxxxxxxxxx-GRU",
+    "cf-visitor": "{\"scheme\":\"https\"}",
+    "host": "ccontroller",
+    "user-agent": "insomnia/2022.4.2",
+    "x-custom": "potato",
+    "x-forwarded-for": "45.444.444.444",
+    "x-forwarded-proto": "https",
+    "x-request-id": "xxxxxxxxxxxxxxxx"
+  },
+  "__ow_path": "/store"
+}
+```
+
+So, to add support to the above request, we must have registered the `/store` route as `POST` and when DigitalOcean sends this event, you will get:
+
+- `body`: `{"test":true}`
+- `queryString`: `potato=true`
+
+## Customizing
+
+You can strip base path with the option `stripBasePath` inside [HttpFunctionAdapterOptions](/docs/api/Adapters/Digital%20Ocean/HttpFunctionAdapter/HttpFunctionAdapterOptions).
+
+:::tip
+
+You can configure this option based on your api base url like: `/api/test-serverless-adapter`, then the request coming from `/api/test-serverless-adapter/events`
+will be transformed into `/events`.
+
+:::
+
+## Usage
+
+To add support to DigitalOcean Functions you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { DigitalOceanHandler } from '@h4ad/serverless-adapter/lib/handlers/digital-ocean';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { HttpFunctionAdapter } from '@h4ad/serverless-adapter/lib/adapters/digital-ocean';
+import app from './app';
+
+export const main = ServerlessAdapter.new(app)
+  .setHandler(new DigitalOceanHandler())
+  .setResolver(new PromiseResolver())
+  // continue to set the other options here.
+  // .setFramework(new ExpressFramework())
+  .addAdapter(new HttpFunctionAdapter())
+  .build();
+```
+
+## Examples
+
+You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).

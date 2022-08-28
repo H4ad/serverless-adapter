@@ -30,6 +30,8 @@ export const frameworkTestOptions: [
   body: any,
   expectedValue?: string,
 ][] = [
+  ['get', '/', 200, [{ name: 'Joga10' }]],
+  ['get', '/', 200, [{ name: 'Joga10' }]],
   ['get', '/users', 200, [{ name: 'Joga10' }]],
   ['get', '/users/list', 200, []],
   ['get', '/users/1', 404, { didntFind: 'entity' }],
@@ -66,23 +68,27 @@ export function createTestSuiteFor<TApp, TFrameworkApp = TApp>(
       async () => {
         const app = await appFactory();
 
-        routeBuilder[method](app, path, (requestHeaders, requestBody) => {
-          expect(requestHeaders).toHaveProperty('request-header', 'true');
+        routeBuilder[method](
+          app,
+          path || '/',
+          (requestHeaders, requestBody) => {
+            expect(requestHeaders).toHaveProperty('request-header', 'true');
 
-          if (
-            (method === 'post' || method === 'put') &&
-            requestBody !== NO_OP
-          ) {
-            const parsedRequestBody =
-              requestBody instanceof Buffer
-                ? JSON.parse(requestBody.toString('utf-8'))
-                : requestBody;
+            if (
+              (method === 'post' || method === 'put') &&
+              requestBody !== NO_OP
+            ) {
+              const parsedRequestBody =
+                requestBody instanceof Buffer
+                  ? JSON.parse(requestBody.toString('utf-8'))
+                  : requestBody;
 
-            expect(parsedRequestBody || null).toEqual(body || null);
-          }
+              expect(parsedRequestBody || null).toEqual(body || null);
+            }
 
-          return [statusCode, body, { 'response-header': 'true' }];
-        });
+            return [statusCode, body, { 'response-header': 'true' }];
+          },
+        );
 
         const stringBody = body ? JSON.stringify(body) : body;
         const [bufferBody, bodyLength] = stringBody

@@ -1,5 +1,6 @@
 import { allAWSEvents } from '../aws/utils/events';
 import { allAzureEvents } from '../azure/utils/events';
+import { allDigitalOceanEvents } from '../digital-ocean/utils/event';
 import { allHuaweiEvents } from '../huawei/utils/events';
 
 /**
@@ -9,4 +10,5 @@ export const allEvents: [string, any][] = [
   ...allAWSEvents,
   ...allHuaweiEvents,
   ...allAzureEvents,
+  ...allDigitalOceanEvents,
 ];
