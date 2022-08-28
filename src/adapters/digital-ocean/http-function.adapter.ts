@@ -75,6 +75,7 @@ export class HttpFunctionAdapter
     const digitalOceanHttpEvent = event as DigitalOceanHttpEvent;
 
     return (
+      !!digitalOceanHttpEvent &&
       digitalOceanHttpEvent.__ow_path !== undefined &&
       digitalOceanHttpEvent.__ow_method !== undefined &&
       digitalOceanHttpEvent.__ow_headers !== undefined
