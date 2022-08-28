@@ -63,6 +63,16 @@ describe(HttpFunctionAdapter.name, () => {
       expect(result).toHaveProperty('path', resultPath);
     });
 
+    it('should method be always uppercase', () => {
+      const method = 'get';
+      const path = '/test';
+
+      const event = createHttpFunctionEvent(method, path);
+      const result = adapter.getRequest(event);
+
+      expect(result).toHaveProperty('method', method.toUpperCase());
+    });
+
     it('should return the correct mapping for the request when it has no body', () => {
       const method = 'GET';
       const path = '/collaborators';

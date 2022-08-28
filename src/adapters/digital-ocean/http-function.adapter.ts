@@ -87,7 +87,7 @@ export class HttpFunctionAdapter
    */
   public getRequest(event: DigitalOceanHttpEvent): AdapterRequest {
     const headers = event.__ow_headers;
-    const method = event.__ow_method;
+    const method = event.__ow_method.toUpperCase();
     const path = this.getPathFromEvent(event);
 
     let body: Buffer | undefined;
