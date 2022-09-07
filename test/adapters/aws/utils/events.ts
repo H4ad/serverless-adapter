@@ -5,6 +5,7 @@ import {
   DynamoDBAdapter,
   EventBridgeAdapter,
   LambdaEdgeAdapter,
+  S3Adapter,
   SNSAdapter,
   SQSAdapter,
 } from '../../../../src/adapters/aws';
@@ -23,6 +24,7 @@ import {
   createLambdaEdgeOriginEvent,
   createLambdaEdgeViewerEvent,
 } from './lambda-edge';
+import { createS3Event } from './s3';
 import { createSNSEvent } from './sns';
 import { createSQSEvent } from './sqs';
 
@@ -84,4 +86,5 @@ export const allAWSEvents: Array<[string, any]> = [
       base64: Buffer.from('batata', 'utf-8').toString('base64'),
     }),
   ],
+  [S3Adapter.name, createS3Event()],
 ];
