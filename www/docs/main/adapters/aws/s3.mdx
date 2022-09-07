@@ -1,0 +1,112 @@
+---
+title: S3
+description: See more about how to integrate with AWS S3.
+---
+
+The adapter to handle requests from [AWS S3](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-s3.html).
+
+:::info
+
+The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
+
+:::
+
+## Typescript
+
+To correctly type your `body` when receiving the AWS S3 request, you must install `aws-lambda`:
+
+```bash
+npm i --save-dev @types/aws-lambda
+```
+
+So when getting the `body` you should use this type:
+
+```ts title="s3.controller.ts"
+import type { S3Event } from 'aws-lambda';
+```
+
+## About the adapter
+
+In AWS S3, you don't have requests, you just receive the records from the queue in the `event` property of the handler.
+
+So, in order to handle this adapter, by default we create a `POST` request to `/s3` with the `body` being the `event` property as JSON.
+
+```json title="s3-event-example.json"
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "us-east-2",
+      "eventTime": "2019-09-03T19:37:27.192Z",
+      "eventName": "ObjectCreated:Put",
+      "userIdentity": {
+        "principalId": "AWS:AIDAINPONIXQXHT3IKHL2"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "205.255.255.255"
+      },
+      "responseElements": {
+        "x-amz-request-id": "D82B88E5F771F645",
+        "x-amz-id-2": "vlR7PnpV2Ce81l0PRw6jlUpck7Jo5ZsQjryTjKlc5aLWGVHPZLj5NeC6qMa0emYBDXOo6QBU0Wo="
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "828aa6fc-f7b5-4305-8584-487c791949c1",
+        "bucket": {
+          "name": "DOC-EXAMPLE-BUCKET",
+          "ownerIdentity": {
+            "principalId": "A3I5XTEXAMAI3E"
+          },
+          "arn": "arn:aws:s3:::lambda-artifacts-deafc19498e3f2df"
+        },
+        "object": {
+          "key": "b21b84d653bb07b05b1e6b33684dc11b",
+          "size": 1305107,
+          "eTag": "b21b84d653bb07b05b1e6b33684dc11b",
+          "sequencer": "0C0F6F405D6ED209E1"
+        }
+      }
+    }
+  ]
+}
+```
+
+Normally, your framework will parse this JSON and return the parsed values as javascript objects.
+
+## Customizing
+
+You can change the HTTP Method and Path that will be used to create the request by sending `s3ForwardMethod` and `s3ForwardPath` inside [S3AdapterOptions](/docs/api/Adapters/AWS/S3Adapter/S3AdapterOptions).
+
+## Usage
+
+To add support to AWS S3 you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { S3Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new S3Adapter())
+  // customizing:
+  // .addAdapter(new S3Adapter({ s3ForwardPath: '/prod/s3', s3ForwardMethod: 'PUT' }))
+  .build();
+```
+
+:::caution
+
+When you configure your API with some `basePath` like `/prod`, you should set `s3ForwardPath` as `/prod/s3` instead leave as default `/s3`.
+
+:::
+
+## Security
+
+You **MUST** check if the header `Host` contains the value of `s3.amazonaws.com`.
+
+Without checking this header, if you add this adapter and [AWS API Gateway V2](./api-gateway-v2) adapter, you will be vulnerable to attacks
+because anyone can create a `POST` request to `/s3`.
