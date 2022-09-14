@@ -51,7 +51,7 @@ const frameworkOptions: TrpcFrameworkOptions<CustomContext> = {
   createContext: () => ({ currentDate: new Date() }),
 };
 
-const framework = new TrpcFramework<CustomContext>(frameworkOptions);
+const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
 
 export const handler = ServerlessAdapter.new(appRouter)
   .setFramework(framework)
