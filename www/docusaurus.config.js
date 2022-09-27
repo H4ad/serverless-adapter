@@ -10,7 +10,7 @@ const config = {
   tagline:
     'Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Huawei and many other clouds.',
   url: 'https://viniciusl.com.br/serverless-adapter',
-  baseUrl: '/serverless-adapter/',
+  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
