@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[2909],{8881:e=>{e.exports=JSON.parse('{"label":"azure","permalink":"/serverless-adapter/blog/tags/azure","allTagsPath":"/serverless-adapter/blog/tags","count":1}')}}]);

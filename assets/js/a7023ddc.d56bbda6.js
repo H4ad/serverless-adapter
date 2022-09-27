@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[1713],{3457:e=>{e.exports=JSON.parse('[{"label":"serverless-adapter","permalink":"/blog/tags/serverless-adapter","count":2},{"label":"trpc","permalink":"/blog/tags/trpc","count":1},{"label":"azure","permalink":"/blog/tags/azure","count":1},{"label":"firebase","permalink":"/blog/tags/firebase","count":1}]')}}]);
