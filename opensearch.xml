@@ -4,8 +4,8 @@
   <ShortName>Serverless Adapter</ShortName>
   <Description>Search Serverless Adapter</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://viniciusl.com.br/serverless-adapter/img/favicon.ico</Image>
-  <Url type="text/html" method="get" template="https://viniciusl.com.br/serverless-adapter/search?q={searchTerms}"/>
-  <Url type="application/opensearchdescription+xml" rel="self" template="https://viniciusl.com.br/serverless-adapter/opensearch.xml" />
-  <moz:SearchForm>https://viniciusl.com.br/serverless-adapter/</moz:SearchForm>
+  <Image width="16" height="16" type="image/x-icon">https://serverless-adapter.viniciusl.com.br/img/favicon.ico</Image>
+  <Url type="text/html" method="get" template="https://serverless-adapter.viniciusl.com.br/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://serverless-adapter.viniciusl.com.br/opensearch.xml" />
+  <moz:SearchForm>https://serverless-adapter.viniciusl.com.br/</moz:SearchForm>
 </OpenSearchDescription>
