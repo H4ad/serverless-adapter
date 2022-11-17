@@ -23,13 +23,15 @@ export type TestRouteBuilder<TApp> = Record<
   TestRouteBuilderHandler<TApp>
 >;
 
-export const frameworkTestOptions: [
+export type TestOptions = [
   method: TestRouteBuilderMethods,
   path: string,
   statusCode: number,
   body: any,
   expectedValue?: string,
-][] = [
+];
+
+export const frameworkTestOptions: TestOptions[] = [
   ['get', '/', 200, [{ name: 'Joga10' }]],
   ['get', '/', 200, [{ name: 'Joga10' }]],
   ['get', '/users', 200, [{ name: 'Joga10' }]],
@@ -53,14 +55,9 @@ export function createTestSuiteFor<TApp, TFrameworkApp = TApp>(
   appToFrameworkApp?: (TApp) => TFrameworkApp,
   tearDown?: (app: TApp) => Promise<void>,
   skip?: boolean,
+  testOptions: TestOptions[] = frameworkTestOptions,
 ): void {
-  for (const [
-    method,
-    path,
-    statusCode,
-    body,
-    expectedValue,
-  ] of frameworkTestOptions) {
+  for (const [method, path, statusCode, body, expectedValue] of testOptions) {
     const itFn = skip ? it.skip : it;
 
     itFn(
