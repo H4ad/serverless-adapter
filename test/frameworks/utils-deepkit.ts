@@ -40,63 +40,61 @@ export function createDeepkitHandler(
 }
 
 export const runDeepkitTest = () => {
-  describe(HttpDeepkitFramework.name, () => {
-    it('should convert correctly when the value is not an buffer', async () => {
-      const framework = new HttpDeepkitFramework();
-      const kernel: Partial<HttpKernel> = {
-        handleRequest: jest.fn((request, response) => {
-          request.pipe(response);
+  it('should convert correctly when the value is not an buffer', async () => {
+    const framework = new HttpDeepkitFramework();
+    const kernel: Partial<HttpKernel> = {
+      handleRequest: jest.fn((request, response) => {
+        request.pipe(response);
 
-          return void 0 as any;
-        }),
-      };
-      const textCodes = 'test'.split('').map(c => c.charCodeAt(0));
+        return void 0 as any;
+      }),
+    };
+    const textCodes = 'test'.split('').map(c => c.charCodeAt(0));
 
-      const request = new ServerlessRequest({
-        body: Uint8Array.of(...textCodes),
-        url: '/test',
-        method: 'POST',
-        headers: {},
-      });
-      const response = new ServerlessResponse({
-        method: 'POST',
-      });
-
-      framework.sendRequest(kernel as HttpKernel, request, response);
-
-      await waitForStreamComplete(response);
-
-      const resultBody = ServerlessResponse.body(response);
-
-      expect(resultBody).toBeInstanceOf(Buffer);
-      expect(resultBody.toString()).toEqual('test');
+    const request = new ServerlessRequest({
+      body: Uint8Array.of(...textCodes),
+      url: '/test',
+      method: 'POST',
+      headers: {},
+    });
+    const response = new ServerlessResponse({
+      method: 'POST',
     });
 
-    createTestSuiteFor(
-      () => {
-        return new HttpDeepkitFramework();
-      },
-      async () => {
-        const testingApp = createTestingApp({
-          imports: [
-            new HttpModule({ debug: true }),
-            new FrameworkModule({ debug: true, httpLog: true }),
-          ],
-        });
+    framework.sendRequest(kernel as HttpKernel, request, response);
 
-        await testingApp.startServer();
+    await waitForStreamComplete(response);
 
-        return testingApp;
-      },
-      {
-        get: createDeepkitHandler('get'),
-        delete: createDeepkitHandler('delete'),
-        post: createDeepkitHandler('post'),
-        put: createDeepkitHandler('put'),
-      },
-      app => app.app.get(HttpKernel),
-      async app => await app.stopServer(),
-      process.env.SKIP_DEEPKIT === 'true',
-    );
+    const resultBody = ServerlessResponse.body(response);
+
+    expect(resultBody).toBeInstanceOf(Buffer);
+    expect(resultBody.toString()).toEqual('test');
   });
+
+  createTestSuiteFor(
+    () => {
+      return new HttpDeepkitFramework();
+    },
+    async () => {
+      const testingApp = createTestingApp({
+        imports: [
+          new HttpModule({ debug: true }),
+          new FrameworkModule({ debug: true, httpLog: true }),
+        ],
+      });
+
+      await testingApp.startServer();
+
+      return testingApp;
+    },
+    {
+      get: createDeepkitHandler('get'),
+      delete: createDeepkitHandler('delete'),
+      post: createDeepkitHandler('post'),
+      put: createDeepkitHandler('put'),
+    },
+    app => app.app.get(HttpKernel),
+    async app => await app.stopServer(),
+    process.env.SKIP_DEEPKIT === 'true',
+  );
 };
