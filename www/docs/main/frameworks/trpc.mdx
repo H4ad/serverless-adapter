@@ -21,6 +21,7 @@ Then, you just need to use the [TrpcFramework](../../api/Frameworks/TrpcFramewor
 import * as trpc from '@trpc/server';
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions, BufferToJSObjectTransformer } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
 import { z } from 'zod';
 
 type CustomContext = { currentDate: Date };
@@ -52,9 +53,10 @@ const frameworkOptions: TrpcFrameworkOptions<CustomContext> = {
 };
 
 const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
+const corsFramework = new CorsFramework(framework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
 
 export const handler = ServerlessAdapter.new(appRouter)
-  .setFramework(framework)
+  .setFramework(corsFramework)
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
   //.setResolver(new PromiseResolver())
@@ -165,9 +167,10 @@ const frameworkOptions: TrpcFrameworkOptions<TrpcContext> = {
 };
 
 const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
+const corsFramework = new CorsFramework(framework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
 
 export const handler = ServerlessAdapter.new(appRouter)
-  .setFramework(framework)
+  .setFramework(corsFramework)
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
   //.setResolver(new PromiseResolver())
@@ -181,5 +184,11 @@ export const handler = ServerlessAdapter.new(appRouter)
 :::tip
 
 Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::
+
+:::tip
+
+Need to deal with CORS? See [CorsFramework](./cors) which helps you to add correct headers.
 
 :::
