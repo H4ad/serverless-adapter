@@ -16,6 +16,22 @@ import { KoaFramework } from '../../src/frameworks/koa';
 import { TrpcFramework } from '../../src/frameworks/trpc';
 import SpyInstance = jest.SpyInstance;
 
+jest.mock('fastify', () => {
+  const packages = {
+    '12.x': 'fastify-3',
+    latest: 'fastify',
+  };
+  const version = process.env.TEST_NODE_VERSION || 'latest';
+
+  // Require the original module.
+  const originalModule = jest.requireActual(packages[version]);
+
+  return {
+    __esModule: true,
+    ...originalModule,
+  };
+});
+
 type CorsTest = {
   name: string;
   method: string;
