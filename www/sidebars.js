@@ -134,6 +134,7 @@ const sidebars = {
       },
       collapsed: true,
       items: [
+        'main/frameworks/cors',
         'main/frameworks/deepkit',
         'main/frameworks/express',
         'main/frameworks/fastify',
