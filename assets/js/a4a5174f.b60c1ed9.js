@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[1727],{5746:e=>{e.exports=JSON.parse('{"title":"Helpers","slug":"/category/helpers","permalink":"/docs/category/helpers","navigation":{"previous":{"title":"tRPC","permalink":"/docs/main/frameworks/trpc"},"next":{"title":"CORS","permalink":"/docs/main/frameworks/helpers/cors"}}}')}}]);

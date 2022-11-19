@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[8742],{5640:a=>{a.exports=JSON.parse('{"title":"Handlers","slug":"/category/handlers","permalink":"/docs/category/handlers","navigation":{"previous":{"title":"Huawei Api Gateway","permalink":"/docs/main/adapters/huawei/huawei-api-gateway"},"next":{"title":"AWS","permalink":"/docs/main/handlers/aws"}}}')}}]);
