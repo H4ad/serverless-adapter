@@ -18,7 +18,7 @@ const FeatureList: FeatureItem[] = [
     title: 'One library, many Serverless environments',
     description: (
       <>
-        We currently support AWS, Azure and Huawei, but in the future we will add
+        We currently support AWS, Azure, Firebase, Digital Ocean and Huawei, but in the future we will add
         support for GCP and many other serverless environments.
       </>
     ),
