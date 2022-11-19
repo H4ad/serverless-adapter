@@ -1,0 +1,71 @@
+---
+title: CORS
+description: See more about how to deal with CORS in serverless.
+---
+
+This framework is a helper framework that wraps around another framework and gets some options to configure CORS in your app using the [cors](https://github.com/expressjs/cors) library behind the scenes.
+
+## Why?
+
+Why should I use this framework instead of directly using my framework/application's `joe-doe-cors` package?
+
+Using this framework, you can skip the `request` to your framework, so it's faster to handle it directly in the library instead of leaving it
+to your frame.
+
+Also, frameworks like `trpc`, `deepḱit` and other frameworks don't have a good way of dealing with CORS, so with `CorsFramework` you can do the CORS
+works for these frameworks.
+
+Finally, I added an optimization, inspired by [access control](https://github.com/primus/access-control/blob/master/index.js#L95-L115), which returns the Forbidden error when the origin is invalid
+or when the method is not allowed. In other packages, like `fastify/cors`, the `cors` itself used by this library and [even other languages](https://stackoverflow.com/questions/57212248/why-is-http-request-been-processed-in-action-even-when-cors-is-not-enabled),
+they process the request if the origin is invalid and to me it sounds like a waste of resources, so we can just return the error to the user instead of processing the request which is sure to return the error in the user's browser.
+
+> If you want to disable this behaviour, set `{ forbiddenOnInvalidOriginOrMethod: false }` in the options.
+
+## Requirements
+
+To be able to use, first you need to install some packages:
+
+```bash
+npm i --save cors
+```
+
+If you are using TypeScript:
+
+```bash
+npm i --save-dev @types/cors
+```
+
+## Usage
+
+The first parameter is the instance of another framework, so if you want to use [Express](./express) for example, you can just use like this:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { CorsFramework, CorsFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+
+const express = require('express');
+
+const expressFramework = new ExpressFramework();
+// see docs about the options in the original package:
+// https://github.com/expressjs/cors
+const options: CorsFrameworkOptions = { origin: '*' };
+const framework = new CorsFramework(expressFramework, options);
+
+export const handler = ServerlessAdapter.new(express)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::

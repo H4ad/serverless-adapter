@@ -5,6 +5,22 @@ import { Readable, Writable } from 'stream';
 //#endregion
 
 /**
+ * Check if stream already ended
+ *
+ * @param stream - The stream
+ *
+ * @breadcrumb Core / Stream
+ * @public
+ */
+export function isStreamEnded(stream: Readable | Writable): boolean {
+  if ('readableEnded' in stream && stream.readableEnded) return true;
+
+  if ('writableEnded' in stream && stream.writableEnded) return true;
+
+  return false;
+}
+
+/**
  * Wait asynchronous the stream to complete
  *
  * @param stream - The stream
@@ -15,11 +31,7 @@ import { Readable, Writable } from 'stream';
 export function waitForStreamComplete<TStream extends Readable | Writable>(
   stream: TStream,
 ): Promise<TStream> {
-  if ('readableEnded' in stream && stream.readableEnded)
-    return Promise.resolve(stream);
-
-  if ('writableEnded' in stream && stream.writableEnded)
-    return Promise.resolve(stream);
+  if (isStreamEnded(stream)) return Promise.resolve(stream);
 
   return new Promise<TStream>((resolve, reject) => {
     // Reading the {@link https://github.com/nodejs/node/blob/v12.22.9/lib/events.js#L262 | emit source code},

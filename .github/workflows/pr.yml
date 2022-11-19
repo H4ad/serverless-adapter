@@ -18,8 +18,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Update NPM Version On NodeJS 12
+        run: npm i -g npm@8.x
+        if: matrix.node-version == '12.x'
+
       - name: Update NPM Version
         run: npm i -g npm
+        if: matrix.node-version != '12.x'
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -55,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 14
+      - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
@@ -64,9 +69,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-14.x-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-16.x-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-14.x-
+            ${{ runner.os }}-node-16.x-
 
       - name: Install Lib Dependencies
         run: npm ci
