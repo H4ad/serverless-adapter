@@ -19,8 +19,8 @@
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-Run REST APIs and other web applications using your existing Node.js application framework (Deepkit, Express, Koa, Hapi, 
-Fastify and tRPC), on top of AWS Lambda, Azure, Huawei and many other clouds.
+Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Deepkit, Express, Koa, Hapi,
+Fastify and tRPC), on top of AWS Lambda, Azure, Digital Ocean and many other clouds.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I
 create a new way to interact and extend event sources by creating contracts to abstract the integrations between each
@@ -37,6 +37,14 @@ Why you would use this libray instead of [@vendia/serverless-express](https://gi
 - All code was written in Typescript.
 - Well documented, any method, class, or interface has comments to explain the behavior.
 - We have >99% coverage.
+
+# Installing
+
+To be able to use, first install the library:
+
+```bash
+npm i --save @h4ad/serverless-adapter
+```
 
 # Usage
 
@@ -90,7 +98,6 @@ for existing and giving us a brilliant library that is the core of my current co
 
 | <a href="https://liga.facens.br/"><img height="50" src="https://mlogu6g7z5ex.i.optimole.com/yEwfkqo-4R0ttNtd/w:auto/h:auto/q:mauto/f:avif/http://liga.facens.br/wp-content/uploads/2020/03/logo-1.png" title="The LIGA logo" width="100"/></a> |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
 
 [build-img]:https://github.com/H4ad/serverless-adapter/actions/workflows/release.yml/badge.svg
 
