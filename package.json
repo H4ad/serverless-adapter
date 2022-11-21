@@ -109,7 +109,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "express": "^4.18.1",
-    "fastify": "^4.3.0",
+    "fastify": "^4.10.2",
     "fastify-3": "npm:fastify@3.29.0",
     "firebase-admin": "^11.0.1",
     "firebase-admin-8": "npm:firebase-admin@^8.0.0",
