@@ -178,6 +178,9 @@
     "body-parser": {
       "optional": true
     },
+    "cors": {
+      "optional": true
+    },
     "express": {
       "optional": true
     },
@@ -200,6 +203,9 @@
       "optional": true
     },
     "koa": {
+      "optional": true
+    },
+    "reflect-metadata": {
       "optional": true
     }
   },
