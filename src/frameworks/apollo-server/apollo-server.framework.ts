@@ -1,7 +1,7 @@
 //#region
 
 import { IncomingMessage, ServerResponse } from 'http';
-import { ApolloServer, BaseContext, ContextFunction } from '@apollo/server';
+import { ApolloServer, BaseContext, HeaderMap } from '@apollo/server';
 import { FrameworkContract } from '../../contracts';
 import { ServerlessRequest } from '../../network';
 import { getDefaultIfUndefined } from '../../core';
@@ -14,9 +14,10 @@ import { getDefaultIfUndefined } from '../../core';
  * @breadcrumb Frameworks / ApolloServerFramework
  * @public
  */
-export type ApolloServerContextArguments = [
-  { request: IncomingMessage; response: ServerResponse },
-];
+export type ApolloServerContextArguments = {
+  request: IncomingMessage;
+  response: ServerResponse;
+};
 
 /**
  * The options to customize {@link ApolloServerFramework}
@@ -25,7 +26,12 @@ export type ApolloServerContextArguments = [
  * @public
  */
 export interface ApolloServerOptions<TContext extends BaseContext> {
-  context: ContextFunction<ApolloServerContextArguments, TContext>;
+  /**
+   * Define a function to create the context of Apollo Server
+   *
+   * @param options - Default options passed by library
+   */
+  context: (options: ApolloServerContextArguments) => Promise<TContext>;
 }
 
 /**
@@ -54,18 +60,19 @@ export class ApolloServerFramework<TContext extends BaseContext>
     request: ServerlessRequest,
     response: ServerResponse,
   ): void {
-    const headers = new Map<string, string>();
+    const headers = new HeaderMap();
 
     for (const [key, value] of Object.entries(request.headers)) {
       if (value === undefined) continue;
 
-      headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+      headers.set(
+        key,
+        Array.isArray(value) ? value.join(', ') : value.toString(),
+      );
     }
 
-    const defaultContext: ContextFunction<
-      ApolloServerContextArguments,
-      any
-    > = context => Promise.resolve(context);
+    const defaultContext: ApolloServerOptions<any>['context'] = context =>
+      Promise.resolve(context);
 
     const context = () =>
       getDefaultIfUndefined(
@@ -77,18 +84,13 @@ export class ApolloServerFramework<TContext extends BaseContext>
       ? new URL(request.url).search ?? ''
       : request.url?.split('?')[1] || '';
 
-    let body: string = '{}';
-
-    if (request.body instanceof Buffer) body = request.body.toString('utf-8');
-    else if (request.body && typeof request.body === 'object')
-      body = JSON.stringify(request.body);
-
+    // we don't need to handle catch because of https://www.apollographql.com/docs/apollo-server/integrations/building-integrations/#handle-errors
     app
       .executeHTTPGraphQLRequest({
         httpGraphQLRequest: {
           method: request.method!.toUpperCase(),
           headers,
-          body: JSON.parse(body),
+          body: request.body,
           search,
         },
         context,
@@ -116,9 +118,6 @@ export class ApolloServerFramework<TContext extends BaseContext>
         }
 
         response.end();
-      })
-      .catch(err => {
-        response.destroy(err);
       });
   }
 }
