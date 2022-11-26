@@ -12,6 +12,8 @@ import {
 /**
  * The body-parser options for application/json
  *
+ * @remarks {@link https://github.com/expressjs/body-parser#bodyparserjsonoptions}
+ *
  * @breadcrumb Frameworks / BodyParserFramework / JsonBodyParserFramework
  * @public
  */

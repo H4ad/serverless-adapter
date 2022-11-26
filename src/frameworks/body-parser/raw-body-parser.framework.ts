@@ -12,6 +12,8 @@ import {
 /**
  * The body-parser options for application/octet-stream
  *
+ * @remarks {@link https://github.com/expressjs/body-parser#bodyparserrawoptions}
+ *
  * @breadcrumb Frameworks / BodyParserFramework / RawBodyParserFramework
  * @public
  */

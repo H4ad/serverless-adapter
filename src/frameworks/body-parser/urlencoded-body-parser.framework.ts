@@ -12,6 +12,8 @@ import {
 /**
  * The body parser options for application/x-www-form-urlencoded
  *
+ * @remarks {@link https://github.com/expressjs/body-parser#bodyparserurlencodedoptions}
+ *
  * @breadcrumb Frameworks / BodyParserFramework / UrlencodedBodyParserFramework
  * @public
  */

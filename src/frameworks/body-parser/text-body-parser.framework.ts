@@ -12,6 +12,8 @@ import {
 /**
  * The body-parser options for text/plain
  *
+ * @remarks {@link https://github.com/expressjs/body-parser#bodyparsertextoptions}
+ *
  * @breadcrumb Frameworks / BodyParserFramework / TextBodyParserFramework
  * @public
  */
