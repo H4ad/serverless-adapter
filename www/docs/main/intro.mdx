@@ -30,7 +30,15 @@ If you don't know what each thing means, see [Architecture](./architecture).
 
 :::
 
-Currently, we support these frameworks:
+Currently, we support these clouds (handlers):
+
+- Azure by using ([AzureHandler](./handlers/azure))
+- AWS by using ([DefaultHandler](./handlers/aws))
+- Digital Ocean by using ([DigitalOceanHandler](./handlers/digital-ocean))
+- Firebase by using ([HttpFirebaseHandler](./handlers/firebase))
+- Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
+
+Additionally, we support these frameworks:
 
 - [Deepkit](https://docs.deepkit.io/) by using ([HttpDeepkitFramework](./frameworks/deepkit))
 - [Express](https://expressjs.com/) by using ([ExpressFramework](./frameworks/express))
@@ -42,12 +50,14 @@ Currently, we support these frameworks:
 
 Additionally, we have some helper frameworks that you can combine with the above frameworks to give more power to your application:
 
-- Async Initialization by using ([LazyFramework](./frameworks/lazy))
+- Async Initialization by using ([LazyFramework](./frameworks/helpers/lazy))
   - Use this framework to provide a way to create the instance of your app asynchronously.
-  - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](./frameworks/lazy).
-- CORS support without rely on original framework with ([CorsFramework](./frameworks/cors))
-  - Use this framework to provide a way to handle CORS in frameworks like `trpc`.
+  - With him, you can create an instance of Express or Fastify asynchronously, [see the docs](./frameworks/helpers/lazy).
+- CORS support without rely on original framework with ([CorsFramework](./frameworks/helpers/cors))
+  - Use this framework to provide a way to handle CORS in frameworks like `trpc`, `deepkit` and others.
   - Or use to get faster responses when method is `OPTIONS`.
+- Content Type parsing support without rely on original framework with ([BodyParserFramework](./frameworks/helpers/body-parser))
+  - Use this framework to provide a way to handle content type parsing in frameworks like `trpc`, `deepkit` and others.
 
 We support these event sources:
 
@@ -88,14 +98,6 @@ We support these resolvers:
 - Promise by using ([PromiseResolver](./resolvers/promise))
 - Callback by using ([CallbackResolver](./resolvers/callback))
 - AWS Context by using ([AwsContextResolver](./resolvers/aws-context))
-
-We support these handlers:
-
-- Azure by using ([AzureHandler](./handlers/azure))
-- Default by using ([DefaultHandler](./handlers/default))
-- Digital Ocean by using ([DigitalOceanHandler](./handlers/digital-ocean))
-- Firebase by using ([HttpFirebaseHandler](./handlers/firebase))
-- Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
 
 ## Why you create this library?
 

@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Serverless Adapter',
   tagline:
-    'Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Huawei and many other clouds.',
+    'Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Digital Ocean and many other clouds.',
   url: 'https://serverless-adapter.viniciusl.com.br',
   baseUrl: '/',
   onBrokenLinks: 'throw',
@@ -18,6 +18,20 @@ const config = {
   projectName: 'serverless-adapter', // Usually your repo name.
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          { from: '/docs/main/adapters/introduction', to: '/docs/main/advanced/adapters/introduction' },
+          { from: '/docs/main/adapters/creating-an-adapter', to: '/docs/main/advanced/adapters/creating-an-adapter' },
+          { from: '/docs/main/frameworks/cors', to: '/docs/main/frameworks/helpers/cors' },
+          { from: '/docs/main/frameworks/lazy', to: '/docs/main/frameworks/helpers/lazy' },
+          { from: '/docs/main/handlers/default', to: '/docs/main/handlers/aws' },
+        ],
+      },
+    ],
+  ],
   presets: [
     [
       'classic',
@@ -41,7 +55,7 @@ const config = {
   ],
 
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
         title: 'Serverless Adapter',

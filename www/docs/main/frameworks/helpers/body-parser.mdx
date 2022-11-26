@@ -1,0 +1,119 @@
+---
+title: Body Parser
+description: See more about how to deal with content type parsing in serverless.
+---
+
+This framework is a helper framework that wraps around another framework and gets some options to configure content parsing in your app using the [body-parser](https://github.com/expressjs/body-parser) library behind the scenes.
+
+## Why?
+
+Why should I use this framework instead of directly using my framework/application's `joe-doe-body-parser` package?
+
+Frameworks like `trpc`, `deepḱit` and other frameworks don't have a good way of dealing with content parsing, so with `BodyParserFramework` you can do the content parsing
+works for these frameworks.
+
+## Requirements
+
+To be able to use, first you need to install some packages:
+
+```bash
+npm i --save body-parser http-errors
+```
+
+If you are using TypeScript:
+
+```bash
+npm i --save-dev @types/body-parser
+```
+
+## Usage
+
+Like [body-parser](https://github.com/expressjs/body-parser), you have four types of content that we support:
+
+- `application/json` using [JsonBodyParserFramework](/docs/api/Frameworks/BodyParserFramework/JsonBodyParserFramework).
+- `text/plain` using [TextBodyParserFramework](/docs/api/Frameworks/BodyParserFramework/TextBodyParserFramework).
+- `application/octet-stream` using [RawBodyParserFramework](/docs/api/Frameworks/BodyParserFramework/RawBodyParserFramework).
+- `application/x-www-form-urlencoded` using [UrlencodedBodyParserFramework](/docs/api/Frameworks/BodyParserFramework/UrlencodedBodyParserFramework).
+
+> If you have sent any other type of content using these body parsers, the body parser will skip parsing your content.
+
+The first parameter is the instance of another framework, so if you want to use [Express](../express) for example and want to parse `application/json`, you can use like this:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+
+const express = require('express');
+
+const expressFramework = new ExpressFramework();
+// see docs about the options in the original package:
+// https://github.com/expressjs/body-parser#bodyparserjsonoptions
+const options: JsonBodyParserFrameworkOptions = { limit: 1024 * 1024 }; // limit body to 1mb
+const framework = new JsonBodyParserFramework(expressFramework, options);
+
+export const handler = ServerlessAdapter.new(express)
+  .setFramework(framework)
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+If you want to combine with more frameworks, just add others like:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { JsonBodyParserFramework, UrlencodedBodyParserFramework, RawBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express'; import {  } from './cors.framework';
+
+const expressFramework = new ExpressFramework();
+
+// combine as much as you want
+const framework = new UrlencodedBodyParserFramework(
+  new RawBodyParserFramework(
+    new JsonBodyParserFramework(
+      expressFramework,
+      { limit: 1024 * 1024 }, // options
+    ),
+    { limit: 1024 * 1024 }, // options
+  ),
+  { limit: 1024 * 1024 }, // options
+);
+
+// you can also combine with cors
+const finalFramework = new CorsFramework(framework);
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./lazy) which helps you in asynchronous startup.
+
+:::
+
+## Customizing
+
+If you want to customize the error messages, like when the size limit is exceeded, you can use `customErrorHandler`, like this:
+
+```ts
+import { IncomingMessage, ServerResponse } from 'http';
+import type { HttpError } from 'http-errors';
+import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+
+const options: JsonBodyParserFrameworkOptions = {
+  customErrorHandler: (req: IncomingMessage, response: ServerResponse, error: HttpError<any>) => {
+    response.setHeader('content-type', 'application/json');
+    response.statusCode = error.statusCode;
+    // always call end to return the error
+    response.end(JSON.stringify({
+      message: error.message,
+    }));
+  },
+};
+const framework = new JsonBodyParserFramework(expressFramework, options);
+```
