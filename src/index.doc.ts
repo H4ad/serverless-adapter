@@ -7,6 +7,7 @@ export * from './adapters/dummy';
 export * from './adapters/huawei';
 export * from './contracts';
 export * from './core';
+export * from './frameworks/body-parser';
 export * from './frameworks/cors';
 export * from './frameworks/deepkit';
 export * from './frameworks/express';
