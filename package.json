@@ -71,7 +71,7 @@
   },
   "homepage": "https://github.com/H4ad/serverless-adapter#readme",
   "devDependencies": {
-    "@apollo/server": "^4.1.1",
+    "@apollo/server": "*",
     "@azure/functions": "^3.2.0",
     "@deepkit/app": ">= 1.0.1-alpha.74",
     "@deepkit/core": ">= 1.0.1-alpha.74",
@@ -129,6 +129,7 @@
     "typescript": "~4.7.4"
   },
   "peerDependencies": {
+    "@apollo/server": ">= 4.0.0",
     "@azure/functions": ">= 2.0.0",
     "@deepkit/http": ">= 1.0.1-alpha.74",
     "@hapi/hapi": ">= 20.0.0",
@@ -152,6 +153,9 @@
     "reflect-metadata": "^0.1.13"
   },
   "peerDependenciesMeta": {
+    "@apollo/server": {
+      "optional": true
+    },
     "@azure/functions": {
       "optional": true
     },
