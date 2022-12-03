@@ -1,5 +1,6 @@
 export * from './@types';
 export * from './@types/huawei';
+export * from './adapters/apollo-server';
 export * from './adapters/aws';
 export * from './adapters/azure';
 export * from './adapters/digital-ocean';
@@ -7,6 +8,7 @@ export * from './adapters/dummy';
 export * from './adapters/huawei';
 export * from './contracts';
 export * from './core';
+export * from './frameworks/apollo-server';
 export * from './frameworks/body-parser';
 export * from './frameworks/cors';
 export * from './frameworks/deepkit';

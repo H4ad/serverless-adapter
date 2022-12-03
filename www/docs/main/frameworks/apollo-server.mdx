@@ -1,0 +1,256 @@
+---
+title: Apollo Server
+description: See more about how to integrate with Apollo Server.
+---
+
+Above, you will see how to integrate any cloud with your Apollo Server application.
+
+> We only support HTTP Requests, subscriptions is not supported yet.
+
+## Requirements
+
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save apollo-server
+```
+
+Also, to be able to handle JSON requests, we can use [JsonBodyParserFramework](./helpers/body-parser), so let's install it:
+
+```bash
+npm i --save body-parser http-errors
+npm i --save-dev @types/body-parser
+```
+
+:::tip
+
+Need to deal with CORS? See [CorsFramework](./helpers/cors) which helps you to add correct headers.
+
+:::
+
+## Usage
+
+Then, you need you just need to use the [ApolloServerFramework](/docs/api/Frameworks/ApolloServerFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { ApolloServerFramework } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { ApolloServer } from '@apollo/server';
+
+export const app = new ApolloServer({
+  typeDefs: `type Query { message: String }`,
+  resolvers: {
+    Query: {
+      message: () => 'Hello World!',
+    }
+  },
+});
+
+// json-body is needed to handle JSON content type
+const framework = new JsonBodyParserFramework(
+  new ApolloServerFramework(),
+);
+
+// you always need to start your application
+app.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(framework)
+  // continue to set the other options here.
+  // .setHandler(new DefaultHandler())
+  // .setResolver(new PromiseResolver())
+  // .addAdapter(new ApiGatewayV1Adapter())
+  // .addAdapter(new ApiGatewayV2Adapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Need more examples? See more examples [here](https://github.com/H4ad/serverless-adapter-examples#apollo-server).
+
+:::
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./helpers/lazy) which helps you in asynchronous startup.
+
+:::
+
+## Support for AWS SQS, SNS and others.
+
+Well, this framework will work great for adapters like [ApiGatewayV1Adapter](../adapters/aws/api-gateway-v1), [ApiGatewayV2Adapter](../adapters/aws/api-gateway-v2),
+[HttpTriggerV4Adapter](../adapters/azure/http-trigger-v4) and others based on pure HTTP requests.
+
+But adapters like [SQSAdapter](../adapters/aws/sqs), [SNSAdapter](../adapters/aws/sns) and others by default cannot send a request with the correct format that
+Apollo Server understands, it's not in your control how the request is constructed, the adapter that construct the request to Apollo.
+
+To address this issue, I create the [ApolloServerMutationAdapter](/docs/api/Adapters/Apollo Server/ApolloServerMutationAdapter), an adapter for other adapters.
+It follows the same principle of helper frameworks, It wraps the adapter you are using and customize the behavior to support send valid requests to Apollo.
+
+Let's see how to integrate with AWS SQS and AWS SNS, first, let's create the schema
+
+```ts
+const schema = `
+  type Query { message: String }
+
+  type AWSResult {
+    result: String
+  }
+
+  type Mutation {
+    sqs (event: String): AWSResult
+    sns (event: String): AWSResult
+  }
+`;
+```
+
+In this schema, you define inside mutation, the name of the operation you want to give to AWS SQS, I just put `sqs` but you can put whatever you want.
+
+About the mutation parameters and the result, you `MUST` define the parameter as `event: String`, but you `CAN` change the `AWSResult` if you want.
+I explain further below about the decision to have this `event: String`.
+
+Ok, after define the schema, let's create the apollo server instance.
+
+```ts
+import { ApolloServer } from '@apollo/server';
+import { GraphQLError } from 'graphql/error/GraphQLError';
+import { DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+import type { SNSEvent, SQSEvent } from 'aws-lambda';
+
+export const app = new ApolloServer<DefaultServerlessApolloServerContext>({
+  typeDefs: schema,
+  resolvers: {
+    Query: {
+      message: () => 'Hello World!',
+    },
+    Mutation: {
+      sqs: (_, data, context) => {
+        // security measures: http://serverless-adapter.viniciusl.com.br/docs/main/adapters/aws/sqs#security
+        if (context.request.headers['host'] !== 'sqs.amazonaws.com')
+          throw new GraphQLError('Your host is not allowed to call this mutation.');
+
+        // here, you can manipulate the event data and do whatever you want with it.
+        const event = JSON.parse(data.event) as SQSEvent;
+
+        // I will just return the event data to better debugging
+        return ({
+          result: JSON.stringify(event),
+        });
+      },
+      sns: (_, data, context) => {
+        // security measures: http://serverless-adapter.viniciusl.com.br/docs/main/adapters/aws/sqs#security
+        if (context.request.headers['host'] !== 'sns.amazonaws.com')
+          throw new GraphQLError('Your host is not allowed to call this mutation.');
+
+        // here, you can manipulate the event data and do whatever you want with it.
+        const event = JSON.parse(data.event) as SNSEvent;
+
+        // I will just return the event data to better debugging
+        return ({
+          result: JSON.stringify(event),
+        });
+      },
+    },
+  },
+});
+```
+
+In the code above, we created the Apollo Server Instance with the mutations that will handle the events from SQS and SNS.
+
+Because of the nature of GraphQL, is too hard to create strict schema definitions for each event source, so I just serialize in JSON the event and send it as string
+inside `data` with the type of `{ event: string }`.
+
+About the result of each mutation (`AWSResult`), you can customize it to return whatever you want, like the name, but you will need to specify the return inside `ApolloServerMutationAdapter`,
+we will see this configuration in next section.
+
+Well, know we only need to expose the Apollo Server Instance using Serverless Adapter:
+
+```ts
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ApolloServerMutationAdapter } from '@h4ad/serverless-adapter/lib/adapters/apollo-server';
+import { ApiGatewayV2Adapter, SNSAdapter, SQSAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
+import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+
+const framework = new ApolloServerFramework<DefaultServerlessApolloServerContext>();
+const jsonBodyFramework = new JsonBodyParserFramework(framework);
+
+// optional: you can configure cors using this guy here, if you don't want, just erase
+const corsFramework = new CorsFramework(jsonBodyFramework, {
+  origin: '*',
+  maxAge: 30,
+});
+
+// needed to start the application, without this, the apollo server will throw an error
+app.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
+
+// let's add support for api gateway v2
+const apiGatewayV2Adapter = new ApiGatewayV2Adapter();
+
+// let's add support for sqs
+const sqsAdapter = new SQSAdapter();
+const wrappedSqsAdapter = new ApolloServerMutationAdapter(
+  sqsAdapter,
+  {
+    mutationName: 'sqs', // remember the scheme? This is the name of the mutation
+    mutationResultQuery: '{ result }', // we specify the return as `AWSResult` and here we specify which properties we want to return of that type
+    // if we dont specify nothing, `{ __typename }` will be returned.
+  }
+);
+
+// let's add support for sns
+const snsAdapter = new SNSAdapter();
+const wrappedSnsAdapter = new ApolloServerMutationAdapter(
+  snsAdapter,
+  {
+    mutationName: 'sns', // remember the scheme? This is the name of the mutation
+    mutationResultQuery: '{ result }', // we specify the return as `AWSResult` and here we specify which properties we want to return of that type
+    // if we dont specify nothing, `{ __typename }` will be returned.
+  }
+);
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(corsFramework)
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(apiGatewayV2Adapter)
+  .addAdapter(wrappedSqsAdapter)
+  .addAdapter(wrappedSnsAdapter)
+  .build();
+```
+
+:::tip
+
+Need more examples? See more examples [here](https://github.com/H4ad/serverless-adapter-examples#apollo-server).
+
+:::
+
+That's it! Know that you are able to receive `API Gateway V2` requests and also integrate in the same lambda with `AWS SQS` and `AWS SNS`, great, right?
+
+## Customizing the Context
+
+By default, the context will be [DefaultServerlessApolloServerContext](/docs/api/Frameworks/ApolloServerFramework/DefaultServerlessApolloServerContext), but you can customize
+the creation of the context by passing `context` variable inside `ApolloServerFramework`, like:
+
+```ts
+import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+
+// I want the date when it's started, and also, I always recommend including the default context
+type MyCustomContext = { startedAt: Date } & DefaultServerlessApolloServerContext;
+
+const framework = new ApolloServerFramework<MyCustomContext>({
+  context: async ({ request, response }) => {
+    return {
+      startedAt: new Date(),
+      request,
+      response,
+    };
+  },
+});
+```

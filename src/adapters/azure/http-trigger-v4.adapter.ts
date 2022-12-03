@@ -92,7 +92,7 @@ export class HttpTriggerV4Adapter
       maybeContext.traceContext &&
       maybeContext.bindingDefinitions &&
       maybeContext.log &&
-      maybeContext.log.info &&
+      !!maybeContext.log.info &&
       maybeContext.bindingData
     );
   }

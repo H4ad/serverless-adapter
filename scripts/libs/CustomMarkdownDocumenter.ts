@@ -802,7 +802,7 @@ export class CustomMarkdownDocumenter {
             new DocParagraph({ configuration }, [
               new DocCodeSpan({
                 configuration,
-                code: apiEnumMember.initializerExcerpt.text,
+                code: apiEnumMember.initializerExcerpt?.text || '',
               }),
             ]),
           ]),

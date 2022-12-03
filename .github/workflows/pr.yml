@@ -44,10 +44,6 @@ jobs:
         if: matrix.node-version == '12.x'
         run: echo "TEST_NODE_VERSION=12.x" >> $GITHUB_ENV
 
-      - name: Skip Deepkit Tests for 12.x
-        if: matrix.node-version == '12.x'
-        run: echo "SKIP_DEEPKIT=true" >> $GITHUB_ENV
-
       - name: Run tests
         run: npm test
 

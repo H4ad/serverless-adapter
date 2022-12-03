@@ -133,6 +133,7 @@ const sidebars = {
       },
       collapsed: true,
       items: [
+        'main/frameworks/apollo-server',
         'main/frameworks/deepkit',
         'main/frameworks/express',
         'main/frameworks/fastify',
