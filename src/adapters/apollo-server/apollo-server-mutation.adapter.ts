@@ -16,6 +16,9 @@ import {
 
 /**
  * The options for {@link ApolloServerMutationAdapter}
+ *
+ * @breadcrumb Adapters / Apollo Server / ApolloServerMutationAdapter
+ * @public
  */
 export type ApolloServerMutationAdapterOptions = {
   /**
@@ -34,6 +37,9 @@ export type ApolloServerMutationAdapterOptions = {
 
 /**
  * The adapter that wraps another adapter to force a transformation of the event data as a mutation to Apollo Server be able to handle.
+ *
+ * @breadcrumb Adapters / Apollo Server / ApolloServerMutationAdapter
+ * @public
  */
 export class ApolloServerMutationAdapter<
   TEvent,

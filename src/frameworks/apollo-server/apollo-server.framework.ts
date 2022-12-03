@@ -9,13 +9,36 @@ import { getDefaultIfUndefined } from '../../core';
 //#endregion
 
 /**
+ * The default context of Apollo Server when you integrate and don't pass any context.
+ *
+ * @breadcrumb Frameworks / ApolloServerFramework
+ * @public
+ */
+export interface DefaultServerlessApolloServerContext extends BaseContext {
+  /**
+   * The request reference
+   */
+  request: IncomingMessage;
+  /**
+   * The response reference
+   */
+  response: ServerResponse;
+}
+
+/**
  * The arguments used to create a Context inside {@link ApolloServerOptions}
  *
  * @breadcrumb Frameworks / ApolloServerFramework
  * @public
  */
 export type ApolloServerContextArguments = {
+  /**
+   * The request reference
+   */
   request: IncomingMessage;
+  /**
+   * The response reference
+   */
   response: ServerResponse;
 };
 
@@ -31,7 +54,7 @@ export interface ApolloServerOptions<TContext extends BaseContext> {
    *
    * @param options - Default options passed by library
    */
-  context: (options: ApolloServerContextArguments) => Promise<TContext>;
+  context?: (options: ApolloServerContextArguments) => Promise<TContext>;
 }
 
 /**
@@ -96,6 +119,8 @@ export class ApolloServerFramework<TContext extends BaseContext>
         context,
       })
       .then(async httpGraphQLResponse => {
+        // this section was copy and pasted from https://github.com/apollographql/apollo-server/blob/main/packages/server/src/express4/index.ts#L95
+
         for (const [key, value] of httpGraphQLResponse.headers)
           response.setHeader(key, value);
 

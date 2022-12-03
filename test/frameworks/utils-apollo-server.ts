@@ -1,4 +1,3 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { OutgoingHttpHeaders } from 'http2';
 import { ApolloServer, BaseContext, HeaderMap } from '@apollo/server';
 import {
@@ -10,6 +9,7 @@ import {
 import {
   ApolloServerContextArguments,
   ApolloServerFramework,
+  DefaultServerlessApolloServerContext,
 } from '../../src/frameworks/apollo-server';
 import { JsonBodyParserFramework } from '../../src/frameworks/body-parser';
 import { TestRouteBuilderMethods } from './utils';
@@ -40,12 +40,7 @@ export function runApolloServerTests() {
         expectHeaderSet,
       ] of frameworkTestOptions) {
         it(`${method}${queryName}: should forward request and receive response correctly`, async () => {
-          interface ApolloCustomContext extends BaseContext {
-            request: IncomingMessage;
-            response: ServerResponse;
-          }
-
-          const app = new ApolloServer<ApolloCustomContext>({
+          const app = new ApolloServer<DefaultServerlessApolloServerContext>({
             typeDefs: 'type Query { message: String }',
             resolvers: {
               Query: {
@@ -72,7 +67,7 @@ export function runApolloServerTests() {
             : [undefined, 0];
 
           const framework = new JsonBodyParserFramework(
-            new ApolloServerFramework<ApolloCustomContext>(),
+            new ApolloServerFramework<DefaultServerlessApolloServerContext>(),
           );
 
           const request = new ServerlessRequest({
