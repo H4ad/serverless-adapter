@@ -3,6 +3,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { https } from 'firebase-functions';
 import { FrameworkContract, HandlerContract } from '../../contracts';
+import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core';
 import { ServerlessRequest } from '../../network';
 
 //#endregion
@@ -30,19 +31,39 @@ export class HttpFirebaseHandler<TApp>
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
     return https.onRequest(
       (request: IncomingMessage, response: ServerResponse) => {
-        const serverlessRequest = request as ServerlessRequest;
+        const expressRequestParsed = request as unknown as {
+          body: object | Buffer;
+        };
+
+        const headers = getFlattenedHeadersMap(request.headers, ',', true);
+        const remoteAddress = headers['x-forwarded-for'];
+
+        let body: Buffer | undefined;
 
         if (
-          serverlessRequest.body &&
-          typeof serverlessRequest.body === 'object'
+          expressRequestParsed.body &&
+          typeof expressRequestParsed.body === 'object'
         ) {
-          serverlessRequest.body = Buffer.from(
-            JSON.stringify(serverlessRequest.body),
-            'utf-8',
+          const jsonContent = JSON.stringify(expressRequestParsed.body);
+
+          const [bufferBody, contentLength] = getEventBodyAsBuffer(
+            jsonContent,
+            false,
           );
+
+          body = bufferBody;
+          headers['content-length'] = String(contentLength);
         }
 
-        return framework.sendRequest(app, serverlessRequest, response);
+        const customRequest = new ServerlessRequest({
+          method: request.method!,
+          url: request.url!,
+          body,
+          headers,
+          remoteAddress,
+        });
+
+        return framework.sendRequest(app, customRequest, response);
       },
     );
   }
