@@ -1,9 +1,5 @@
 import {
-  AdapterContract,
   FrameworkContract,
-  createDefaultLogger,
-} from '../../lib';
-import {
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
@@ -88,19 +84,31 @@ describe(HttpFirebaseHandler.name, () => {
       });
 
       const framework: FrameworkContract<unknown> = {
-        sendRequest: jest.fn(),
+        sendRequest: jest.fn(
+          async (
+            app: null,
+            req: ServerlessRequest,
+            res: ServerlessResponse,
+          ) => {
+            expect(req.body?.toString()).toEqual(JSON.stringify(option));
+            expect(req.headers['content-length']).toEqual(
+              Buffer.byteLength(JSON.stringify(option)).toString(),
+            );
+
+            req.pipe(res);
+
+            await waitForStreamComplete(res);
+
+            expect(ServerlessResponse.body(res).toString()).toEqual(
+              JSON.stringify(option),
+            );
+          },
+        ),
       };
 
       const handler = handlerFactory.getHandler(null, framework);
 
       handler(request, response);
-
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(framework.sendRequest).toHaveBeenCalledWith(
-        null,
-        expect.objectContaining({ body: Buffer.from(JSON.stringify(option)) }),
-        response,
-      );
     }
   });
 });
