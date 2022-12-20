@@ -7,3 +7,4 @@ export * from './lambda-edge.adapter';
 export * from './s3.adapter';
 export * from './sns.adapter';
 export * from './sqs.adapter';
+export * from './base';

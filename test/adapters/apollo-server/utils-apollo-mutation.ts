@@ -263,10 +263,11 @@ export function runApolloServerTests() {
         statusCode: serverlessResponse.statusCode,
         isBase64Encoded: false,
       };
-      const response = mutationAdapter.getResponse(props);
 
+      expect(() => mutationAdapter.getResponse(props)).toThrow(
+        'Cannot query field',
+      );
       expect(sqsAdapterSpy).toHaveBeenNthCalledWith(1, props);
-      expect(response).toEqual(EmptyResponse);
     });
   });
 
@@ -319,7 +320,7 @@ export function runApolloServerTests() {
       headers: {},
     };
 
-    expect(mutation.getResponse(props)).toEqual(EmptyResponse);
+    expect(() => mutation.getResponse(props)).toThrow('"statusCode":400');
     expect(spyedOnError).toHaveBeenNthCalledWith(1, props);
   });
 }

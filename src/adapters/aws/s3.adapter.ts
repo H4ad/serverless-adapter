@@ -1,13 +1,8 @@
 //#region Imports
 
-import type { Context, S3Event } from 'aws-lambda';
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import {
-  EmptyResponse,
-  IEmptyResponse,
-  getDefaultIfUndefined,
-  getEventBodyAsBuffer,
-} from '../../core';
+import type { S3Event } from 'aws-lambda';
+import { getDefaultIfUndefined } from '../../core';
+import { AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -50,17 +45,22 @@ export interface S3AdapterOptions {
  * @breadcrumb Adapters / AWS / S3Adapter
  * @public
  */
-export class S3Adapter
-  implements AdapterContract<S3Event, Context, IEmptyResponse>
-{
+export class S3Adapter extends AwsSimpleAdapter<S3Event> {
   //#region Constructor
 
   /**
    * Default constructor
    *
-   * @param options - The options to customize the {@link S3Adapter}
+   * @param options - The options to customize the {@link SNSAdapter}
    */
-  constructor(protected readonly options?: S3AdapterOptions) {}
+  constructor(options?: S3AdapterOptions) {
+    super({
+      forwardPath: getDefaultIfUndefined(options?.s3ForwardPath, '/s3'),
+      forwardMethod: getDefaultIfUndefined(options?.s3ForwardMethod, 'POST'),
+      batch: false,
+      host: 's3.amazonaws.com',
+    });
+  }
 
   //#endregion
 
@@ -84,49 +84,6 @@ export class S3Adapter
     const eventSource = s3Event.Records[0]?.eventSource;
 
     return eventSource === 'aws:s3';
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getRequest(event: S3Event): AdapterRequest {
-    const path = getDefaultIfUndefined(this.options?.s3ForwardPath, '/s3');
-    const method = getDefaultIfUndefined(this.options?.s3ForwardMethod, 'POST');
-
-    const [body, contentLength] = getEventBodyAsBuffer(
-      JSON.stringify(event),
-      false,
-    );
-
-    const headers = {
-      host: 's3.amazonaws.com',
-      'content-type': 'application/json',
-      'content-length': String(contentLength),
-    };
-
-    return {
-      method,
-      headers,
-      body,
-      path,
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getResponse(): IEmptyResponse {
-    return EmptyResponse;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public onErrorWhileForwarding({
-    error,
-    delegatedResolver,
-  }: OnErrorProps<S3Event, IEmptyResponse>): void {
-    delegatedResolver.fail(error);
   }
 
   //#endregion

@@ -92,3 +92,39 @@ You **MUST** check if the header `Host` contains the value of `sqs.amazonaws.com
 
 Without checking this header, if you add this adapter and [AWS API Gateway V2](./api-gateway-v2) adapter, you will be vulnerable to attacks
 because anyone can create a `POST` request to `/sqs`.
+
+## What happens when my response status is different from 2xx or 3xx?
+
+Well, this library will throw an error.
+In previous versions of this library, the behavior was different, but now we throw an error if the status does not indicate success.
+
+When it throws an error, the request will simply fail to process the event, and depending on how you set up your dead-letter queue or your retry police,
+can be sent to dead-letter queue for you to check what happens or try again.
+
+## Batch Item Failures
+
+If you enable this batch item failure option, to be able to partially return that some items failed to process, first configure your Adapter:
+
+```ts
+const adapter = new SQSAdapter({
+  batch: true,
+});
+```
+
+And then, just return the following JSON in the route that processes the SQS event.
+
+```json
+{
+  "batchItemFailures": [
+    {
+        "itemIdentifier": "id2"
+    },
+    {
+        "itemIdentifier": "id4"
+    }
+  ]
+}
+```
+
+> [Reference](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting)
+

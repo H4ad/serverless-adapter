@@ -1,13 +1,8 @@
 //#region Imports
 
-import type { Context, EventBridgeEvent } from 'aws-lambda';
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import {
-  EmptyResponse,
-  IEmptyResponse,
-  getDefaultIfUndefined,
-  getEventBodyAsBuffer,
-} from '../../core';
+import type { EventBridgeEvent } from 'aws-lambda';
+import { getDefaultIfUndefined } from '../../core';
+import { AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -58,9 +53,7 @@ export type EventBridgeEventAll = EventBridgeEvent<any, any>;
  * @breadcrumb Adapters / AWS / EventBridgeAdapter
  * @public
  */
-export class EventBridgeAdapter
-  implements AdapterContract<EventBridgeEventAll, Context, IEmptyResponse>
-{
+export class EventBridgeAdapter extends AwsSimpleAdapter<EventBridgeEventAll> {
   //#region Constructor
 
   /**
@@ -68,7 +61,20 @@ export class EventBridgeAdapter
    *
    * @param options - The options to customize the {@link EventBridgeAdapter}
    */
-  constructor(protected readonly options?: EventBridgeOptions) {}
+  constructor(options?: EventBridgeOptions) {
+    super({
+      forwardPath: getDefaultIfUndefined(
+        options?.eventBridgeForwardPath,
+        '/eventbridge',
+      ),
+      forwardMethod: getDefaultIfUndefined(
+        options?.eventBridgeForwardMethod,
+        'POST',
+      ),
+      batch: false,
+      host: 'events.amazonaws.com',
+    });
+  }
 
   //#endregion
 
@@ -104,55 +110,6 @@ export class EventBridgeAdapter
       typeof eventBridgeEvent.detail === 'object' &&
       !Array.isArray(eventBridgeEvent.detail)
     );
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getRequest(event: EventBridgeEventAll): AdapterRequest {
-    const path = getDefaultIfUndefined(
-      this.options?.eventBridgeForwardPath,
-      '/eventbridge',
-    );
-    const method = getDefaultIfUndefined(
-      this.options?.eventBridgeForwardMethod,
-      'POST',
-    );
-
-    const [body, contentLength] = getEventBodyAsBuffer(
-      JSON.stringify(event),
-      false,
-    );
-
-    const headers = {
-      host: 'events.amazonaws.com',
-      'content-type': 'application/json',
-      'content-length': String(contentLength),
-    };
-
-    return {
-      method,
-      headers,
-      body,
-      path,
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getResponse(): IEmptyResponse {
-    return EmptyResponse;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public onErrorWhileForwarding({
-    error,
-    delegatedResolver,
-  }: OnErrorProps<EventBridgeEventAll, IEmptyResponse>): void {
-    delegatedResolver.fail(error);
   }
 
   //#endregion

@@ -1,13 +1,8 @@
 //#region Imports
 
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import {
-  EmptyResponse,
-  IEmptyResponse,
-  getDefaultIfUndefined,
-  getEventBodyAsBuffer,
-} from '../../core';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
+import { getDefaultIfUndefined } from '../../core';
+import { AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -17,7 +12,8 @@ import {
  * @breadcrumb Adapters / AWS / DynamoDBAdapter
  * @public
  */
-export interface DynamoDBAdapterOptions {
+export interface DynamoDBAdapterOptions
+  extends Pick<AWSSimpleAdapterOptions, 'batch'> {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
@@ -50,9 +46,7 @@ export interface DynamoDBAdapterOptions {
  * @breadcrumb Adapters / AWS / DynamoDBAdapter
  * @public
  */
-export class DynamoDBAdapter
-  implements AdapterContract<DynamoDBStreamEvent, Context, IEmptyResponse>
-{
+export class DynamoDBAdapter extends AwsSimpleAdapter<DynamoDBStreamEvent> {
   //#region Constructor
 
   /**
@@ -60,7 +54,20 @@ export class DynamoDBAdapter
    *
    * @param options - The options to customize the {@link DynamoDBAdapter}
    */
-  constructor(protected readonly options?: DynamoDBAdapterOptions) {}
+  constructor(options?: DynamoDBAdapterOptions) {
+    super({
+      forwardPath: getDefaultIfUndefined(
+        options?.dynamoDBForwardPath,
+        '/dynamo',
+      ),
+      forwardMethod: getDefaultIfUndefined(
+        options?.dynamoDBForwardMethod,
+        'POST',
+      ),
+      batch: options?.batch,
+      host: 'dynamodb.amazonaws.com',
+    });
+  }
 
   //#endregion
 
@@ -84,55 +91,6 @@ export class DynamoDBAdapter
     const eventSource = dynamoDBevent.Records[0]?.eventSource;
 
     return eventSource === 'aws:dynamodb';
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getRequest(event: DynamoDBStreamEvent): AdapterRequest {
-    const path = getDefaultIfUndefined(
-      this.options?.dynamoDBForwardPath,
-      '/dynamo',
-    );
-    const method = getDefaultIfUndefined(
-      this.options?.dynamoDBForwardMethod,
-      'POST',
-    );
-
-    const [body, contentLength] = getEventBodyAsBuffer(
-      JSON.stringify(event),
-      false,
-    );
-
-    const headers = {
-      host: 'dynamodb.amazonaws.com',
-      'content-type': 'application/json',
-      'content-length': String(contentLength),
-    };
-
-    return {
-      method,
-      headers,
-      body,
-      path,
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getResponse(): IEmptyResponse {
-    return EmptyResponse;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public onErrorWhileForwarding({
-    error,
-    delegatedResolver,
-  }: OnErrorProps<DynamoDBStreamEvent, IEmptyResponse>): void {
-    delegatedResolver.fail(error);
   }
 
   //#endregion

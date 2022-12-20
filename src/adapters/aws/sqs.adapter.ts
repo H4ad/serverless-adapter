@@ -1,13 +1,8 @@
 //#region Imports
 
-import type { Context, SQSEvent } from 'aws-lambda';
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import {
-  EmptyResponse,
-  IEmptyResponse,
-  getDefaultIfUndefined,
-  getEventBodyAsBuffer,
-} from '../../core';
+import type { SQSEvent } from 'aws-lambda';
+import { getDefaultIfUndefined } from '../../core';
+import { AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -17,7 +12,8 @@ import {
  * @breadcrumb Adapters / AWS / SQSAdapter
  * @public
  */
-export interface SQSAdapterOptions {
+export interface SQSAdapterOptions
+  extends Pick<AWSSimpleAdapterOptions, 'batch'> {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *
@@ -50,17 +46,22 @@ export interface SQSAdapterOptions {
  * @breadcrumb Adapters / AWS / SQSAdapter
  * @public
  */
-export class SQSAdapter
-  implements AdapterContract<SQSEvent, Context, IEmptyResponse>
-{
+export class SQSAdapter extends AwsSimpleAdapter<SQSEvent> {
   //#region Constructor
 
   /**
    * Default constructor
    *
-   * @param options - The options to customize the {@link SQSAdapter}
+   * @param options - The options to customize the {@link SNSAdapter}
    */
-  constructor(protected readonly options?: SQSAdapterOptions) {}
+  constructor(options?: SQSAdapterOptions) {
+    super({
+      forwardPath: getDefaultIfUndefined(options?.sqsForwardPath, '/sqs'),
+      forwardMethod: getDefaultIfUndefined(options?.sqsForwardMethod, 'POST'),
+      batch: options?.batch,
+      host: 'sqs.amazonaws.com',
+    });
+  }
 
   //#endregion
 
@@ -84,52 +85,6 @@ export class SQSAdapter
     const eventSource = sqsEvent.Records[0]?.eventSource;
 
     return eventSource === 'aws:sqs';
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getRequest(event: SQSEvent): AdapterRequest {
-    const path = getDefaultIfUndefined(this.options?.sqsForwardPath, '/sqs');
-    const method = getDefaultIfUndefined(
-      this.options?.sqsForwardMethod,
-      'POST',
-    );
-
-    const [body, contentLength] = getEventBodyAsBuffer(
-      JSON.stringify(event),
-      false,
-    );
-
-    const headers = {
-      host: 'sqs.amazonaws.com',
-      'content-type': 'application/json',
-      'content-length': String(contentLength),
-    };
-
-    return {
-      method,
-      headers,
-      body,
-      path,
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getResponse(): IEmptyResponse {
-    return EmptyResponse;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public onErrorWhileForwarding({
-    error,
-    delegatedResolver,
-  }: OnErrorProps<SQSEvent, IEmptyResponse>): void {
-    delegatedResolver.fail(error);
   }
 
   //#endregion
