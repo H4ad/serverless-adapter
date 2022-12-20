@@ -35,7 +35,7 @@ export function getFlattenedHeadersMap(
 
     if (Array.isArray(headerValue))
       commaDelimitedHeaders[newKey] = headerValue.join(separator);
-    else commaDelimitedHeaders[newKey] = headerValue || '';
+    else commaDelimitedHeaders[newKey] = String(headerValue ?? '');
   }
 
   return commaDelimitedHeaders;
