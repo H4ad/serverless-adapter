@@ -1,11 +1,4 @@
-import type { DynamoDBStreamEvent } from 'aws-lambda';
-import {
-  DelegatedResolver,
-  EmptyResponse,
-  IEmptyResponse,
-  ILogger,
-  getEventBodyAsBuffer,
-} from '../../../src';
+import { getEventBodyAsBuffer } from '../../../src';
 import { DynamoDBAdapter } from '../../../src/adapters/aws';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createDynamoDBEvent } from './utils/dynamodb';
@@ -80,50 +73,6 @@ describe(DynamoDBAdapter.name, () => {
         'content-length',
         String(contentLength),
       );
-    });
-  });
-
-  describe('getResponse', () => {
-    it('should return the correct mapping for the response', () => {
-      const result = adapter.getResponse();
-
-      expect(result).toBe(EmptyResponse);
-    });
-  });
-
-  describe('onErrorWhileForwarding', () => {
-    it('should resolver just call fail without get response', () => {
-      const event = createDynamoDBEvent();
-
-      const error = new Error('fail because I need to test.');
-      const resolver: DelegatedResolver<DynamoDBStreamEvent> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
-      };
-
-      const oldGetResponse = adapter.getResponse.bind(adapter);
-
-      let getResponseResult: IEmptyResponse;
-
-      adapter.getResponse = jest.fn(() => {
-        getResponseResult = oldGetResponse();
-
-        return getResponseResult;
-      });
-
-      adapter.onErrorWhileForwarding({
-        event,
-        error,
-        delegatedResolver: resolver,
-        log: {} as ILogger,
-        respondWithErrors: false,
-      });
-
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(adapter.getResponse).toHaveBeenCalledTimes(0);
-
-      expect(resolver.fail).toHaveBeenCalledTimes(1);
-      expect(resolver.succeed).toHaveBeenCalledTimes(0);
     });
   });
 });

@@ -1,13 +1,8 @@
 //#region Imports
 
-import type { Context, SNSEvent } from 'aws-lambda';
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import {
-  EmptyResponse,
-  IEmptyResponse,
-  getDefaultIfUndefined,
-  getEventBodyAsBuffer,
-} from '../../core';
+import type { SNSEvent } from 'aws-lambda';
+import { getDefaultIfUndefined } from '../../core';
+import { AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -50,9 +45,7 @@ export interface SNSAdapterOptions {
  * @breadcrumb Adapters / AWS / SNSAdapter
  * @public
  */
-export class SNSAdapter
-  implements AdapterContract<SNSEvent, Context, IEmptyResponse>
-{
+export class SNSAdapter extends AwsSimpleAdapter<SNSEvent> {
   //#region Constructor
 
   /**
@@ -60,7 +53,14 @@ export class SNSAdapter
    *
    * @param options - The options to customize the {@link SNSAdapter}
    */
-  constructor(protected readonly options?: SNSAdapterOptions) {}
+  constructor(options?: SNSAdapterOptions) {
+    super({
+      forwardPath: getDefaultIfUndefined(options?.snsForwardPath, '/sns'),
+      forwardMethod: getDefaultIfUndefined(options?.snsForwardMethod, 'POST'),
+      batch: false,
+      host: 'sns.amazonaws.com',
+    });
+  }
 
   //#endregion
 
@@ -84,52 +84,6 @@ export class SNSAdapter
     const eventSource = snsEvent.Records[0]?.EventSource;
 
     return eventSource === 'aws:sns';
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getRequest(event: SNSEvent): AdapterRequest {
-    const path = getDefaultIfUndefined(this.options?.snsForwardPath, '/sns');
-    const method = getDefaultIfUndefined(
-      this.options?.snsForwardMethod,
-      'POST',
-    );
-
-    const [body, contentLength] = getEventBodyAsBuffer(
-      JSON.stringify(event),
-      false,
-    );
-
-    const headers = {
-      host: 'sns.amazonaws.com',
-      'content-type': 'application/json',
-      'content-length': String(contentLength),
-    };
-
-    return {
-      method,
-      headers,
-      body,
-      path,
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public getResponse(): IEmptyResponse {
-    return EmptyResponse;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public onErrorWhileForwarding({
-    error,
-    delegatedResolver,
-  }: OnErrorProps<SNSEvent, IEmptyResponse>): void {
-    delegatedResolver.fail(error);
   }
 
   //#endregion
