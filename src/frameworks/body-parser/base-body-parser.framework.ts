@@ -10,6 +10,9 @@ import { getDefaultIfUndefined } from '../../core';
 
 /**
  * The options for {@link BaseBodyParserFramework}
+ *
+ * @breadcrumb Frameworks / BodyParserFramework
+ * @public
  */
 export type BodyParserOptions = {
   /**
