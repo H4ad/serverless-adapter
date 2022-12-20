@@ -12,12 +12,14 @@ describe('getFlattenedHeadersMap', () => {
         'Accept-Language': 'en-US,en;q=0.9',
         Host: undefined,
         'Content-Type': '',
+        'Content-Length': 40 as unknown as string,
       },
       {
         'Accept-Encoding': ['gzip'],
         'Accept-Language': ['en-US', 'en;q=0.9'],
         Host: undefined,
         'Content-Type': '',
+        'Content-Length': [40] as unknown as string[],
       },
     ];
 
@@ -31,6 +33,7 @@ describe('getFlattenedHeadersMap', () => {
       expect(flattenedHeaders).toHaveProperty('Accept-Encoding');
       expect(flattenedHeaders['Accept-Encoding']).toEqual('gzip');
       expect(flattenedHeaders['Accept-Language']).toEqual('en-US,en;q=0.9');
+      expect(flattenedHeaders['Content-Length']).toEqual('40');
     }
   });
 
