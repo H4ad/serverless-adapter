@@ -187,3 +187,11 @@ You **MUST** check if the header `Host` contains the value of `events.amazonaws.
 
 Without checking this header, if you add this adapter and [AWS API Gateway V2](./api-gateway-v2) adapter, you will be vulnerable to attacks
 because anyone can create a `POST` request to `/eventbridge`.
+
+## What happens when my response status is different from 2xx or 3xx?
+
+Well, this library will throw an error.
+In previous versions of this library, the behavior was different, but now we throw an error if the status does not indicate success.
+
+When it throws an error, the request will simply fail to process the event, and depending on how you set up your dead-letter queue or your retry police,
+can be sent to dead-letter queue for you to check what happens or try again.
