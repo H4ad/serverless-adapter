@@ -3,11 +3,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { https } from 'firebase-functions';
 import { FrameworkContract, HandlerContract } from '../../contracts';
-import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core';
-import { ServerlessRequest } from '../../network';
+import { RawRequest } from '../base/index';
 
 //#endregion
-
 /**
  * The class that implements a handler for Firebase Https Events
  *
@@ -17,6 +15,7 @@ import { ServerlessRequest } from '../../network';
  * @public
  */
 export class HttpFirebaseHandler<TApp>
+  extends RawRequest<TApp>
   implements
     HandlerContract<TApp, never, never, never, void, void | Promise<void>>
 {
@@ -29,43 +28,7 @@ export class HttpFirebaseHandler<TApp>
     app: TApp,
     framework: FrameworkContract<TApp>,
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
-    return https.onRequest(
-      (request: IncomingMessage, response: ServerResponse) => {
-        const expressRequestParsed = request as unknown as {
-          body: object | Buffer;
-        };
-
-        const headers = getFlattenedHeadersMap(request.headers, ',', true);
-        const remoteAddress = headers['x-forwarded-for'];
-
-        let body: Buffer | undefined;
-
-        if (
-          expressRequestParsed.body &&
-          typeof expressRequestParsed.body === 'object'
-        ) {
-          const jsonContent = JSON.stringify(expressRequestParsed.body);
-
-          const [bufferBody, contentLength] = getEventBodyAsBuffer(
-            jsonContent,
-            false,
-          );
-
-          body = bufferBody;
-          headers['content-length'] = String(contentLength);
-        }
-
-        const customRequest = new ServerlessRequest({
-          method: request.method!,
-          url: request.url!,
-          body,
-          headers,
-          remoteAddress,
-        });
-
-        return framework.sendRequest(app, customRequest, response);
-      },
-    );
+    return https.onRequest(this.onRequestCallback(app, framework));
   }
 
   //#endregion
