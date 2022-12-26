@@ -10,10 +10,10 @@ import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core/index';
 /**
  * The class that expose some methods to be used to get raw request from Express HTTP Request
  *
- * @breadcrumb Core / RawRequest
+ * @breadcrumb Handlers / Base / RawRequest
  * @public
  */
-export class RawRequest<TApp> {
+export abstract class RawRequest<TApp> {
   //#region Protected Methods
 
   /**

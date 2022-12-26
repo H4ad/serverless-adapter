@@ -65,7 +65,9 @@
     "deepkit http",
     "digital ocean",
     "digital ocean functions",
-    "digital ocean serverless"
+    "digital ocean serverless",
+    "gcp",
+    "google cloud functions"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"

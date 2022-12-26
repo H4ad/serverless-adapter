@@ -1,0 +1,68 @@
+---
+title: Google Cloud Functions
+description: See more about how to integrate with Google Cloud Functions.
+---
+
+:::tip
+
+Don't know what a handler is? See the [Architecture](../architecture#handler) section.
+
+:::
+
+## Requirements
+
+First, install the types for this adapter:
+
+```bash
+npm i --save @google-cloud/functions-framework
+```
+
+## Integrating with Http Events
+
+To use, you can import [GCPHandler](../../api/Handlers/GCPHandler) and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { DummyAdapter } from '@h4ad/serverless-adapter/lib/adapters/dummy';
+import { GCPHandler } from '@h4ad/serverless-adapter/lib/handlers/gcp';
+import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import app from './app';
+
+const functionName = 'helloWorld';
+
+// this handler don't need to export
+ServerlessAdapter.new(app)
+  .setHandler(new GCPHandler(functionName))
+  .setResolver(new DummyResolver())
+  // choose the framework of your app
+  // .setFramework(new ExpressFramework())
+  .addAdapter(new DummyAdapter())
+  .build();
+```
+
+When defining `functionName`, on deploy, you MUST set the `--entry-point` flag when running `gcloud deploy` to the same value.
+
+:::danger Function Version
+
+You MUST use `--gen2` flag when running `gcloud deploy`, this library was designed to only work with `gen2` of Google Cloud Function.
+
+:::
+
+:::info About Resolver and Adapter
+
+You should use `DummyResolver` and `DummyAdapter` because it's a requirement for the library, but `GCPHandler` doesn't do anything with them,
+so you use those dummy versions just to satisfy the library requirements.
+
+:::
+
+## What about Pub/Sub, Storage, etc?
+
+I could not think yet in an API to handle those cases well,
+so currently I didn't add support to these type of Google Cloud Functions.
+
+If you have some idea about a design for those APIs, [create an issue](https://github.com/H4ad/serverless-adapter/issues/new/choose).
+
+## Examples
+
+You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).
+
