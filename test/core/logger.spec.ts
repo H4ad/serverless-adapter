@@ -35,6 +35,17 @@ describe('createDefaultLogger', () => {
     expect(createDefaultLogger()).toBeDefined();
   });
 
+  it('should lazy log when we pass a function', () => {
+    const logger = createDefaultLogger({ level: 'debug' });
+
+    logger.debug('debug', () => '=true', ' works');
+
+    expect(global.console.debug).not.toHaveBeenNthCalledWith(
+      1,
+      'debug=true works',
+    );
+  });
+
   it('should log correctly with log level as none', () => {
     const logger = createDefaultLogger({ level: 'none' });
 

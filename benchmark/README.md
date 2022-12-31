@@ -12,6 +12,7 @@ npm run build
 npm pack
 cd benchmark
 npm ci
+npm i ../h4ad-serverless-adapter-0.0.0-development.tgz
 npm run bench
 ```
 
@@ -24,11 +25,11 @@ npm run bench
 ╔════════════════════════════╤═════════╤════════════════╤═══════════╗
 ║ Slower tests               │ Samples │         Result │ Tolerance ║
 ╟────────────────────────────┼─────────┼────────────────┼───────────╢
-║ @h4ad/serverless-adapter   │    5500 │ 4424.96 op/sec │  ± 0.98 % ║
-║ @vendia/serverless-express │    6500 │ 4454.06 op/sec │  ± 0.97 % ║
+║ @vendia/serverless-express │    5500 │ 4518.75 op/sec │  ± 0.99 % ║
+║ @h4ad/serverless-adapter   │   10000 │ 7590.44 op/sec │  ± 1.29 % ║
 ╟────────────────────────────┼─────────┼────────────────┼───────────╢
 ║ Fastest test               │ Samples │         Result │ Tolerance ║
 ╟────────────────────────────┼─────────┼────────────────┼───────────╢
-║ serverless-http            │   10000 │ 8046.93 op/sec │  ± 1.48 % ║
+║ serverless-http            │   10000 │ 8298.48 op/sec │  ± 1.53 % ║
 ╚════════════════════════════╧═════════╧════════════════╧═══════════╝
 ```
