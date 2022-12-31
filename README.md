@@ -7,6 +7,7 @@
   <a href="#usage">Usage</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#support">Support</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#examples">Examples</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#benchmark">Benchmark</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#architecture">Architecture</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#credits">Credits</a>
 </p>
@@ -88,6 +89,10 @@ See how to use this library [here](https://viniciusl.com.br/serverless-adapter/d
 # Examples
 
 You can see some examples of how to use this library [here](https://github.com/H4ad/serverless-adapter-examples).
+
+# Benchmark
+
+See the speed comparison between other libraries that have the same purpose in the [Benchmark Section](./benchmark).
 
 # Credits
 
