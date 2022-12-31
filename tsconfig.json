@@ -72,5 +72,5 @@
   },
   "reflection": true,
   "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"],
-  "exclude": ["src/index.doc.ts"]
+  "exclude": ["src/index.doc.ts", "benchmark/**/*.ts"]
 }

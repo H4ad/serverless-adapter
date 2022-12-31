@@ -50,7 +50,7 @@ describe('DefaultHandler', () => {
       expect(logger.debug).toHaveBeenNthCalledWith(
         1,
         'SERVERLESS_ADAPTER:PROXY',
-        expect.any(Object),
+        expect.any(Function),
       );
 
       expect(logger.debug).toHaveBeenNthCalledWith(
@@ -80,7 +80,7 @@ describe('DefaultHandler', () => {
       expect(logger.debug).toHaveBeenNthCalledWith(
         6,
         'SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE',
-        expect.any(Object),
+        expect.any(Function),
       );
 
       expect(result).toHaveProperty('headers', {

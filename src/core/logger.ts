@@ -51,6 +51,35 @@ export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
  */
 const InternalLoggerSymbol = Symbol('InternalLogger');
 
+const errorLogLevel = new Map([
+  ['debug', true],
+  ['verbose', true],
+  ['info', true],
+  ['warn', true],
+  ['error', true],
+]);
+const warnLogLevel = new Map([
+  ['debug', true],
+  ['verbose', true],
+  ['info', true],
+  ['warn', true],
+]);
+const infoLogLevel = new Map([
+  ['debug', true],
+  ['verbose', true],
+  ['info', true],
+]);
+const verboseLogLevel = new Map([
+  ['debug', true],
+  ['verbose', true],
+]);
+
+const lazyPrint = value => {
+  if (typeof value === 'function') return value();
+
+  return value;
+};
+
 /**
  * The method used to create a simple logger instance to use in this library.
  *
@@ -72,37 +101,32 @@ const InternalLoggerSymbol = Symbol('InternalLogger');
 export function createDefaultLogger(
   { level }: LoggerOptions = { level: 'error' },
 ): ILogger {
-  const errorLogLevel = ['debug', 'verbose', 'info', 'warn', 'error'];
-  const warnLogLevel = ['debug', 'verbose', 'info', 'warn'];
-  const infoLogLevel = ['debug', 'verbose', 'info'];
-  const verboseLogLevel = ['debug', 'verbose'];
-
   return {
     [InternalLoggerSymbol]: true,
     error: (message, ...additional) => {
-      if (!errorLogLevel.includes(level)) return;
+      if (!errorLogLevel.has(level)) return;
 
-      console.error(message, ...additional);
+      console.error(message, ...additional.map(lazyPrint));
     },
     warn: (message, ...additional) => {
-      if (!warnLogLevel.includes(level)) return;
+      if (!warnLogLevel.has(level)) return;
 
-      console.warn(message, ...additional);
+      console.warn(message, ...additional.map(lazyPrint));
     },
     info: (message, ...additional) => {
-      if (!infoLogLevel.includes(level)) return;
+      if (!infoLogLevel.has(level)) return;
 
-      console.info(message, ...additional);
+      console.info(message, ...additional.map(lazyPrint));
     },
     verbose: (message, ...additional) => {
-      if (!verboseLogLevel.includes(level)) return;
+      if (!verboseLogLevel.has(level)) return;
 
-      console.debug(message, ...additional);
+      console.debug(message, ...additional.map(lazyPrint));
     },
     debug: (message, ...additional) => {
       if (level !== 'debug') return;
 
-      console.debug(message, ...additional);
+      console.debug(message, ...additional.map(lazyPrint));
     },
   } as ILogger;
 }

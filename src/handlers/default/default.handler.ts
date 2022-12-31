@@ -117,12 +117,12 @@ export class DefaultHandler<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
   ): void {
-    log.debug('SERVERLESS_ADAPTER:PROXY', {
+    log.debug('SERVERLESS_ADAPTER:PROXY', () => ({
       event: util.inspect(event, { depth: null }),
       context: util.inspect(context, { depth: null }),
       binarySettings,
       respondWithErrors,
-    });
+    }));
   }
 
   /**
@@ -218,10 +218,13 @@ export class DefaultHandler<
     successResponse: TResponse,
     body: string,
   ) {
-    log.debug('SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE', {
-      successResponse: util.inspect(successResponse, { depth: null }),
-      body,
-    });
+    log.debug(
+      'SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE',
+      () => ({
+        successResponse: util.inspect(successResponse, { depth: null }),
+        body,
+      }),
+    );
   }
 
   //#endregion
