@@ -3,7 +3,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { https } from 'firebase-functions';
 import { FrameworkContract, HandlerContract } from '../../contracts';
-import { RawRequest } from '../base/index';
+import { RawRequest } from '../base';
 
 //#endregion
 /**
