@@ -17,19 +17,27 @@ First, install the types for this adapter:
 npm i --save firebase-functions firebase-admin
 ```
 
+## V1 and V2
+
+If you want to use Firebase Functions V1, use [HttpFirebaseHandler](../../api/Handlers/HttpFirebaseHandler).
+
+But if you want to add support for V2, then use [HttpFirebaseV2Handler](../../api/Handlers/HttpFirebaseHandler/HttpFirebaseV2Handler).
+
 ## Integrating with Http Events
 
-To use, you can import [HttpFirebaseHandler](../../api/Handlers/HttpFirebaseHandler) and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
+To use, you can import [HttpFirebaseV2Handler](../../api/Handlers/HttpFirebaseHandler/HttpFirebaseV2Handler) and call the method [setHandler](../../api/ServerlessAdapter#method-sethandler), as per the code below:
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { DummyAdapter } from '@h4ad/serverless-adapter/lib/adapters/dummy';
-import { HttpFirebaseHandler } from '@h4ad/serverless-adapter/lib/handlers/firebase';
+import { HttpFirebaseV2Handler } from '@h4ad/serverless-adapter/lib/handlers/firebase';
 import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
 import app from './app';
 
 export const helloWorld = ServerlessAdapter.new(app)
-  .setHandler(new HttpFirebaseHandler())
+  .setHandler(new HttpFirebaseV2Handler({
+    // you can pass custom properties here, like: concurrency.
+  }))
   .setResolver(new DummyResolver())
   // choose the framework of your app
   // .setFramework(new ExpressFramework())
@@ -38,7 +46,7 @@ export const helloWorld = ServerlessAdapter.new(app)
 
 // you can export more than one if you want
 export const test = ServerlessAdapter.new(app)
-  .setHandler(new HttpFirebaseHandler())
+  .setHandler(new HttpFirebaseV2Handler())
   .setResolver(new DummyResolver())
   // choose the framework of your app
   // .setFramework(new ExpressFramework())
@@ -48,7 +56,7 @@ export const test = ServerlessAdapter.new(app)
 
 :::info About Resolver and Adapter
 
-You should use DummyResolver and DummyAdapter because it's a requirement for the library, but HttpFirebaseHandler doesn't do anything with them,
+You should use `DummyResolver` and `DummyAdapter` because it's a requirement for the library, but `HttpFirebaseV2Handler` doesn't do anything with them,
 so you use those dummy versions just to satisfy the library requirements.
 
 :::
