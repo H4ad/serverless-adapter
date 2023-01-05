@@ -17,6 +17,7 @@ import { getDefaultIfUndefined, getFlattenedHeadersMap } from '../../core';
 /**
  * The transformer that is responsible to transform buffer's input to javascript objects
  *
+ * @deprecated You should use {@link JsonBodyParserFramework} instead, is more reliable and enable you to use transformer of trpc to other things.
  * @breadcrumb Frameworks / TrpcFramework
  * @public
  */

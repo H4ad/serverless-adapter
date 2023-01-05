@@ -12,15 +12,18 @@ The following examples only work with tRPC over HTTP, you cannot use this framew
 First, you need to ensure you have the libs installed, so run this code:
 
 ```bash
-npm i --save @trpc/server
+npm i --save @trpc/server body-parser
 ```
+
+> `body-parser` is needed to parse the body of the request to JSON.
 
 Then, you just need to use the [TrpcFramework](../../api/Frameworks/TrpcFramework) when you create your adapter, like:
 
 ```ts title="index.ts"
 import * as trpc from '@trpc/server';
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions, BufferToJSObjectTransformer } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
 import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
 import { z } from 'zod';
 
@@ -29,7 +32,6 @@ type TrpcContext = TrpcAdapterContext<CustomContext>;
 
 const appRouter = trpc
   .router<TrpcContext>()
-  .transformer(new BufferToJSObjectTransformer())
   .query('getUser', {
     input: z.string(),
     async resolve(req) {
@@ -53,7 +55,8 @@ const frameworkOptions: TrpcFrameworkOptions<CustomContext> = {
 };
 
 const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
-const corsFramework = new CorsFramework(framework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
+const jsonFramework = new JsonBodyParserFramework(framework);
+const corsFramework = new CorsFramework(jsonFramework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
 
 export const handler = ServerlessAdapter.new(appRouter)
   .setFramework(corsFramework)
@@ -66,13 +69,6 @@ export const handler = ServerlessAdapter.new(appRouter)
   // after put all methods necessary, just call the build method.
   .build();
 ```
-
-:::warning
-
-Always add the [BufferToJSObjectTransformer](../../api/Frameworks/TrpcFramework/BufferToJSObjectTransformer) because the input can be a buffer
-when you sent some JSON inside `body` on mutation, so this transformer will be responsible to convert back to JS Object.
-
-:::
 
 :::tip
 
@@ -92,14 +88,13 @@ With this behavior, to integrate with [SQSAdapter](/docs/main/adapters/aws/sqs),
 ```typescript title="index.ts"
 import type { SQSEvent } from 'aws-lambda';
 import * as trpc from '@trpc/server';
-import { TrpcAdapterContext, BufferToJSObjectTransformer } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { TrpcAdapterContext } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
 import { z } from 'zod';
 
 type TrpcContext = TrpcAdapterContext<unknown>;
 
 const appRouter = trpc
   .router<TrpcContext>()
-  .transformer(new BufferToJSObjectTransformer())
   .mutation('sqs', {
     input: z.object({
       Records: z.array(z.any()),
@@ -142,14 +137,15 @@ like the code below:
 ```typescript title="index.ts"
 import * as trpc from '@trpc/server';
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { TrpcFramework, TrpcAdapterContext, BufferToJSObjectTransformer, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
 
 type CustomContext = { potato: boolean };
 type TrpcContext = TrpcAdapterContext<CustomContext>;
 
 const appRouter = trpc
   .router<TrpcContext>()
-  .transformer(new BufferToJSObjectTransformer())
   .mutation('add', {
     async resolve({ ctx }) {
       // get the request url
@@ -167,7 +163,8 @@ const frameworkOptions: TrpcFrameworkOptions<TrpcContext> = {
 };
 
 const framework = new TrpcFramework<TrpcContext>(frameworkOptions);
-const corsFramework = new CorsFramework(framework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
+const jsonFramework = new JsonBodyParserFramework(framework);
+const corsFramework = new CorsFramework(jsonFramework); // see more about: https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/cors
 
 export const handler = ServerlessAdapter.new(appRouter)
   .setFramework(corsFramework)
