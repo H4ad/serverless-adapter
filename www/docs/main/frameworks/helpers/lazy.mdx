@@ -24,7 +24,7 @@ import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/expres
 
 const express = require('express');
 
-async function boostrap() {
+async function bootstrap() {
   const app = express();
 
   // do the things asynchronously
@@ -33,7 +33,7 @@ async function boostrap() {
 }
 
 const expressFramework = new ExpressFramework();
-const framework = new LazyFramework(expressFramework, boostrap);
+const framework = new LazyFramework(expressFramework, bootstrap);
 
 export const handler = ServerlessAdapter.new(null)
   .setFramework(framework)
@@ -62,4 +62,3 @@ The solution above is inspired by [top-level await](https://aws.amazon.com/pt/bl
 Need to deal with CORS? See [CorsFramework](./cors) which helps you to add correct headers.
 
 :::
-
