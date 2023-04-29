@@ -19,6 +19,7 @@ export * from './frameworks/hapi';
 export * from './frameworks/lazy';
 export * from './frameworks/trpc';
 export * from './handlers/azure';
+export * from './handlers/aws';
 export * from './handlers/base';
 export * from './handlers/default';
 export * from './handlers/digital-ocean';

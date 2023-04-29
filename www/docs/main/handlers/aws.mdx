@@ -40,6 +40,55 @@ export const handler = ServerlessAdapter.new(app)
   .build();
 ```
 
+## AWS Lambda Response Streaming
+
+:::info
+
+This handler is intended to be used when you integrate with `FunctionURLs`, which is the only service that supports streaming on AWS currently,
+[read more](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-response-streaming/).
+
+:::
+
+By default, every Lambda will be `BUFFERED`, which means we need to wait for the framework to write all the content of the response until we send it to the user.
+
+But when you enable the `RESPONSE_STREAM` mode within your Lambda settings, the framework will send the response to the user as fast as possible, without waiting for the framework to write all the content.
+
+To support this behavior, we need to change three things:
+
+- Instead of `DefaultHandler`, you should use [AwsStreamHandler](../../api/handlers/AwsStreamHandler).
+- Instead of `PromiseResolver` or whatever, you should use [DummyResolver](../../api/resolvers/DummyResolver).
+  - Resolvers are not used in this mode, so you can just use this dummy version.
+- Add the adapter [ApiGatewayV2Adapter](../../api/adapters/aws/ApiGatewayV2Adapter).
+  - It is required to handle function URLs, but you can add more if you wish.
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AwsStreamHandler } from '@h4ad/serverless-adapter/lib/handlers/aws';
+import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new AwsStreamHandler())
+  .setResolver(new DummyResolver())
+  .setAdapter(new ApiGatewayV2Adapter())
+  // continue to set the other options here.
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  //.setFramework(new ExpressFramework())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+As you see, we only have to change the `setHandler`, `setResolver` and `setAdapter` methods, that's all!
+
+### Can I use SQS and other services?
+
+Well, I don't know, but you can try. At least with `SQS` I was able to get the messages, but I couldn't use the `partial batch response` feature.
+
+Other services may or may not work, at least if it's a service that doesn't need a response, maybe it works now.
+
 ## Examples
 
 You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).

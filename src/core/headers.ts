@@ -71,3 +71,34 @@ export function getMultiValueHeadersMap(
 
   return multiValueHeaders;
 }
+
+/**
+ * Parse HTTP Raw Headers
+ * Attribution to {@link https://github.com/kesla/parse-headers/blob/master/parse-headers.js}
+ *
+ * @param headers - The raw headers
+ *
+ * @breadcrumb Core / Headers
+ * @public
+ */
+export function parseHeaders(
+  headers: string,
+): Record<string, string | string[]> {
+  if (!headers) return {};
+
+  const result = {};
+  const headersArr = headers.trim().split('\n');
+
+  for (let i = 0; i < headersArr.length; i++) {
+    const row = headersArr[i];
+    const index = row.indexOf(':');
+    const key = row.slice(0, index).trim().toLowerCase();
+    const value = row.slice(index + 1).trim();
+
+    if (typeof result[key] === 'undefined') result[key] = value;
+    else if (Array.isArray(result[key])) result[key].push(value);
+    else result[key] = [result[key], value];
+  }
+
+  return result;
+}

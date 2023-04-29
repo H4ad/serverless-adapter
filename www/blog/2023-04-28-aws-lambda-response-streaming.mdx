@@ -1,0 +1,93 @@
+---
+slug: aws-lambda-response-streaming
+title: AWS Lambda Response Streaming
+authors: [h4ad]
+tags: [serverless-adapter, aws, aws-lambda, function-url]
+image: https://images.unsplash.com/photo-1527489377706-5bf97e608852
+---
+
+![A beautiful stream!](https://images.unsplash.com/photo-1527489377706-5bf97e608852)
+> Image by [Hendrik Cornelissen](https://unsplash.com/@the_bracketeer) on [Unsplash](https://unsplash.com)
+
+It's been a long time since I wrote a post here, but I'm happy to share this new announcement.
+
+## First, are you new to this library?
+
+![First time?](first-time-meme-first-time.gif)
+
+Let me introduce the library first, I named [Serverless Adapter](/docs/main/intro) because my goal is connect any serverless environment to any NodeJS framework.
+
+So you could just plug your [framework](/docs/main/architecture#framework), use the correct [handler](/docs/main/architecture#handler) for your serverless environment,
+choose the [adapters](/docs/main/architecture#adapter) and then you can deploy your application!
+
+### What does this library support?
+
+Currently, we support [8 NodeJS frameworks](/docs/category/frameworks): [Express](/docs/main/frameworks/express), [Fastify](/docs/main/frameworks/fastify), [tRPC](/docs/main/frameworks/trpc), [Apollo Server](/docs/main/frameworks/apollo-server), [NestJS](/docs/main/frameworks/nestjs), [Deepkit](/docs/main/frameworks/deepkit), [Koa](/docs/main/frameworks/koa) and [Hapi](/docs/main/frameworks/Hapi).
+
+We also support [6 serverless environments](/docs/category/handlers): [AWS](/docs/main/handlers/aws), [Azure](/docs/main/handlers/azure), [Google Cloud](/docs/main/handlers/gcp), [Digital Ocean](/docs/main/handlers/digital-ocean), [Firebase](/docs/main/handlers/firebase) and [Huawei](/docs/main/handlers/huawei).
+
+Talking about AWS, we support [10 different services](/docs/category/aws) like API Gateway [V1](/docs/main/adapters/aws/api-gateway-v1) and [V2](/docs/main/adapters/aws/api-gateway-v2), [SQS](/docs/main/adapters/aws/sqs), [SNS](/docs/main/adapters/aws/sns), etc... and you can combine them to use the same codebase and lambda to handle them all.
+
+:::tip
+To learn understand the power of this composability, check this article I wrote about how I went [From a million invocations to a thousand with correct caching](https://viniciusl.com.br/posts/2022/12/08-from-million-invocations-to-thousand-with-correct-caching/).
+:::
+
+But okay, enough self-marketing, let's get to the main point of this article.
+
+## AWS Lambda Response Streaming
+
+Today I'm rolling out support for [AWS Lambda Streaming Response](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-response-streaming/) using [AwsStreamHandler](/docs/main/handlers/aws#aws-lambda-response-streaming).
+
+If you already use this library, just change [DefaultHandler](/docs/main/handlers/aws#usage) to [AwsStreamHandler](/docs/main/handlers/aws#aws-lambda-response-streaming), and make sure you're using [DummyResolver](/docs/api/Resolvers/DummyResolver) and [ApiGatewayV2Adapter](/docs/main/adapters/aws/api-gateway-v2):
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AwsStreamHandler } from '@h4ad/serverless-adapter/lib/handlers/aws';
+import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+// .setHandler(new DefaultHandler())
+   .setHandler(new AwsStreamHandler())
+   .setResolver(new DummyResolver())
+   .setAdapter(new ApiGatewayV2Adapter())
+   // more options...
+   //.setFramework(new ExpressFramework())
+   .build();
+```
+
+> Despite its name, `ApiGatewayV2Adapter` can be used to support API Gateway V2 and function URLs.
+
+:::caution
+Response streaming currently is only available for Function URLs.
+:::
+
+That's it :) Now you can use Function URLs and stream your content to the world!
+
+:::information
+Don't forget to enable the feature in your AWS Lambda function by changing `BUFFERED` TO `RESPONSE_STREAM.`
+:::
+
+### I NEED CODE!!!
+
+Well, if you're the type of person who, like me, needs to see the code working, here's a repository with several example projects using this library:
+[serverless-adapter-examples](https://github.com/H4ad/serverless-adapter-examples).
+
+## Beyond HTTP Requests
+
+Furthermore, not only can you receive HTTP requests using `Function URLs`, but you can combine your `SQS` queue and use the same codebase to process everything.
+
+I haven't spent a lot of time testing it, but so far, any AWS service that supports this library can be hooked up to your Lambda function with `RESPONSE_STREAM` enabled.
+
+The only thing you need to know is: the answer didn't work as expected, I couldn't get the [SQS Partial Response](/docs/main/adapters/aws/sqs#batch-item-failures) to work for example .
+
+But you can give it a try anyway, share your results with me on [twitter](https://twitter.com/vinii_joga10) and I'll be happy to help if I can.
+
+## Conclusion
+
+Well, I don't have much to say, but I hope you enjoy this new feature and use it to build amazing things.
+
+I've spent the last 3 weeks trying to figure out how to make this work and I'm happy with the result.
+
+If you're curious enough to learn more about how I implement it, you can see [this PR](https://github.com/H4ad/serverless-adapter/pull/90) with all my struggles and thoughts over the weeks.

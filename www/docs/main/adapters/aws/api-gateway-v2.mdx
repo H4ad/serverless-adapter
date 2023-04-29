@@ -3,7 +3,8 @@ title: Api Gateway V2
 description: See more about how to integrate with AWS API Gateway V2.
 ---
 
-The adapter to handle requests from [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html).
+The adapter to handle requests from [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+and from [AWS Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
 
 :::info
 
@@ -131,5 +132,6 @@ export const handler = ServerlessAdapter.new(app)
 :::danger
 
 As per [know issues](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html), we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+If you use Function URL, you can send the `transfer-encoding=chunked` when you configure the invocation method as `RESPONSE_STREAM`.
 
 :::

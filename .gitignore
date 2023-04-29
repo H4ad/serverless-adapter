@@ -132,3 +132,4 @@ www/api/*
 !www/api/.gitkeep
 
 .env
+perf/
