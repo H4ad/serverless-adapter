@@ -34,6 +34,7 @@ Currently, we support these clouds (handlers):
 
 - Azure by using ([AzureHandler](./handlers/azure))
 - AWS by using ([DefaultHandler](./handlers/aws))
+  - For [AWS Lambda Response Streaming](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-response-streaming/), you should use ([AwsStreamHandler](./handlers/aws#aws-lambda-response-streaming))
 - Digital Ocean by using ([DigitalOceanHandler](./handlers/digital-ocean))
 - Firebase by using ([HttpFirebaseHandler](./handlers/firebase))
 - Huawei by using ([HttpHuaweiHandler](./handlers/huawei#http-function)) and ([EventHuaweiHandler](./handlers/huawei#event-function))
@@ -69,6 +70,8 @@ We support these event sources:
     by using ([ApiGatewayV1Adapter](./adapters/aws/api-gateway-v1))
   - [AWS Api Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
     by using ([ApiGatewayV2Adapter](./adapters/aws/api-gateway-v2))
+  - [AWS Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html)
+    by using ([ApiGatewayV2Adapter](./adapters/aws/function-url))
   - [AWS DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) by
     using ([DynamoDBAdapter](./adapters/aws/dynamodb))
   - [AWS Event Bridge / CloudWatch Events](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html)

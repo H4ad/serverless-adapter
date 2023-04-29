@@ -36,7 +36,8 @@ export interface ApiGatewayV2Options {
 /**
  * The adapter to handle requests from AWS Api Gateway V2
  *
- * As per {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html | know issues}, we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+ * As per {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html | know issues}, we throw an exception when you send the `transfer-encoding=chunked`.
+ * But, if you use this adapter to accept requests from Function URL, you can accept the `transfer-encoding=chunked` changing the method of invocation from `BUFFERED` to `RESPONSE_STREAM`.
  *
  * @example
  * ```typescript

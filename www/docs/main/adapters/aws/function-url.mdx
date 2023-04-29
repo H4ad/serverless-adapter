@@ -1,0 +1,27 @@
+---
+title: Function URLs
+description: See more about how to integrate with AWS Lambda Function URLs
+---
+
+The [AWS Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) has the same API interface of [API Gateway V2](./api-gateway-v2),
+so you can use the [ApiGatewayV2Adapter](./api-gateway-v2#usage) to support it.
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV2Adapter())
+  // customizing:
+  // .addAdapter(new ApiGatewayV2Adapter({ stripBasePath: '/prod' }))
+  .build();
+```
+
+## AWS Lambda Response Streaming
+
+To support response streaming, read the docs on [AwsStreamHandler](../../handlers/aws#aws-lambda-response-streaming).
