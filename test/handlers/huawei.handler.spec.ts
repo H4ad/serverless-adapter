@@ -1,4 +1,5 @@
 import * as http from 'http';
+import { describe, expect, it, vitest } from 'vitest';
 import supertest from 'supertest';
 import { ILogger } from '../../src';
 import { DummyAdapter } from '../../src/adapters/dummy';
@@ -6,7 +7,7 @@ import {
   DEFAULT_HUAWEI_LISTEN_PORT,
   HttpHuaweiHandler,
 } from '../../src/handlers/huawei';
-import { DummyResolver } from '../../src/resolvers/dummy/dummy.resolver';
+import { DummyResolver } from '../../src/resolvers/dummy';
 import { FrameworkMock } from '../mocks/framework.mock';
 
 describe(HttpHuaweiHandler.name, () => {
@@ -18,18 +19,18 @@ describe(HttpHuaweiHandler.name, () => {
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
   const logger: ILogger = {
-    debug: jest.fn(),
-    error: jest.fn(),
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
+    debug: vitest.fn(),
+    error: vitest.fn(),
+    verbose: vitest.fn(),
+    info: vitest.fn(),
+    warn: vitest.fn(),
   };
 
   it('should create correctly mocked server and test default constants', async () => {
-    const listenMock = jest.fn();
-    const closeMock = jest.fn();
-    const addEventListenerMock = jest.fn();
-    const createServerMock = jest.fn(
+    const listenMock = vitest.fn();
+    const closeMock = vitest.fn();
+    const addEventListenerMock = vitest.fn();
+    const createServerMock = vitest.fn(
       () =>
         ({
           listen: listenMock,
@@ -140,8 +141,8 @@ describe(HttpHuaweiHandler.name, () => {
     const error = new Error('something wrong occours');
 
     const mockServer = {
-      listen: jest.fn(),
-      close: jest.fn(cb => cb(error)),
+      listen: vitest.fn(),
+      close: vitest.fn(cb => cb(error)),
     } as unknown as http.Server;
 
     const handlerFactory = new HttpHuaweiHandler({

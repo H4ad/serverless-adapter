@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   EmptyResponse,
@@ -44,8 +45,8 @@ describe(DummyAdapter.name, () => {
   describe('onErrorWhileForwarding', () => {
     it('should always resolve with success', () => {
       const resolver: DelegatedResolver<void> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       adapter.onErrorWhileForwarding({

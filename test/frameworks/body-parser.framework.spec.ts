@@ -1,19 +1,16 @@
 import { ServerResponse } from 'http';
+import * as trpc from '@trpc/server';
+import { Options } from 'body-parser';
 import express, { Express } from 'express';
 import fastify from 'fastify';
 import Application from 'koa';
-import * as trpc from '@trpc/server';
-import { Options } from 'body-parser';
+import { SpyInstance, describe, expect, it, vitest } from 'vitest';
 import {
   FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
-import { ExpressFramework } from '../../src/frameworks/express';
-import { FastifyFramework } from '../../src/frameworks/fastify';
-import { KoaFramework } from '../../src/frameworks/koa';
-import { TrpcAdapterContext, TrpcFramework } from '../../src/frameworks/trpc';
 import {
   BodyParserOptions,
   JsonBodyParserFramework,
@@ -21,24 +18,11 @@ import {
   TextBodyParserFramework,
   UrlencodedBodyParserFramework,
 } from '../../src/frameworks/body-parser';
+import { ExpressFramework } from '../../src/frameworks/express';
+import { FastifyFramework } from '../../src/frameworks/fastify';
 import { setNoOpForContentType } from '../../src/frameworks/fastify/helpers/no-op-content-parser';
-import SpyInstance = jest.SpyInstance;
-
-jest.mock('fastify', () => {
-  const packages = {
-    '12.x': 'fastify-3',
-    latest: 'fastify',
-  };
-  const version = process.env.TEST_NODE_VERSION || 'latest';
-
-  // Require the original module.
-  const originalModule = jest.requireActual(packages[version]);
-
-  return {
-    __esModule: true,
-    ...originalModule,
-  };
-});
+import { KoaFramework } from '../../src/frameworks/koa';
+import { TrpcAdapterContext, TrpcFramework } from '../../src/frameworks/trpc';
 
 type BodyParserTest = {
   name: string;
@@ -204,9 +188,9 @@ function createFramework<TApp>(
   instance: FrameworkContract<TApp>,
 ): [
   FrameworkContract<TApp>,
-  SpyInstance<void, Parameters<FrameworkContract<TApp>['sendRequest']>>,
+  SpyInstance<Parameters<FrameworkContract<TApp>['sendRequest']>>,
 ] {
-  const spy = jest.spyOn(instance, 'sendRequest');
+  const spy = vitest.spyOn(instance, 'sendRequest');
 
   return [options.createFramework(instance), spy];
 }
@@ -328,7 +312,7 @@ describe('BodyParserFramework', () => {
           throw e;
         };
 
-        const next = jest.fn(ctx => {
+        const next = vitest.fn(ctx => {
           const body = ctx.req.body;
 
           if (bodyParserTest.expectedBody)

@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import { describe } from 'vitest';
 import { ExpressFramework } from '../../src/frameworks/express';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 

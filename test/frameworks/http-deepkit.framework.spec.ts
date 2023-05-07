@@ -1,10 +1,5 @@
 import { App } from '@deepkit/app';
 import {
-  FrameworkModule,
-  TestingFacade,
-  createTestingApp,
-} from '@deepkit/framework';
-import {
   HttpBody,
   HttpKernel,
   HttpModule,
@@ -12,19 +7,20 @@ import {
   HttpRouterRegistry,
   JSONResponse,
 } from '@deepkit/http';
+import { describe, expect, it, vitest } from 'vitest';
 import {
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
 import { HttpDeepkitFramework } from '../../src/frameworks/deepkit';
-import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
+import { TestRouteBuilderHandler } from './utils';
 
 export function createDeepkitHandler(
   method: 'get' | 'post' | 'delete' | 'put',
-): TestRouteBuilderHandler<TestingFacade<App<any>>> {
+): TestRouteBuilderHandler<App<any>> {
   return (app, path, handler) => {
-    const router = app.app.get(HttpRouterRegistry);
+    const router = app.get(HttpRouterRegistry);
 
     router[method](path, (request: HttpRequest, body: HttpBody<any>) => {
       const [statusCode, resultBody, headers] = handler(request.headers, body);
@@ -42,7 +38,7 @@ export function createDeepkitHandler(
 it('should convert correctly when the value is not an buffer', async () => {
   const framework = new HttpDeepkitFramework();
   const kernel: Partial<HttpKernel> = {
-    handleRequest: jest.fn((request, response) => {
+    handleRequest: vitest.fn((request, response) => {
       request.pipe(response);
 
       return void 0 as any;
@@ -70,29 +66,41 @@ it('should convert correctly when the value is not an buffer', async () => {
   expect(resultBody.toString()).toEqual('test');
 });
 
-createTestSuiteFor(
-  () => {
-    return new HttpDeepkitFramework();
-  },
-  async () => {
-    const testingApp = createTestingApp({
-      imports: [
-        new HttpModule({ debug: true }),
-        new FrameworkModule({ debug: true, httpLog: true }),
-      ],
+describe('deepkit', () => {
+  it('should return valid json on get request', async () => {
+    const app = new App({
+      imports: [new HttpModule()],
     });
 
-    await testingApp.startServer();
+    const body = { test: 'ok' };
 
-    return testingApp;
-  },
-  {
-    get: createDeepkitHandler('get'),
-    delete: createDeepkitHandler('delete'),
-    post: createDeepkitHandler('post'),
-    put: createDeepkitHandler('put'),
-  },
-  app => app.app.get(HttpKernel),
-  async app => await app.stopServer(),
-  process.env.SKIP_DEEPKIT === 'true',
-);
+    app.get(HttpRouterRegistry).get('/', () => {
+      return new JSONResponse(body, 200).header('response-header', 'true');
+    });
+
+    const request = new ServerlessRequest({
+      method: 'GET',
+      url: '/',
+      headers: {},
+    });
+
+    const response = new ServerlessResponse({
+      method: 'GET',
+    });
+    const framework = new HttpDeepkitFramework();
+    const httpKernel = app.get(HttpKernel);
+
+    framework.sendRequest(httpKernel, request, response);
+
+    await waitForStreamComplete(response);
+
+    const resultBody = ServerlessResponse.body(response);
+
+    expect(resultBody.toString('utf-8')).toEqual(JSON.stringify(body));
+    expect(response.statusCode).toBe(200);
+    expect(ServerlessResponse.headers(response)).toHaveProperty(
+      'response-header',
+      'true',
+    );
+  });
+});

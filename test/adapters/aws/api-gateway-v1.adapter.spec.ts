@@ -1,5 +1,6 @@
 import type { APIGatewayProxyResult } from 'aws-lambda';
 import type { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
@@ -220,8 +221,8 @@ describe(ApiGatewayV1Adapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<APIGatewayProxyResult> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = true;
@@ -231,7 +232,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       let getResponseResult: APIGatewayProxyResult | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<APIGatewayProxyEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
@@ -273,8 +274,8 @@ describe(ApiGatewayV1Adapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<APIGatewayProxyResult> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = false;
@@ -284,7 +285,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       let getResponseResult: APIGatewayProxyResult | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<APIGatewayProxyEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { NO_OP } from '../../src';
 
 describe('NO_OP', () => {

@@ -3,4 +3,4 @@
 
 npm run build
 npm run test
-npx lint-staged
+npm run lint

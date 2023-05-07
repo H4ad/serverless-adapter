@@ -1,11 +1,11 @@
 import { Server } from '@hapi/hapi';
-import type { Server as HapiServer } from 'hapi';
+import { describe } from 'vitest';
 import { HapiFramework } from '../../src/frameworks/hapi';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(
   method: 'GET' | 'POST' | 'DELETE' | 'PUT',
-): TestRouteBuilderHandler<HapiServer> {
+): TestRouteBuilderHandler<Server> {
   return (app, path, handler) => {
     app.route({
       method,

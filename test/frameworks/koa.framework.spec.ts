@@ -1,4 +1,5 @@
 import Application, { Context } from 'koa';
+import { describe } from 'vitest';
 import { NO_OP } from '../../src';
 import { KoaFramework } from '../../src/frameworks/koa';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';

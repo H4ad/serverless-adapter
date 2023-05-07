@@ -1,3 +1,4 @@
+import { expect, it } from 'vitest';
 import {
   FrameworkContract,
   NO_OP,

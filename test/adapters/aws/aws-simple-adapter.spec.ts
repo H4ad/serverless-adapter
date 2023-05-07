@@ -1,11 +1,12 @@
-import { AwsSimpleAdapter } from '../../../src/adapters/aws/index';
+import { describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   EmptyResponse,
   ILogger,
   createDefaultLogger,
   getEventBodyAsBuffer,
-} from '../../../src/index';
+} from '../../../src';
+import { AwsSimpleAdapter } from '../../../src/adapters/aws';
 import { createDynamoDBEvent } from './utils/dynamodb';
 import { createSNSEvent } from './utils/sns';
 import { createSQSEvent } from './utils/sqs';
@@ -281,11 +282,11 @@ describe(AwsSimpleAdapter.name, () => {
 
       const error = new Error('fail because I need to test.');
       const resolver: DelegatedResolver<any> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
-      adapter.getResponse = jest.fn();
+      adapter.getResponse = vitest.fn();
       adapter.onErrorWhileForwarding({
         event: {},
         error,

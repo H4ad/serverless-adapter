@@ -1,3 +1,4 @@
+import { describe, expect, it, vitest } from 'vitest';
 import { ILogger, NO_OP, getCurrentInvoke } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { DefaultHandler } from '../../src/handlers/default';
@@ -16,11 +17,11 @@ describe('DefaultHandler', () => {
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
   const logger: ILogger = {
-    debug: jest.fn(),
-    error: jest.fn(),
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
+    debug: vitest.fn(),
+    error: vitest.fn(),
+    verbose: vitest.fn(),
+    info: vitest.fn(),
+    warn: vitest.fn(),
   };
 
   it('should forward and return the response from a request with different status', async () => {

@@ -1,7 +1,7 @@
 //#region Imports
 
 import { IncomingMessage, ServerResponse } from 'http';
-import type { Server } from 'hapi';
+import type { Server } from '@hapi/hapi';
 import { FrameworkContract } from '../../contracts';
 
 //#endregion

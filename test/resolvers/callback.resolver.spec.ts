@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   AdapterContract,
   ILogger,
@@ -22,11 +23,11 @@ describe(CallbackResolver.name, () => {
     resolverFactory = new CallbackResolver();
 
     mockedLogger = {
-      error: jest.fn(),
+      error: vitest.fn(),
     } as unknown as ILogger;
 
     mockedAdapter = {
-      onErrorWhileForwarding: jest.fn(
+      onErrorWhileForwarding: vitest.fn(
         ({
           error,
           delegatedResolver,
@@ -47,7 +48,7 @@ describe(CallbackResolver.name, () => {
     } as unknown as AdapterContract<any, any, any>;
   });
 
-  it('should call correctly the callback when succeed', done => {
+  it('should call correctly the callback when succeed', async () => {
     const resolverProps: ResolverProps<
       any,
       any,
@@ -56,7 +57,7 @@ describe(CallbackResolver.name, () => {
     > = {
       log: mockedLogger,
       respondWithErrors: false,
-      callback: jest.fn(),
+      callback: vitest.fn(),
       event: {},
       adapter: mockedAdapter,
     };
@@ -67,14 +68,16 @@ describe(CallbackResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onCallbackResolve(() => {
-      expect(resolverProps.callback).toHaveBeenCalledWith(null, true);
+    await new Promise<void>(resolve => {
+      onCallbackResolve(() => {
+        expect(resolverProps.callback).toHaveBeenCalledWith(null, true);
 
-      done();
+        resolve();
+      });
     });
   });
 
-  it('should call correctly the callback when fail', done => {
+  it('should call correctly the callback when fail', async () => {
     const resolverProps: ResolverProps<
       any,
       any,
@@ -83,7 +86,7 @@ describe(CallbackResolver.name, () => {
     > = {
       log: mockedLogger,
       respondWithErrors: false,
-      callback: jest.fn(),
+      callback: vitest.fn(),
       event: {},
       adapter: mockedAdapter,
     };
@@ -95,14 +98,16 @@ describe(CallbackResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onCallbackResolve(() => {
-      expect(resolverProps.log.error).toHaveBeenCalled();
+    await new Promise<void>(resolve => {
+      onCallbackResolve(() => {
+        expect(resolverProps.log.error).toHaveBeenCalled();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
-      expect(resolverProps.callback).toHaveBeenCalledWith(error, null);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
+        expect(resolverProps.callback).toHaveBeenCalledWith(error, null);
 
-      done();
+        resolve();
+      });
     });
   });
 

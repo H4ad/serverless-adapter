@@ -1,11 +1,12 @@
 import { resolve } from 'path';
 import type { ALBResult } from 'aws-lambda';
 import express from 'express';
-import { AlbAdapter } from '../../../src/adapters/aws/index';
-import { ExpressFramework } from '../../../src/frameworks/express/index';
-import { DefaultHandler } from '../../../src/handlers/default/index';
-import { PromiseResolver } from '../../../src/resolvers/promise/index';
-import { ServerlessAdapter } from '../../../src/index';
+import { describe, expect, it } from 'vitest';
+import { ServerlessAdapter } from '../../../src';
+import { AlbAdapter } from '../../../src/adapters/aws';
+import { ExpressFramework } from '../../../src/frameworks/express';
+import { DefaultHandler } from '../../../src/handlers/default';
+import { PromiseResolver } from '../../../src/resolvers/promise';
 import { createAlbEvent } from '../../adapters/aws/utils/alb-event';
 
 describe('ALB rejecting response when uses express.static because', () => {

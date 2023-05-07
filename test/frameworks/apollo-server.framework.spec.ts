@@ -1,5 +1,6 @@
 import { OutgoingHttpHeaders } from 'http2';
 import { ApolloServer, BaseContext, HeaderMap } from '@apollo/server';
+import { describe, expect, it, vitest } from 'vitest';
 import {
   ServerlessRequest,
   ServerlessResponse,
@@ -131,12 +132,12 @@ describe(ApolloServerFramework.name, () => {
         for (let i = 0; i < values.length; i++) yield values[i];
       }
 
-      jest.spyOn(app, 'executeHTTPGraphQLRequest').mockImplementation(() =>
+      vitest.spyOn(app, 'executeHTTPGraphQLRequest').mockImplementation(() =>
         Promise.resolve({
           status: 200,
           headers: new HeaderMap(),
           body: {
-            kind: 'chunked',
+            kind: 'chunked' as const,
             asyncIterator: iterator(asyncContent),
           },
         }),
@@ -176,7 +177,7 @@ describe(ApolloServerFramework.name, () => {
           method: 'POST',
         });
 
-      response.flush = jest.fn(() => void 0);
+      response.flush = vitest.fn(() => void 0);
 
       framework.sendRequest(app, request, response);
 
@@ -203,7 +204,7 @@ describe(ApolloServerFramework.name, () => {
         resolvers: {},
       });
 
-      jest
+      vitest
         .spyOn(app, 'executeHTTPGraphQLRequest')
         .mockImplementation(({ httpGraphQLRequest: { headers } }) => {
           const objHeaders = Object.fromEntries(headers.entries());

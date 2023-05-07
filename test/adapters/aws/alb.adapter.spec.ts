@@ -1,4 +1,5 @@
 import type { ALBEvent, ALBResult } from 'aws-lambda';
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
@@ -272,8 +273,8 @@ describe(AlbAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<ALBResult> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = true;
@@ -283,7 +284,7 @@ describe(AlbAdapter.name, () => {
 
       let getResponseResult: ALBResult | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<ALBEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
@@ -329,8 +330,8 @@ describe(AlbAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<ALBResult> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = false;
@@ -340,7 +341,7 @@ describe(AlbAdapter.name, () => {
 
       let getResponseResult: ALBResult | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<ALBEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);

@@ -1,5 +1,6 @@
 import * as trpc from '@trpc/server';
 import { AnyRouter } from '@trpc/server';
+import { describe, expect, it } from 'vitest';
 import {
   NO_OP,
   ServerlessRequest,

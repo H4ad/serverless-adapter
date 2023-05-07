@@ -1,4 +1,5 @@
 import type { Context } from 'aws-lambda';
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   AdapterContract,
   ILogger,
@@ -21,16 +22,16 @@ describe(AwsContextResolver.name, () => {
     resolverFactory = new AwsContextResolver();
 
     mockedContext = {
-      succeed: jest.fn(),
-      fail: jest.fn(),
+      succeed: vitest.fn(),
+      fail: vitest.fn(),
     } as unknown as Context;
 
     mockedLogger = {
-      error: jest.fn(),
+      error: vitest.fn(),
     } as unknown as ILogger;
 
     mockedAdapter = {
-      onErrorWhileForwarding: jest.fn(
+      onErrorWhileForwarding: vitest.fn(
         ({
           error,
           delegatedResolver,
@@ -51,7 +52,7 @@ describe(AwsContextResolver.name, () => {
     } as unknown as AdapterContract<any, any, any>;
   });
 
-  it('should call correctly the context when succeed', done => {
+  it('should call correctly the context when succeed', async () => {
     const resolverProps: ResolverProps<any, any, Context, any> = {
       log: mockedLogger,
       respondWithErrors: false,
@@ -66,14 +67,16 @@ describe(AwsContextResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onContextResolve(() => {
-      expect(resolverProps.context.succeed).toHaveBeenCalledWith(true);
+    await new Promise<void>(resolve => {
+      onContextResolve(() => {
+        expect(resolverProps.context.succeed).toHaveBeenCalledWith(true);
 
-      done();
+        resolve();
+      });
     });
   });
 
-  it('should call correctly the context when fail', done => {
+  it('should call correctly the context when fail', async () => {
     const resolverProps: ResolverProps<any, any, Context, any> = {
       log: mockedLogger,
       respondWithErrors: false,
@@ -89,14 +92,16 @@ describe(AwsContextResolver.name, () => {
 
     expect(result).toBeUndefined();
 
-    onContextResolve(() => {
-      expect(resolverProps.log.error).toHaveBeenCalled();
+    await new Promise<void>(resolve => {
+      onContextResolve(() => {
+        expect(resolverProps.log.error).toHaveBeenCalled();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
-      expect(resolverProps.context.fail).toHaveBeenCalledWith(error);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
+        expect(resolverProps.context.fail).toHaveBeenCalledWith(error);
 
-      done();
+        resolve();
+      });
     });
   });
 
@@ -127,7 +132,7 @@ describe(AwsContextResolver.name, () => {
         adapter: mockedAdapter,
         context: {
           succeed: undefined,
-          fail: jest.fn(),
+          fail: vitest.fn(),
         } as unknown as Context,
         event: {},
       }),
@@ -139,7 +144,7 @@ describe(AwsContextResolver.name, () => {
         respondWithErrors: false,
         adapter: mockedAdapter,
         context: {
-          succeed: jest.fn(),
+          succeed: vitest.fn(),
           fail: undefined,
         } as unknown as Context,
         event: {},

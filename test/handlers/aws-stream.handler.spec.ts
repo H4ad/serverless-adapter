@@ -2,6 +2,7 @@ import { createReadStream, readFileSync } from 'fs';
 import { join } from 'path';
 import express from 'express';
 import { WritableMock } from 'stream-mock/lib/writable';
+import { afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
 import { ILogger, getCurrentInvoke } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { ExpressFramework } from '../../src/frameworks/express';
@@ -18,7 +19,7 @@ describe('AwsStreamHandler', () => {
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
   const logger: ILogger = {
-    debug: jest.fn((m, callbackOrString) => {
+    debug: vitest.fn((m, callbackOrString) => {
       expect(typeof m === 'string').toBeTruthy();
       const content =
         typeof callbackOrString === 'function'
@@ -26,16 +27,16 @@ describe('AwsStreamHandler', () => {
           : callbackOrString || 'no-second-arg';
       expect(content).toBeTruthy();
     }),
-    error: jest.fn(),
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
+    error: vitest.fn(),
+    verbose: vitest.fn(),
+    info: vitest.fn(),
+    warn: vitest.fn(),
   };
 
   beforeEach(() => {
     (global as any).awslambda = {
-      streamifyResponse: jest.fn(fn => fn),
-      HttpResponseStream: { from: jest.fn(r => r) },
+      streamifyResponse: vitest.fn(fn => fn),
+      HttpResponseStream: { from: vitest.fn(r => r) },
     };
   });
 
@@ -139,7 +140,7 @@ describe('AwsStreamHandler', () => {
     const context = { test: Symbol('unique') };
 
     const writable = new WritableMock();
-    const write = jest.spyOn(writable, 'write');
+    const write = vitest.spyOn(writable, 'write');
 
     await handler(event, writable, context);
 
@@ -176,7 +177,7 @@ describe('AwsStreamHandler', () => {
     const context = { test: Symbol('unique') };
 
     const writable = new WritableMock();
-    const write = jest.spyOn(writable, 'write');
+    const write = vitest.spyOn(writable, 'write');
 
     await handler(event, writable, context);
 
@@ -213,7 +214,7 @@ describe('AwsStreamHandler', () => {
     const context = { test: Symbol('unique') };
 
     const writable = new WritableMock();
-    const write = jest.spyOn(writable, 'write');
+    const write = vitest.spyOn(writable, 'write');
 
     await handler(event, writable, context);
 

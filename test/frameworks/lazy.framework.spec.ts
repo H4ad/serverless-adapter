@@ -1,10 +1,11 @@
+import { describe, expect, it, vitest } from 'vitest';
 import {
   ILogger,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
-import { LazyFramework } from '../../src/frameworks/lazy/lazy.framework';
+import { LazyFramework } from '../../src/frameworks/lazy';
 import { FrameworkMock } from '../mocks/framework.mock';
 
 describe(LazyFramework.name, () => {
@@ -16,9 +17,9 @@ describe(LazyFramework.name, () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    mockFramework.sendRequest = jest.fn(mockFramework.sendRequest);
+    mockFramework.sendRequest = vitest.fn(mockFramework.sendRequest);
 
-    const factory = jest.fn(
+    const factory = vitest.fn(
       () => new Promise(resolve => setTimeout(() => resolve(appInstance), 100)),
     );
 
@@ -74,7 +75,7 @@ describe(LazyFramework.name, () => {
       data: true,
     });
 
-    const mockLogger = { error: jest.fn() } as unknown as ILogger;
+    const mockLogger = { error: vitest.fn() } as unknown as ILogger;
     const error = new Error('Something Wrong Occours');
 
     const framework = new LazyFramework(

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
@@ -178,8 +179,8 @@ describe(HttpFunctionAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<DigitalOceanHttpResponse> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = true;
@@ -189,7 +190,7 @@ describe(HttpFunctionAdapter.name, () => {
 
       let getResponseResult: DigitalOceanHttpResponse | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<DigitalOceanHttpEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
@@ -231,8 +232,8 @@ describe(HttpFunctionAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<DigitalOceanHttpResponse> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = false;
@@ -242,7 +243,7 @@ describe(HttpFunctionAdapter.name, () => {
 
       let getResponseResult: DigitalOceanHttpResponse | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<DigitalOceanHttpEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
