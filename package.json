@@ -34,7 +34,7 @@
     "url": "https://github.com/H4ad"
   },
   "engines": {
-    "node": ">=12.0"
+    "node": ">=18.0"
   },
   "keywords": [
     "aws",

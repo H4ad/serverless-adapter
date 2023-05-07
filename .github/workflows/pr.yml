@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 12.x, 14.x, 16.x, 18.x ]
+        node-version: [ 18.x, 20.x ]
 
     steps:
       - uses: actions/checkout@v3
@@ -18,13 +18,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Update NPM Version On NodeJS 12
-        run: npm i -g npm@8.x
-        if: matrix.node-version == '12.x'
-
       - name: Update NPM Version
         run: npm i -g npm
-        if: matrix.node-version != '12.x'
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -40,10 +35,6 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
-      - name: Override Packages Versions for NodeJS 12.x
-        if: matrix.node-version == '12.x'
-        run: echo "TEST_NODE_VERSION=12.x" >> $GITHUB_ENV
-
       - name: Run tests
         run: npm test
 
@@ -56,18 +47,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 16
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.x'
 
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-16.x-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-18.x-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-16.x-
+            ${{ runner.os }}-node-18.x-
 
       - name: Install Lib Dependencies
         run: npm ci
