@@ -83,7 +83,7 @@ describe('ServerlessAdapter', () => {
       framework,
       [adapter],
       resolver,
-      binarySettings,
+      expect.objectContaining(binarySettings),
       respondWithErrors,
       logger,
     );

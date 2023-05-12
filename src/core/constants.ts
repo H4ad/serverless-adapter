@@ -11,12 +11,19 @@ export const DEFAULT_BINARY_ENCODINGS: string[] = ['gzip', 'deflate', 'br'];
  * Default content types that are treated as binary, they are compared with the `Content-Type` header.
  *
  * @breadcrumb Core / Constants
- * @defaultValue [new RegExp('^image/.*$'), new RegExp('^video/.*$'), 'application/pdf']
+ * @defaultValue ['image/png', 'image/jpeg', 'image/jpg', 'image/avif', 'image/bmp', 'image/x-png', 'image/gif', 'image/webp', 'video/mp4', 'application/pdf']
  * @public
  */
-export const DEFAULT_BINARY_CONTENT_TYPES: (string | RegExp)[] = [
-  new RegExp('^image/.*$'),
-  new RegExp('^video/.*$'),
+export const DEFAULT_BINARY_CONTENT_TYPES: string[] = [
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/avif',
+  'image/bmp',
+  'image/x-png',
+  'image/gif',
+  'image/webp',
+  'video/mp4',
   'application/pdf',
 ];
 

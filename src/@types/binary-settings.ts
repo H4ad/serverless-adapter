@@ -26,7 +26,7 @@ export interface BinarySettingsContentHeaders {
   /**
    * The list of content types that will be treated as binary
    */
-  contentTypes: (string | RegExp)[];
+  contentTypes: string[];
 
   /**
    * The list of content encodings that will be treated as binary
