@@ -224,7 +224,22 @@ export class ApiGatewayV1Adapter
    */
   protected getPathFromEvent(event: APIGatewayProxyEvent): string {
     const path = this.stripPathFn(event.path);
-    const queryParams = event.queryStringParameters || {};
+    const queryParams = event.multiValueQueryStringParameters || {};
+
+    if (event.queryStringParameters) {
+      for (const queryStringKey of Object.keys(event.queryStringParameters)) {
+        const queryStringValue = event.queryStringParameters[queryStringKey];
+
+        if (queryStringValue === undefined) continue;
+
+        if (!Array.isArray(queryParams[queryStringKey]))
+          queryParams[queryStringKey] = [];
+
+        if (queryParams[queryStringKey]!.includes(queryStringValue)) continue;
+
+        queryParams[queryStringKey]!.push(queryStringValue);
+      }
+    }
 
     return getPathWithQueryStringParams(path, queryParams);
   }

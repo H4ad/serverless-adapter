@@ -37,14 +37,23 @@ describe(ApiGatewayV1Adapter.name, () => {
       const body = { name: 'H4ad Event' };
 
       const event = createApiGatewayV1(method, path, body);
+      event.queryStringParameters = {
+        potato: 'v1',
+        nanana: 'oh nanana',
+        unkown: 'oi',
+        ignore: undefined,
+      };
+      event.multiValueQueryStringParameters = {
+        potato: ['v1', 'v2'],
+        nanana: ['oh nanana'],
+      };
       const result = adapter.getRequest(event);
 
       const remoteAddress = event.requestContext.identity.sourceIp;
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
-      expect(result.headers).not.toHaveProperty('Accept');
-      expect(result.headers).toHaveProperty('accept');
+      expect(result.headers).toHaveProperty('Accept');
 
       expect(result).toHaveProperty('body');
       expect(result.body).toBeInstanceOf(Buffer);
@@ -61,7 +70,7 @@ describe(ApiGatewayV1Adapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path,
-        event.queryStringParameters,
+        event.multiValueQueryStringParameters,
       );
       expect(result).toHaveProperty('path', resultPath);
     });

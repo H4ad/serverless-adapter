@@ -17,7 +17,7 @@ export function createApiGatewayV1(
     httpMethod,
     headers: {
       Accept: '*/*',
-      'Accept-Encoding': 'gzip, deflate, br',
+      'Accept-Encoding': 'gzip',
       'Accept-Language': 'en-US,en;q=0.9',
       'cache-control': 'no-cache',
       'CloudFront-Forwarded-Proto': 'https',
@@ -43,7 +43,7 @@ export function createApiGatewayV1(
     },
     multiValueHeaders: {
       Accept: ['*/*'],
-      'Accept-Encoding': ['gzip, deflate, br'],
+      'Accept-Encoding': ['gzip', 'deflate', 'br'],
       'Accept-Language': ['en-US,en;q=0.9'],
       'cache-control': ['no-cache'],
       'CloudFront-Forwarded-Proto': ['https'],
