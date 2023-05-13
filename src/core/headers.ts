@@ -73,6 +73,57 @@ export function getMultiValueHeadersMap(
 }
 
 /**
+ * The wrapper that holds the information about single value headers and cookies
+ *
+ * @breadcrumb Core / Headers
+ * @public
+ */
+export type FlattenedHeadersAndCookies = {
+  /**
+   * Just the single value headers
+   */
+  headers: Record<string, string>;
+
+  /**
+   * The list of cookies
+   */
+  cookies: string[];
+};
+
+/**
+ * Transforms a header map into a single value headers and cookies
+ *
+ * @param headersMap - The initial headers
+ *
+ * @breadcrumb Core / Headers
+ * @public
+ */
+export function getFlattenedHeadersMapAndCookies(
+  headersMap: BothValueHeaders,
+): FlattenedHeadersAndCookies {
+  const headers: FlattenedHeadersAndCookies = {
+    cookies: [],
+    headers: {},
+  };
+
+  for (const [headerKey, headerValue] of Object.entries(headersMap)) {
+    const lowerHeaderKey = headerKey.toLowerCase();
+
+    if (Array.isArray(headerValue)) {
+      if (lowerHeaderKey !== 'set-cookie')
+        headers.headers[headerKey] = headerValue.join(',');
+      else headers.cookies.push(...headerValue);
+    } else {
+      if (lowerHeaderKey === 'set-cookie' && headerValue !== undefined)
+        headers.cookies.push(headerValue ?? '');
+      else headers.headers[headerKey] = String(headerValue ?? '');
+    }
+  }
+
+  return headers;
+}
+
+/**
  * Parse HTTP Raw Headers
  * Attribution to {@link https://github.com/kesla/parse-headers/blob/master/parse-headers.js}
  *

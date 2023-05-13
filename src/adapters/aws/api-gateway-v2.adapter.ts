@@ -12,8 +12,8 @@ import {
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
-  getMultiValueHeadersMap,
   getPathWithQueryStringParams,
+  getFlattenedHeadersMapAndCookies,
 } from '../../core';
 
 //#endregion
@@ -135,8 +135,8 @@ export class ApiGatewayV2Adapter
     statusCode,
     response,
   }: GetResponseAdapterProps<APIGatewayProxyEventV2>): APIGatewayProxyStructuredResultV2 {
-    const headers = getFlattenedHeadersMap(responseHeaders);
-    const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
+    const { cookies, headers } =
+      getFlattenedHeadersMapAndCookies(responseHeaders);
 
     const transferEncodingHeader: string | undefined =
       headers['transfer-encoding'];
@@ -155,10 +155,6 @@ export class ApiGatewayV2Adapter
         'chunked encoding in response is not supported by API Gateway V2',
       );
     }
-
-    const cookies = multiValueHeaders['set-cookie'];
-
-    if (headers) delete headers['set-cookie'];
 
     return {
       statusCode,

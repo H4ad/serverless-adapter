@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BothValueHeaders,
   getFlattenedHeadersMap,
+  getFlattenedHeadersMapAndCookies,
   getMultiValueHeadersMap,
 } from '../../src';
 
@@ -126,6 +127,45 @@ describe('getMultiValueHeadersMap', () => {
           Array.isArray(multiValueHeadersMap[key]),
         ),
       );
+    }
+  });
+});
+
+describe('getFlattenedHeadersMapAndCookies', () => {
+  it('should return headers flattened', () => {
+    const headerLists: BothValueHeaders[] = [
+      {
+        'Accept-Encoding': 'gzip',
+        'Accept-Language': 'en-US,en;q=0.9',
+        Host: undefined,
+        'Content-Type': '',
+        'Content-Length': 40 as unknown as string,
+        'Set-Cookie': 'blabla',
+      },
+      {
+        'Accept-Encoding': ['gzip'],
+        'Accept-Language': ['en-US', 'en;q=0.9'],
+        Host: undefined,
+        'Content-Type': '',
+        'Content-Length': [40] as unknown as string[],
+        'Set-Cookie': ['blabla'],
+      },
+    ];
+
+    for (const headers of headerLists) {
+      const { headers: flattenedHeaders, cookies } =
+        getFlattenedHeadersMapAndCookies(headers);
+
+      expect(Object.keys(flattenedHeaders).length).toEqual(
+        Object.keys(headers).length - 1,
+      );
+
+      expect(flattenedHeaders).toHaveProperty('Accept-Encoding');
+      expect(flattenedHeaders['Accept-Encoding']).toEqual('gzip');
+      expect(flattenedHeaders['Accept-Language']).toEqual('en-US,en;q=0.9');
+      expect(flattenedHeaders['Content-Length']).toEqual('40');
+      expect(flattenedHeaders['Content-Length']).toEqual('40');
+      expect(cookies[0]).toEqual('blabla');
     }
   });
 });
