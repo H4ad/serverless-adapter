@@ -12,7 +12,6 @@ import {
   StripBasePathFn,
   buildStripBasePath,
   getEventBodyAsBuffer,
-  getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
 } from '../../core';
@@ -112,7 +111,22 @@ export class ApiGatewayV1Adapter
    */
   public getRequest(event: APIGatewayProxyEvent): AdapterRequest {
     const method = event.httpMethod;
-    const headers = getFlattenedHeadersMap(event.headers, ',', true);
+    const headers = { ...event.headers };
+
+    for (const multiValueHeaderKey of Object.keys(
+      event.multiValueHeaders || {},
+    )) {
+      const headerValue = event.multiValueHeaders[multiValueHeaderKey];
+
+      // event.headers by default only stick with first value if they see multiple headers
+      // the other values will only appear on multiValueHeaderKey, in this case
+      // we look for headers with more than 1 length which is the wrong values on event.headers
+      // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+      if (!headerValue || headerValue?.length <= 1) continue;
+
+      headers[multiValueHeaderKey] = headerValue.join(',');
+    }
+
     const path = this.getPathFromEvent(event);
 
     let body: Buffer | undefined;
@@ -124,7 +138,8 @@ export class ApiGatewayV1Adapter
       );
 
       body = bufferBody;
-      headers['content-length'] = String(contentLength);
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      headers['content-length'] = contentLength + '';
     }
 
     const remoteAddress = event.requestContext.identity.sourceIp;
