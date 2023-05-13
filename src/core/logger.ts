@@ -1,3 +1,5 @@
+import { NO_OP } from './no-op';
+
 /**
  * The type representing the possible log levels to choose from.
  *
@@ -51,34 +53,46 @@ export type ILogger = Record<Exclude<LogLevels, 'none'>, LoggerFN>;
  */
 const InternalLoggerSymbol = Symbol('InternalLogger');
 
-const errorLogLevel = new Map([
-  ['debug', true],
-  ['verbose', true],
-  ['info', true],
-  ['warn', true],
-  ['error', true],
-]);
-const warnLogLevel = new Map([
-  ['debug', true],
-  ['verbose', true],
-  ['info', true],
-  ['warn', true],
-]);
-const infoLogLevel = new Map([
-  ['debug', true],
-  ['verbose', true],
-  ['info', true],
-]);
-const verboseLogLevel = new Map([
-  ['debug', true],
-  ['verbose', true],
-]);
+const logLevels: Record<
+  LogLevels,
+  [level: LogLevels, consoleMethod: keyof Console][]
+> = {
+  debug: [
+    ['debug', 'debug'],
+    ['verbose', 'debug'],
+    ['info', 'info'],
+    ['error', 'error'],
+    ['warn', 'warn'],
+  ],
+  verbose: [
+    ['verbose', 'debug'],
+    ['info', 'info'],
+    ['error', 'error'],
+    ['warn', 'warn'],
+  ],
+  info: [
+    ['info', 'info'],
+    ['error', 'error'],
+    ['warn', 'warn'],
+  ],
+  warn: [
+    ['warn', 'warn'],
+    ['error', 'error'],
+  ],
+  error: [['error', 'error']],
+  none: [],
+};
 
 const lazyPrint = value => {
   if (typeof value === 'function') return value();
 
   return value;
 };
+
+const print =
+  (fn: string) =>
+  (message, ...additional) =>
+    console[fn](message, ...additional.map(lazyPrint));
 
 /**
  * The method used to create a simple logger instance to use in this library.
@@ -101,34 +115,23 @@ const lazyPrint = value => {
 export function createDefaultLogger(
   { level }: LoggerOptions = { level: 'error' },
 ): ILogger {
-  return {
+  const levels = logLevels[level];
+
+  if (!levels) throw new Error('Invalid log level');
+
+  const logger = {
     [InternalLoggerSymbol]: true,
-    error: (message, ...additional) => {
-      if (!errorLogLevel.has(level)) return;
-
-      console.error(message, ...additional.map(lazyPrint));
-    },
-    warn: (message, ...additional) => {
-      if (!warnLogLevel.has(level)) return;
-
-      console.warn(message, ...additional.map(lazyPrint));
-    },
-    info: (message, ...additional) => {
-      if (!infoLogLevel.has(level)) return;
-
-      console.info(message, ...additional.map(lazyPrint));
-    },
-    verbose: (message, ...additional) => {
-      if (!verboseLogLevel.has(level)) return;
-
-      console.debug(message, ...additional.map(lazyPrint));
-    },
-    debug: (message, ...additional) => {
-      if (level !== 'debug') return;
-
-      console.debug(message, ...additional.map(lazyPrint));
-    },
+    error: NO_OP,
+    debug: NO_OP,
+    info: NO_OP,
+    verbose: NO_OP,
+    warn: NO_OP,
   } as ILogger;
+
+  for (const [level, consoleMethod] of levels)
+    logger[level] = print(consoleMethod);
+
+  return logger;
 }
 
 /**

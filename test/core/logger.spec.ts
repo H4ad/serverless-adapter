@@ -149,6 +149,12 @@ describe('createDefaultLogger', () => {
     expect(global.console.debug).toHaveBeenNthCalledWith(1, 'verbose');
     expect(global.console.debug).toHaveBeenNthCalledWith(2, 'debug');
   });
+
+  it('should throw error with invalid log level', () => {
+    expect(() =>
+      createDefaultLogger({ level: 'random' as unknown as LogLevels }),
+    ).toThrowError('Invalid');
+  });
 });
 
 describe('isInternalLogger', () => {
@@ -172,7 +178,7 @@ describe('isInternalLogger', () => {
     });
   }
 
-  it('random isntance of ILogger should not return true', () => {
+  it('random instance of ILogger should not return true', () => {
     expect(
       isInternalLogger({
         debug: NO_OP,
