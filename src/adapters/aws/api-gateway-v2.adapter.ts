@@ -12,8 +12,8 @@ import {
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
-  getPathWithQueryStringParams,
   getFlattenedHeadersMapAndCookies,
+  getPathWithQueryStringParams,
 } from '../../core';
 
 //#endregion
