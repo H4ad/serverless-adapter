@@ -151,16 +151,14 @@ export class DefaultHandler<
     log: ILogger,
     requestValues: AdapterRequest,
   ): void {
-    const body = requestValues.body?.toString();
-
     log.debug(
       'SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:REQUEST_VALUES',
-      {
+      () => ({
         requestValues: {
           ...requestValues,
-          body,
+          body: requestValues.body?.toString(),
         },
-      },
+      }),
     );
   }
 
@@ -174,9 +172,12 @@ export class DefaultHandler<
     log: ILogger,
     response: ServerlessResponse,
   ): void {
-    log.debug('SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:RESPONSE', {
-      response,
-    });
+    log.debug(
+      'SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:RESPONSE',
+      () => ({
+        response,
+      }),
+    );
   }
 
   /**
@@ -197,12 +198,12 @@ export class DefaultHandler<
   ) {
     log.debug(
       'SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE_PARAMS',
-      {
+      () => ({
         statusCode,
         body,
         headers,
         isBase64Encoded,
-      },
+      }),
     );
   }
 

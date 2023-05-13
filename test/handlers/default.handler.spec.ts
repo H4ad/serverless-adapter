@@ -16,12 +16,13 @@ describe('DefaultHandler', () => {
   const resolver = new PromiseResolver();
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
+  const executeLog = (m, fn) => typeof fn === 'function' && fn();
   const logger: ILogger = {
-    debug: vitest.fn(),
-    error: vitest.fn(),
-    verbose: vitest.fn(),
-    info: vitest.fn(),
-    warn: vitest.fn(),
+    debug: vitest.fn(executeLog),
+    error: vitest.fn(executeLog),
+    verbose: vitest.fn(executeLog),
+    info: vitest.fn(executeLog),
+    warn: vitest.fn(executeLog),
   };
 
   it('should forward and return the response from a request with different status', async () => {
@@ -63,19 +64,19 @@ describe('DefaultHandler', () => {
       expect(logger.debug).toHaveBeenNthCalledWith(
         3,
         'SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:REQUEST_VALUES',
-        expect.any(Object),
+        expect.any(Function),
       );
 
       expect(logger.debug).toHaveBeenNthCalledWith(
         4,
         'SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:RESPONSE',
-        expect.any(Object),
+        expect.any(Function),
       );
 
       expect(logger.debug).toHaveBeenNthCalledWith(
         5,
         'SERVERLESS_ADAPTER:FORWARD_RESPONSE:EVENT_SOURCE_RESPONSE_PARAMS',
-        expect.any(Object),
+        expect.any(Function),
       );
 
       expect(logger.debug).toHaveBeenNthCalledWith(
