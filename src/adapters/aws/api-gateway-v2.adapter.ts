@@ -12,7 +12,6 @@ import {
   StripBasePathFn,
   buildStripBasePath,
   getEventBodyAsBuffer,
-  getFlattenedHeadersMap,
   getFlattenedHeadersMapAndCookies,
   getPathWithQueryStringParams,
 } from '../../core';
@@ -109,8 +108,10 @@ export class ApiGatewayV2Adapter
   public getRequest(event: APIGatewayProxyEventV2): AdapterRequest {
     const method = event.requestContext.http.method;
     const path = this.getPathFromEvent(event);
-
-    const headers = getFlattenedHeadersMap(event.headers, ',', true);
+    // accords https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    // all headers are lowercased and cannot be array
+    // so no need to format, just a shallow copy will work here
+    const headers = { ...event.headers };
 
     if (event.cookies) headers.cookie = event.cookies.join('; ');
 
@@ -123,7 +124,8 @@ export class ApiGatewayV2Adapter
       );
 
       body = bufferBody;
-      headers['content-length'] = String(contentLength);
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      headers['content-length'] = contentLength + '';
     }
 
     const remoteAddress = event.requestContext.http.sourceIp;
