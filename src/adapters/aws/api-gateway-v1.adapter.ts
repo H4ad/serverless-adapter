@@ -9,7 +9,8 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
-  getDefaultIfUndefined,
+  StripBasePathFn,
+  buildStripBasePath,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
@@ -62,7 +63,18 @@ export class ApiGatewayV1Adapter
    *
    * @param options - The options to customize the {@link ApiGatewayV1Adapter}
    */
-  constructor(protected readonly options?: ApiGatewayV1Options) {}
+  constructor(protected readonly options?: ApiGatewayV1Options) {
+    this.stripPathFn = buildStripBasePath(this.options?.stripBasePath);
+  }
+
+  //#endregion
+
+  //#region Protected Properties
+
+  /**
+   * Strip base path function
+   */
+  protected stripPathFn: StripBasePathFn;
 
   //#endregion
 
@@ -138,12 +150,10 @@ export class ApiGatewayV1Adapter
   }: GetResponseAdapterProps<APIGatewayProxyEvent>): APIGatewayProxyResult {
     const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
 
-    const transferEncodingHeader: string[] =
-      multiValueHeaders['transfer-encoding'];
-
-    const hasTransferEncodingChunked =
-      transferEncodingHeader &&
-      transferEncodingHeader.some(value => value.includes('chunked'));
+    const transferEncodingHeader = multiValueHeaders['transfer-encoding'];
+    const hasTransferEncodingChunked = transferEncodingHeader?.some(value =>
+      value.includes('chunked'),
+    );
 
     if (hasTransferEncodingChunked) {
       throw new Error(
@@ -198,13 +208,7 @@ export class ApiGatewayV1Adapter
    * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEvent): string {
-    const stripBasePath = getDefaultIfUndefined(
-      this.options?.stripBasePath,
-      '',
-    );
-    const replaceRegex = new RegExp(`^${stripBasePath}`);
-    const path = event.path.replace(replaceRegex, '');
-
+    const path = this.stripPathFn(event.path);
     const queryParams = event.queryStringParameters || {};
 
     return getPathWithQueryStringParams(path, queryParams);

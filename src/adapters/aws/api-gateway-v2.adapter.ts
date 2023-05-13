@@ -9,7 +9,8 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
-  getDefaultIfUndefined,
+  StripBasePathFn,
+  buildStripBasePath,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getFlattenedHeadersMapAndCookies,
@@ -65,7 +66,18 @@ export class ApiGatewayV2Adapter
    *
    * @param options - The options to customize the {@link ApiGatewayV2Adapter}
    */
-  constructor(protected readonly options?: ApiGatewayV2Options) {}
+  constructor(protected readonly options?: ApiGatewayV2Options) {
+    this.stripPathFn = buildStripBasePath(this.options?.stripBasePath);
+  }
+
+  //#endregion
+
+  //#region Protected Properties
+
+  /**
+   * Strip base path function
+   */
+  protected stripPathFn: StripBasePathFn;
 
   //#endregion
 
@@ -201,13 +213,7 @@ export class ApiGatewayV2Adapter
    * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEventV2): string {
-    const stripBasePath = getDefaultIfUndefined(
-      this.options?.stripBasePath,
-      '',
-    );
-    const replaceRegex = new RegExp(`^${stripBasePath}`);
-    const path = event.rawPath.replace(replaceRegex, '');
-
+    const path = this.stripPathFn(event.rawPath);
     const queryParams = event.rawQueryString;
 
     return getPathWithQueryStringParams(path, queryParams || {});

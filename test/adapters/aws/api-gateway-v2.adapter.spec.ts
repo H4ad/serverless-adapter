@@ -129,7 +129,7 @@ describe(ApiGatewayV2Adapter.name, () => {
         path.replace('/prod', ''),
         event.queryStringParameters,
       );
-      expect(result).toHaveProperty('path', resultPath);
+      expect(result.path).toBe(resultPath);
     });
   });
 

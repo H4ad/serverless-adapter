@@ -75,3 +75,36 @@ export function getQueryParamsStringFromRecord(
 
   return searchParams.toString();
 }
+
+/**
+ * Type of the function to strip base path
+ *
+ * @breadcrumb Core / Path
+ * @public
+ */
+export type StripBasePathFn = (path: string) => string;
+
+const NOOPBasePath: StripBasePathFn = (path: string) => path;
+
+/**
+ * Get the strip base path function
+ *
+ * @param basePath - The base path
+ *
+ * @breadcrumb Core / Path
+ * @public
+ */
+export function buildStripBasePath(
+  basePath: string | undefined,
+): StripBasePathFn {
+  if (!basePath) return NOOPBasePath;
+
+  const length = basePath.length;
+
+  return (path: string) => {
+    if (path.startsWith(basePath))
+      return path.slice(path.indexOf(basePath) + length, path.length) || '/';
+
+    return path;
+  };
+}
