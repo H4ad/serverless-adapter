@@ -375,13 +375,13 @@ export class LambdaEdgeAdapter
   protected getFlattenedHeadersFromCloudfrontRequest(
     cloudFrontRequest: CloudFrontRequest,
   ): SingleValueHeaders {
-    const headers: SingleValueHeaders = {};
-    const headerValuePairs = Object.entries(cloudFrontRequest.headers);
+    return Object.keys(cloudFrontRequest.headers).reduce((acc, headerKey) => {
+      const headerValue = cloudFrontRequest.headers[headerKey];
 
-    for (const [headerKey, headerValue] of headerValuePairs)
-      headers[headerKey] = headerValue.map(header => header.value).join(',');
+      acc[headerKey] = headerValue.map(header => header.value).join(',');
 
-    return headers;
+      return acc;
+    }, {} as SingleValueHeaders);
   }
 
   /**
@@ -430,21 +430,20 @@ export class LambdaEdgeAdapter
   protected getHeadersForCloudfrontResponse(
     originalHeaders: BothValueHeaders,
   ): CloudFrontHeaders {
-    const originalHeadersEntries = Object.entries(originalHeaders);
-    const headers: CloudFrontHeaders = {};
+    return Object.keys(originalHeaders).reduce((acc, headerKey) => {
+      if (this.shouldStripHeader(headerKey)) return acc;
 
-    for (const [headerKey, headerValue] of originalHeadersEntries) {
-      if (this.shouldStripHeader(headerKey)) continue;
+      if (!acc[headerKey]) acc[headerKey] = [];
 
-      if (!headers[headerKey]) headers[headerKey] = [];
+      const headerValue = originalHeaders[headerKey];
 
       if (!Array.isArray(headerValue)) {
-        headers[headerKey].push({
+        acc[headerKey].push({
           key: headerKey,
           value: headerValue || '',
         });
 
-        continue;
+        return acc;
       }
 
       const headersArray = headerValue.map(value => ({
@@ -452,10 +451,10 @@ export class LambdaEdgeAdapter
         value: value,
       }));
 
-      headers[headerKey].push(...headersArray);
-    }
+      acc[headerKey].push(...headersArray);
 
-    return headers;
+      return acc;
+    }, {} as CloudFrontHeaders);
   }
 
   /**

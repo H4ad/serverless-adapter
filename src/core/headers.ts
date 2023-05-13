@@ -27,18 +27,15 @@ export function getFlattenedHeadersMap(
   separator: string = ',',
   lowerCaseKey: boolean = false,
 ): Record<string, string> {
-  const commaDelimitedHeaders: Record<string, string> = {};
-  const headersMapEntries = Object.entries(headersMap);
-
-  for (const [headerKey, headerValue] of headersMapEntries) {
+  return Object.keys(headersMap).reduce((acc, headerKey) => {
     const newKey = lowerCaseKey ? headerKey.toLowerCase() : headerKey;
+    const headerValue = headersMap[headerKey];
 
-    if (Array.isArray(headerValue))
-      commaDelimitedHeaders[newKey] = headerValue.join(separator);
-    else commaDelimitedHeaders[newKey] = String(headerValue ?? '');
-  }
+    if (Array.isArray(headerValue)) acc[newKey] = headerValue.join(separator);
+    else acc[newKey] = (headerValue ?? '') + '';
 
-  return commaDelimitedHeaders;
+    return acc;
+  }, {});
 }
 
 /**
@@ -60,16 +57,15 @@ export function getFlattenedHeadersMap(
 export function getMultiValueHeadersMap(
   headersMap: BothValueHeaders,
 ): Record<string, string[]> {
-  const multiValueHeaders: Record<string, string[]> = {};
-  const headersMapEntries = Object.entries(headersMap);
+  return Object.keys(headersMap).reduce((acc, headerKey) => {
+    const headerValue = headersMap[headerKey];
 
-  for (const [headerKey, headerValue] of headersMapEntries) {
-    multiValueHeaders[headerKey.toLowerCase()] = Array.isArray(headerValue)
+    acc[headerKey.toLowerCase()] = Array.isArray(headerValue)
       ? headerValue.map(String)
       : [String(headerValue)];
-  }
 
-  return multiValueHeaders;
+    return acc;
+  }, {});
 }
 
 /**
@@ -101,26 +97,28 @@ export type FlattenedHeadersAndCookies = {
 export function getFlattenedHeadersMapAndCookies(
   headersMap: BothValueHeaders,
 ): FlattenedHeadersAndCookies {
-  const headers: FlattenedHeadersAndCookies = {
-    cookies: [],
-    headers: {},
-  };
+  return Object.keys(headersMap).reduce(
+    (acc, headerKey) => {
+      const headerValue = headersMap[headerKey];
+      const lowerHeaderKey = headerKey.toLowerCase();
 
-  for (const [headerKey, headerValue] of Object.entries(headersMap)) {
-    const lowerHeaderKey = headerKey.toLowerCase();
+      if (Array.isArray(headerValue)) {
+        if (lowerHeaderKey !== 'set-cookie')
+          acc.headers[headerKey] = headerValue.join(',');
+        else acc.cookies.push(...headerValue);
+      } else {
+        if (lowerHeaderKey === 'set-cookie' && headerValue !== undefined)
+          acc.cookies.push(headerValue ?? '');
+        else acc.headers[headerKey] = String(headerValue ?? '');
+      }
 
-    if (Array.isArray(headerValue)) {
-      if (lowerHeaderKey !== 'set-cookie')
-        headers.headers[headerKey] = headerValue.join(',');
-      else headers.cookies.push(...headerValue);
-    } else {
-      if (lowerHeaderKey === 'set-cookie' && headerValue !== undefined)
-        headers.cookies.push(headerValue ?? '');
-      else headers.headers[headerKey] = String(headerValue ?? '');
-    }
-  }
-
-  return headers;
+      return acc;
+    },
+    {
+      cookies: [],
+      headers: {},
+    } as FlattenedHeadersAndCookies,
+  );
 }
 
 /**
