@@ -1,4 +1,6 @@
+import { describe, expect, it } from 'vitest';
 import {
+  buildStripBasePath,
   getPathWithQueryStringParams,
   getQueryParamsStringFromRecord,
 } from '../../src';
@@ -80,5 +82,26 @@ describe('getQueryParamsStringFromRecord', () => {
 
     for (const [queryParams, expectedValue] of options)
       expect(getQueryParamsStringFromRecord(queryParams)).toBe(expectedValue);
+  });
+});
+
+describe('buildStripBasePath', () => {
+  it('should correctly return query string from values', () => {
+    const options: [
+      basePath: string | undefined,
+      path: string,
+      expectedValue: string,
+    ][] = [
+      ['/prod', '/prod/users', '/users'],
+      ['/v1', '/v1/potato', '/potato'],
+      ['', '/v1/users', '/v1/users'],
+      [undefined, '/v1/courses', '/v1/courses'],
+      ['/prod', '/prod', '/'],
+      ['/prod', '/ignore-path', '/ignore-path'],
+      ['/v1', '/prod/v1/ignore-path', '/prod/v1/ignore-path'],
+    ];
+
+    for (const [basePath, path, expectedValue] of options)
+      expect(buildStripBasePath(basePath)(path)).toBe(expectedValue);
   });
 });

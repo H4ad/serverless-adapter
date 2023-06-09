@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
@@ -211,8 +212,8 @@ describe(HuaweiApiGatewayAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<HuaweiApiGatewayResponse> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = true;
@@ -222,7 +223,7 @@ describe(HuaweiApiGatewayAdapter.name, () => {
 
       let getResponseResult: HuaweiApiGatewayResponse | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<HuaweiApiGatewayEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
@@ -264,8 +265,8 @@ describe(HuaweiApiGatewayAdapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<HuaweiApiGatewayResponse> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = false;
@@ -275,7 +276,7 @@ describe(HuaweiApiGatewayAdapter.name, () => {
 
       let getResponseResult: HuaweiApiGatewayResponse | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<HuaweiApiGatewayEvent>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);

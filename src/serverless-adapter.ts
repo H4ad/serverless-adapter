@@ -226,7 +226,10 @@ export class ServerlessAdapter<
   public setBinarySettings(
     binarySettings: BinarySettings,
   ): Omit<this, 'setBinarySettings'> {
-    this.binarySettings = binarySettings;
+    this.binarySettings = {
+      ...this.binarySettings,
+      ...binarySettings,
+    };
 
     return this;
   }

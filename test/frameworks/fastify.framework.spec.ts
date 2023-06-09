@@ -1,4 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
+import { describe } from 'vitest';
 import { FastifyFramework } from '../../src/frameworks/fastify';
 import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
@@ -16,22 +17,6 @@ function createHandler(
     });
   };
 }
-
-jest.mock('fastify', () => {
-  const packages = {
-    '12.x': 'fastify-3',
-    latest: 'fastify',
-  };
-  const version = process.env.TEST_NODE_VERSION || 'latest';
-
-  // Require the original module.
-  const originalModule = jest.requireActual(packages[version]);
-
-  return {
-    __esModule: true,
-    ...originalModule,
-  };
-});
 
 describe(FastifyFramework.name, () => {
   createTestSuiteFor(

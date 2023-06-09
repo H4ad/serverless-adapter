@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import {
   BothValueHeaders,
   DEFAULT_BINARY_CONTENT_TYPES,
@@ -11,42 +12,42 @@ import {
 type HeaderListJest = [headers: BothValueHeaders, expectedValue: boolean][];
 
 const headerListForContentEncodings: HeaderListJest = [
-  [{ 'Content-Encoding': undefined }, false],
-  [{ 'Content-Encoding': [] }, false],
-  [{ 'Content-Encoding': 'non-standard' }, false],
-  [{ 'Content-Encoding': ['non-standard'] }, false],
-  [{ 'Content-Encoding': 'gzip' }, true],
-  [{ 'Content-Encoding': 'deflate' }, true],
-  [{ 'Content-Encoding': 'br' }, true],
-  [{ 'Content-Encoding': 'gzip,non-standard' }, true],
-  [{ 'Content-Encoding': ['gzip'] }, true],
-  [{ 'Content-Encoding': ['gzip', 'non-standard'] }, true],
-  [{ 'Content-Encoding': ['deflate'] }, true],
-  [{ 'Content-Encoding': ['deflate', 'non-standard'] }, true],
-  [{ 'Content-Encoding': ['br'] }, true],
-  [{ 'Content-Encoding': ['br', 'non-standard'] }, true],
+  [{ 'content-encoding': undefined }, false],
+  [{ 'content-encoding': [] }, false],
+  [{ 'content-encoding': 'non-standard' }, false],
+  [{ 'content-encoding': ['non-standard'] }, false],
+  [{ 'content-encoding': 'gzip' }, true],
+  [{ 'content-encoding': 'deflate' }, true],
+  [{ 'content-encoding': 'br' }, true],
+  [{ 'content-encoding': 'gzip,non-standard' }, true],
+  [{ 'content-encoding': ['gzip'] }, true],
+  [{ 'content-encoding': ['gzip', 'non-standard'] }, true],
+  [{ 'content-encoding': ['deflate'] }, true],
+  [{ 'content-encoding': ['deflate', 'non-standard'] }, true],
+  [{ 'content-encoding': ['br'] }, true],
+  [{ 'content-encoding': ['br', 'non-standard'] }, true],
 ];
 
 const headerListForContentTypes: HeaderListJest = [
-  [{ 'Content-Type': undefined }, false],
-  [{ 'Content-Type': [] }, false],
-  [{ 'Content-Type': 'application/json' }, false],
-  [{ 'Content-Type': ['application/json'] }, false],
-  [{ 'Content-Type': 'application/json,image/png' }, false],
-  [{ 'Content-Type': 'application/json;image/png' }, false],
-  [{ 'Content-Type': ['application/json', 'image/png'] }, false],
-  [{ 'Content-Type': 'image/png' }, true],
-  [{ 'Content-Type': ['image/png'] }, true],
-  [{ 'Content-Type': 'video/mp4' }, true],
-  [{ 'Content-Type': ['video/mp4'] }, true],
-  [{ 'Content-Type': 'application/pdf' }, true],
-  [{ 'Content-Type': ['application/pdf'] }, true],
+  [{ 'content-type': undefined }, false],
+  [{ 'content-type': [] }, false],
+  [{ 'content-type': 'application/json' }, false],
+  [{ 'content-type': ['application/json'] }, false],
+  [{ 'content-type': 'application/json,image/png' }, false],
+  [{ 'content-type': 'application/json;image/png' }, false],
+  [{ 'content-type': ['application/json', 'image/png'] }, false],
+  [{ 'content-type': 'image/png' }, true],
+  [{ 'content-type': ['image/png'] }, true],
+  [{ 'content-type': 'video/mp4' }, true],
+  [{ 'content-type': ['video/mp4'] }, true],
+  [{ 'content-type': 'application/pdf' }, true],
+  [{ 'content-type': ['application/pdf'] }, true],
 ];
 
 describe('isContentEncodingBinary', () => {
   it('should correctly check if content encoding is binary', () => {
     const headersList: HeaderListJest = [
-      [{ 'Content-Type': 'application/json' }, false],
+      [{ 'content-type': 'application/json' }, false],
       ...headerListForContentEncodings,
     ];
 
@@ -63,19 +64,19 @@ describe('isContentEncodingBinary', () => {
 describe('getContentType', () => {
   it('should correctly return the content type from headers', () => {
     const headersList: [headers: BothValueHeaders, expectedValue: string][] = [
-      [{ 'Content-Encoding': 'gzip' }, ''],
-      [{ 'Content-Type': 'application/json' }, 'application/json'],
-      [{ 'Content-Type': ['application/json'] }, 'application/json'],
+      [{ 'content-encoding': 'gzip' }, ''],
+      [{ 'content-type': 'application/json' }, 'application/json'],
+      [{ 'content-type': ['application/json'] }, 'application/json'],
       [
-        { 'Content-Type': 'application/json,image/png' },
+        { 'content-type': 'application/json,image/png' },
         'application/json,image/png',
       ],
-      [{ 'Content-Type': 'application/json;image/png' }, 'application/json'],
+      [{ 'content-type': 'application/json;image/png' }, 'application/json'],
       [
-        { 'Content-Type': ['application/json', 'image/png'] },
+        { 'content-type': ['application/json', 'image/png'] },
         'application/json',
       ],
-      [{ 'Content-Type': ['image/png', 'application/json'] }, 'image/png'],
+      [{ 'content-type': ['image/png', 'application/json'] }, 'image/png'],
     ];
 
     for (const [headers, expectedValue] of headersList) {
@@ -89,7 +90,7 @@ describe('getContentType', () => {
 describe('isContentTypeBinary', () => {
   it('should correctly check if content type is binary', () => {
     const headersList: [headers: BothValueHeaders, expectedValue: boolean][] = [
-      [{ 'Content-Encoding': 'gzip' }, false],
+      [{ 'content-encoding': 'gzip' }, false],
       ...headerListForContentTypes,
     ];
 
@@ -120,7 +121,14 @@ describe('isBinary', () => {
         contentEncodings,
       });
 
-      expect(isContentBinary).toBe(expectedValue);
+      expect(
+        isContentBinary,
+        `contentTypes: ${contentTypes.join(
+          ';',
+        )}, contentEncodings: ${contentEncodings.join(
+          ';',
+        )}: has ${expectedValue} inside ${JSON.stringify(headers)}`,
+      ).toBe(expectedValue);
     }
   });
 

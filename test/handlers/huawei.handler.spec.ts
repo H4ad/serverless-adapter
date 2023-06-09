@@ -1,15 +1,16 @@
 import * as http from 'http';
 import supertest from 'supertest';
+import { describe, expect, it, vitest } from 'vitest';
 import { ILogger } from '../../src';
 import { DummyAdapter } from '../../src/adapters/dummy';
 import {
   DEFAULT_HUAWEI_LISTEN_PORT,
   HttpHuaweiHandler,
 } from '../../src/handlers/huawei';
-import { DummyResolver } from '../../src/resolvers/dummy/dummy.resolver';
+import { DummyResolver } from '../../src/resolvers/dummy';
 import { FrameworkMock } from '../mocks/framework.mock';
 
-describe(HttpHuaweiHandler.name, () => {
+describe('HttpHuaweiHandler', () => {
   const app = null;
 
   const response = { batata: true };
@@ -18,18 +19,18 @@ describe(HttpHuaweiHandler.name, () => {
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
   const logger: ILogger = {
-    debug: jest.fn(),
-    error: jest.fn(),
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
+    debug: vitest.fn(),
+    error: vitest.fn(),
+    verbose: vitest.fn(),
+    info: vitest.fn(),
+    warn: vitest.fn(),
   };
 
   it('should create correctly mocked server and test default constants', async () => {
-    const listenMock = jest.fn();
-    const closeMock = jest.fn();
-    const addEventListenerMock = jest.fn();
-    const createServerMock = jest.fn(
+    const listenMock = vitest.fn();
+    const closeMock = vitest.fn(callback => callback());
+    const addEventListenerMock = vitest.fn();
+    const createServerMock = vitest.fn(
       () =>
         ({
           listen: listenMock,
@@ -54,12 +55,7 @@ describe(HttpHuaweiHandler.name, () => {
       logger,
     );
 
-    expect(addEventListenerMock).toHaveBeenCalledWith(
-      'request',
-      expect.any(Function),
-    );
-
-    expect(createServerMock).toHaveBeenCalledWith(app, framework);
+    expect(createServerMock).toHaveBeenCalledWith(expect.any(Function));
     expect(listenMock).toHaveBeenCalledWith(
       DEFAULT_HUAWEI_LISTEN_PORT,
       expect.any(Function),
@@ -75,7 +71,7 @@ describe(HttpHuaweiHandler.name, () => {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  it.only('should create correctly http server', async () => {
+  it('should create correctly http server', async () => {
     const handlerFactory = new HttpHuaweiHandler();
     const framework = new FrameworkMock(200, response);
 
@@ -102,7 +98,7 @@ describe(HttpHuaweiHandler.name, () => {
     );
   });
 
-  it.only('should forward correctly the request to framework', async () => {
+  it('should forward correctly the request to framework', async () => {
     let httpServer!: http.Server;
 
     const handlerFactory = new HttpHuaweiHandler({
@@ -136,12 +132,12 @@ describe(HttpHuaweiHandler.name, () => {
     await expect(dispose()).resolves.toBeUndefined();
   });
 
-  it.only('should throw error if something wrong occours on dispose', async () => {
+  it('should throw error if something wrong occours on dispose', async () => {
     const error = new Error('something wrong occours');
 
     const mockServer = {
-      listen: jest.fn(),
-      close: jest.fn(cb => cb(error)),
+      listen: vitest.fn(),
+      close: vitest.fn(cb => cb(error)),
     } as unknown as http.Server;
 
     const handlerFactory = new HttpHuaweiHandler({

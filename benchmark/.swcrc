@@ -1,6 +1,10 @@
 {
   "env": {
-    "targets": "node >= 16"
+    "targets": "node >= 18"
+  },
+  "module": {
+    "type": "commonjs",
+    "strict": true,
   },
   "jsc": {
     "target": "es2022",

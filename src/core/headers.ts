@@ -27,18 +27,15 @@ export function getFlattenedHeadersMap(
   separator: string = ',',
   lowerCaseKey: boolean = false,
 ): Record<string, string> {
-  const commaDelimitedHeaders: Record<string, string> = {};
-  const headersMapEntries = Object.entries(headersMap);
-
-  for (const [headerKey, headerValue] of headersMapEntries) {
+  return Object.keys(headersMap).reduce((acc, headerKey) => {
     const newKey = lowerCaseKey ? headerKey.toLowerCase() : headerKey;
+    const headerValue = headersMap[headerKey];
 
-    if (Array.isArray(headerValue))
-      commaDelimitedHeaders[newKey] = headerValue.join(separator);
-    else commaDelimitedHeaders[newKey] = String(headerValue ?? '');
-  }
+    if (Array.isArray(headerValue)) acc[newKey] = headerValue.join(separator);
+    else acc[newKey] = (headerValue ?? '') + '';
 
-  return commaDelimitedHeaders;
+    return acc;
+  }, {});
 }
 
 /**
@@ -60,16 +57,68 @@ export function getFlattenedHeadersMap(
 export function getMultiValueHeadersMap(
   headersMap: BothValueHeaders,
 ): Record<string, string[]> {
-  const multiValueHeaders: Record<string, string[]> = {};
-  const headersMapEntries = Object.entries(headersMap);
+  return Object.keys(headersMap).reduce((acc, headerKey) => {
+    const headerValue = headersMap[headerKey];
 
-  for (const [headerKey, headerValue] of headersMapEntries) {
-    multiValueHeaders[headerKey.toLowerCase()] = Array.isArray(headerValue)
+    acc[headerKey.toLowerCase()] = Array.isArray(headerValue)
       ? headerValue.map(String)
       : [String(headerValue)];
-  }
 
-  return multiValueHeaders;
+    return acc;
+  }, {});
+}
+
+/**
+ * The wrapper that holds the information about single value headers and cookies
+ *
+ * @breadcrumb Core / Headers
+ * @public
+ */
+export type FlattenedHeadersAndCookies = {
+  /**
+   * Just the single value headers
+   */
+  headers: Record<string, string>;
+
+  /**
+   * The list of cookies
+   */
+  cookies: string[];
+};
+
+/**
+ * Transforms a header map into a single value headers and cookies
+ *
+ * @param headersMap - The initial headers
+ *
+ * @breadcrumb Core / Headers
+ * @public
+ */
+export function getFlattenedHeadersMapAndCookies(
+  headersMap: BothValueHeaders,
+): FlattenedHeadersAndCookies {
+  return Object.keys(headersMap).reduce(
+    (acc, headerKey) => {
+      const headerValue = headersMap[headerKey];
+      const lowerHeaderKey = headerKey.toLowerCase();
+
+      if (Array.isArray(headerValue)) {
+        if (lowerHeaderKey !== 'set-cookie')
+          acc.headers[headerKey] = headerValue.join(',');
+        else acc.cookies.push(...headerValue);
+      } else {
+        if (lowerHeaderKey === 'set-cookie' && headerValue !== undefined)
+          acc.cookies.push(headerValue ?? '');
+        else acc.headers[headerKey] = String(headerValue ?? '');
+      }
+
+      return acc;
+    },
+    {
+      cookies: [],
+      headers: {},
+    } as FlattenedHeadersAndCookies,
+  );
 }
 
 /**

@@ -1,21 +1,26 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
 import {
+  SpyInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vitest,
+} from 'vitest';
+import {
   LogLevels,
   NO_OP,
   createDefaultLogger,
   isInternalLogger,
 } from '../../src';
-import FunctionPropertyNames = jest.FunctionPropertyNames;
-import SpyInstance = jest.SpyInstance;
-
-type MethodNames<T> = FunctionPropertyNames<Required<T>>;
 
 describe('createDefaultLogger', () => {
   const mocks: SpyInstance[] = [];
 
   beforeEach(() => {
-    const mockMethods: MethodNames<Console>[] = [
+    const mockMethods: (keyof Console)[] = [
       'error',
       'info',
       'warn',
@@ -23,8 +28,11 @@ describe('createDefaultLogger', () => {
       'debug',
     ];
 
-    for (const method of mockMethods)
-      mocks.push(jest.spyOn(global.console, method).mockImplementation());
+    for (const method of mockMethods) {
+      mocks.push(
+        vitest.spyOn(global.console, method).mockImplementation(NO_OP),
+      );
+    }
   });
 
   afterEach(() => {
@@ -141,6 +149,12 @@ describe('createDefaultLogger', () => {
     expect(global.console.debug).toHaveBeenNthCalledWith(1, 'verbose');
     expect(global.console.debug).toHaveBeenNthCalledWith(2, 'debug');
   });
+
+  it('should throw error with invalid log level', () => {
+    expect(() =>
+      createDefaultLogger({ level: 'random' as unknown as LogLevels }),
+    ).toThrowError('Invalid');
+  });
 });
 
 describe('isInternalLogger', () => {
@@ -164,7 +178,7 @@ describe('isInternalLogger', () => {
     });
   }
 
-  it('random isntance of ILogger should not return true', () => {
+  it('random instance of ILogger should not return true', () => {
     expect(
       isInternalLogger({
         debug: NO_OP,

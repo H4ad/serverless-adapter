@@ -22,14 +22,8 @@ npm run bench
 - Memory: 32GB 3200Hz
 
 ```md
-╔════════════════════════════╤═════════╤════════════════╤═══════════╗
-║ Slower tests               │ Samples │         Result │ Tolerance ║
-╟────────────────────────────┼─────────┼────────────────┼───────────╢
-║ @vendia/serverless-express │    5500 │ 4518.75 op/sec │  ± 0.99 % ║
-║ @h4ad/serverless-adapter   │   10000 │ 7590.44 op/sec │  ± 1.29 % ║
-╟────────────────────────────┼─────────┼────────────────┼───────────╢
-║ Fastest test               │ Samples │         Result │ Tolerance ║
-╟────────────────────────────┼─────────┼────────────────┼───────────╢
-║ serverless-http            │   10000 │ 8298.48 op/sec │  ± 1.53 % ║
-╚════════════════════════════╧═════════╧════════════════╧═══════════╝
+@h4ad/serverless-adapter x 46,463 ops/sec ±10.75% (65 runs sampled)
+@vendia/serverless-express x 8,726 ops/sec ±18.64% (82 runs sampled)
+serverless-http x 48,246 ops/sec ±8.00% (70 runs sampled)
+Fastest is serverless-http,@h4ad/serverless-adapter
 ```

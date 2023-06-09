@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import type { Context } from 'aws-lambda';
 import {
   AdapterContract,
@@ -23,16 +24,16 @@ describe(PromiseResolver.name, () => {
     resolverFactory = new PromiseResolver();
 
     mockedContext = {
-      succeed: jest.fn(),
-      fail: jest.fn(),
+      succeed: vitest.fn(),
+      fail: vitest.fn(),
     } as unknown as Context;
 
     mockedLogger = {
-      error: jest.fn(),
+      error: vitest.fn(),
     } as unknown as ILogger;
 
     mockedAdapter = {
-      onErrorWhileForwarding: jest.fn(
+      onErrorWhileForwarding: vitest.fn(
         ({
           error,
           delegatedResolver,

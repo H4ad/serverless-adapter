@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import type { Context, Form, HttpRequest } from '@azure/functions';
+import { vitest } from 'vitest';
 import { BothValueHeaders } from '../../../../src';
 
 export function createHttpTriggerEvent(
@@ -13,6 +14,7 @@ export function createHttpTriggerEvent(
   url.searchParams.set('code', 'sE_d8h7XJ4YYsGJ7mgVta_t-32323%3D%3D');
 
   return {
+    get: () => '',
     method,
     url: `https://serverless-adapter.azurewebsites.net/api/test-serverless-adapter${
       path || ''
@@ -72,13 +74,13 @@ export function createHttpTriggerContext(
 ): Context {
   const req = createHttpTriggerEvent(method, path, body, headers);
 
-  const log = jest.fn();
+  const log = vitest.fn();
 
   Object.assign(log, {
-    error: jest.fn(),
-    warn: jest.fn(),
-    info: jest.fn(),
-    verbose: jest.fn(),
+    error: vitest.fn(),
+    warn: vitest.fn(),
+    info: vitest.fn(),
+    verbose: vitest.fn(),
   });
 
   return {
@@ -112,16 +114,16 @@ export function createHttpTriggerContext(
       { name: 'req', type: 'httpTrigger', direction: 'in' },
       { name: 'res', type: 'http', direction: 'out' },
     ],
-    done: jest.fn(),
+    done: vitest.fn(),
     req: req,
     res: {
       headers: {},
       cookies: [],
-      send: jest.fn(),
-      header: jest.fn(),
-      set: jest.fn(),
-      get: jest.fn(),
-      _done: jest.fn(),
+      send: vitest.fn(),
+      header: vitest.fn(),
+      set: vitest.fn(),
+      get: vitest.fn(),
+      _done: vitest.fn(),
     },
   };
 }

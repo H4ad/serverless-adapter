@@ -1,48 +1,57 @@
-import { ApiGatewayV1Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws/index.js';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express/index.js';
-import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default/index.js';
-import { ServerlessAdapter } from '@h4ad/serverless-adapter/lib/index.js';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise/index.js';
-import cronometro from 'cronometro';
-import express from 'express';
+import { ServerlessAdapter } from '@h4ad/serverless-adapter/lib';
+import { ApiGatewayV1Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
 import vendia from '@vendia/serverless-express';
+import benchmark from 'benchmark';
 import serverlessHttp from 'serverless-http';
-import { createApiGatewayV1 } from '../events.js';
+import { createApiGatewayV1 } from '../events';
+import { FrameworkMock } from '../framework.mock';
 
 console.log('Running simply-forward.ts');
 
-const app = express();
-
-app.get('/test', (_, res) => res.send('Hello World'));
-
-const handler = ServerlessAdapter.new(app)
+const framework = new FrameworkMock(200, { message: 'Hello world' });
+const handler = ServerlessAdapter.new(null)
   .setHandler(new DefaultHandler())
   .setResolver(new PromiseResolver())
-  .setFramework(new ExpressFramework())
+  .setFramework(framework)
   .addAdapter(new ApiGatewayV1Adapter())
   .build();
 
+const falseApp = (req, res) => framework.sendRequest(null, req, res);
 const vendiaHandler = vendia({
-  app,
+  app: falseApp,
 });
 
-const serverlessHttpHandler = serverlessHttp(app);
+const serverlessHttpHandler = serverlessHttp(falseApp);
 
 const context = {} as any;
 const callback = {} as any;
 
 const eventV1ApiGateway = createApiGatewayV1('GET', '/test');
 
-cronometro({
-  '@h4ad/serverless-adapter'() {
-    return handler(eventV1ApiGateway, context, callback);
-  },
-  '@vendia/serverless-express'() {
-    return vendiaHandler(eventV1ApiGateway, context, callback);
-  },
-  'serverless-http'() {
-    return serverlessHttpHandler(eventV1ApiGateway, context);
-  },
-}, {
-  warmup: true,
-});
+const suite = new benchmark.Suite();
+
+suite.add(
+  '@h4ad/serverless-adapter',
+  async () => await handler(eventV1ApiGateway, context, callback),
+);
+suite.add(
+  '@vendia/serverless-express',
+  async () => await vendiaHandler(eventV1ApiGateway, context, callback),
+);
+suite.add(
+  'serverless-http',
+  async () => await serverlessHttpHandler(eventV1ApiGateway, context),
+);
+
+suite
+  .on('cycle', function (event) {
+    console.log(String(event.target));
+  })
+  .on('complete', function () {
+    console.log('Fastest is ' + this.filter('fastest').map('name'));
+  })
+  .run({
+    async: false,
+  });

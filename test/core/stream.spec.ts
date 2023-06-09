@@ -1,4 +1,5 @@
 import { ObjectReadableMock, ObjectWritableMock } from 'stream-mock';
+import { describe, expect, it } from 'vitest';
 import { NO_OP, waitForStreamComplete } from '../../src';
 import ErrorReadableMock from './utils/stream';
 

@@ -1,4 +1,5 @@
 import type { Cookie, HttpRequest, HttpResponseSimple } from '@azure/functions';
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   DelegatedResolver,
   GetResponseAdapterProps,
@@ -303,8 +304,8 @@ describe(HttpTriggerV4Adapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<HttpRequest> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = true;
@@ -314,7 +315,7 @@ describe(HttpTriggerV4Adapter.name, () => {
 
       let getResponseResult: HttpResponseSimple | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<HttpRequest>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);
@@ -356,8 +357,8 @@ describe(HttpTriggerV4Adapter.name, () => {
       const log = {} as ILogger;
 
       const resolver: DelegatedResolver<HttpResponseSimple> = {
-        fail: jest.fn(),
-        succeed: jest.fn(),
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
       };
 
       const respondWithErrors = false;
@@ -367,7 +368,7 @@ describe(HttpTriggerV4Adapter.name, () => {
 
       let getResponseResult: HttpResponseSimple | undefined;
 
-      adapter.getResponse = jest.fn(
+      adapter.getResponse = vitest.fn(
         (params: GetResponseAdapterProps<HttpRequest>) => {
           expect(params.event).toBe(event);
           expect(params.statusCode).toBe(500);

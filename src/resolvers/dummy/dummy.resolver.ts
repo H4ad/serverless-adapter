@@ -18,6 +18,7 @@ export class DummyResolver
    */
   public createResolver(): Resolver<any, void> {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       run: () => Promise.resolve(),
     };
   }

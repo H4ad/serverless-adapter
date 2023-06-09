@@ -3,7 +3,6 @@
 //#region Imports
 
 import { BinarySettings, BothValueHeaders } from '../@types';
-import { getFlattenedHeadersMap, getMultiValueHeadersMap } from './headers';
 
 //#endregion
 
@@ -12,7 +11,7 @@ import { getFlattenedHeadersMap, getMultiValueHeadersMap } from './headers';
  *
  * @example
  * ```typescript
- * const headers = { 'Content-Encoding': 'gzip' };
+ * const headers = { 'content-encoding': 'gzip' };
  * const isBinary = isContentEncodingBinary(headers, ['gzip']);
  * console.log(isBinary);
  * // true
@@ -28,14 +27,15 @@ export function isContentEncodingBinary(
   headers: BothValueHeaders,
   binaryEncodingTypes: string[],
 ): boolean {
-  const multiValueHeaders = getMultiValueHeadersMap(headers);
+  let contentEncodings = headers['content-encoding'];
 
-  const contentEncodings = multiValueHeaders['content-encoding'];
+  if (!contentEncodings) return false;
 
-  if (!Array.isArray(contentEncodings)) return false;
+  if (!Array.isArray(contentEncodings))
+    contentEncodings = contentEncodings.split(',');
 
   return contentEncodings.some(value =>
-    binaryEncodingTypes.some(binaryEncoding => value.includes(binaryEncoding)),
+    binaryEncodingTypes.includes(value.trim()),
   );
 }
 
@@ -44,7 +44,7 @@ export function isContentEncodingBinary(
  *
  * @example
  * ```typescript
- * const headers = { 'Content-Type': 'application/json' };
+ * const headers = { 'content-type': 'application/json' };
  * const contentType = getContentType(headers);
  * console.log(contentType);
  * // application/json
@@ -56,11 +56,19 @@ export function isContentEncodingBinary(
  * @public
  */
 export function getContentType(headers: BothValueHeaders): string {
-  const flattenedHeaders = getFlattenedHeadersMap(headers, ';', true);
-  const contentTypeHeader = flattenedHeaders['content-type'] || '';
+  const contentTypeHeaderRaw = headers['content-type'];
+  const contentTypeHeader = Array.isArray(contentTypeHeaderRaw)
+    ? contentTypeHeaderRaw[0] || ''
+    : contentTypeHeaderRaw || '';
+
+  if (!contentTypeHeaderRaw) return '';
 
   // only compare mime type; ignore encoding part
-  return contentTypeHeader.split(';')[0];
+  const contentTypeStart = contentTypeHeader.indexOf(';');
+
+  if (contentTypeStart === -1) return contentTypeHeader;
+
+  return contentTypeHeader.slice(0, contentTypeStart);
 }
 
 /**
@@ -68,8 +76,8 @@ export function getContentType(headers: BothValueHeaders): string {
  *
  * @example
  * ```typescript
- * const headers = { 'Content-Type': 'image/png' };
- * const isBinary = isContentTypeBinary(headers, [new RegExp('^image/.*$')]);
+ * const headers = { 'content-type': 'image/png' };
+ * const isBinary = isContentTypeBinary(headers, new Map([['image/png', true]]));
  * console.log(isBinary);
  * // true
  * ```
@@ -82,21 +90,13 @@ export function getContentType(headers: BothValueHeaders): string {
  */
 export function isContentTypeBinary(
   headers: BothValueHeaders,
-  binaryContentTypes: (string | RegExp)[],
+  binaryContentTypes: string[],
 ) {
-  const binaryContentTypesRegexes = binaryContentTypes.map(binaryContentType =>
-    binaryContentType instanceof RegExp
-      ? binaryContentType
-      : new RegExp(`${binaryContentType}`),
-  );
-
   const contentType = getContentType(headers);
 
   if (!contentType) return false;
 
-  return binaryContentTypesRegexes.some(binaryContentType =>
-    binaryContentType.test(contentType),
-  );
+  return binaryContentTypes.includes(contentType.trim());
 }
 
 /**
@@ -104,8 +104,8 @@ export function isContentTypeBinary(
  *
  * @example
  * ```typescript
- * const headers = { 'Content-Type': 'image/png', 'Content-Encoding': 'gzip' };
- * const isContentBinary = isBinary(headers, { contentEncodings: ['gzip'], contentTypes: [new RegExp('^image/.*$')] });
+ * const headers = { 'content-type': 'image/png', 'content-encoding': 'gzip' };
+ * const isContentBinary = isBinary(headers, { contentEncodings: ['gzip'], contentTypes: ['image/png'] });
  * console.log(isContentBinary);
  * // true
  * ```

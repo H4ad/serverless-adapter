@@ -30,25 +30,22 @@ import { z } from 'zod';
 type CustomContext = { currentDate: Date };
 type TrpcContext = TrpcAdapterContext<CustomContext>;
 
-const appRouter = trpc
-  .router<TrpcContext>()
-  .query('getUser', {
-    input: z.string(),
-    async resolve(req) {
-      req.input; // string
-      return { id: req.input, name: 'Bilbo' };
-    },
-  })
-  .mutation('createUser', {
+const t = trpc.initTRPC.context<TrpcContext>().create();
+const appRouter = t.router({
+  getUser: t.procedure.input(z.string()).query((req) => {
+    req.input; // string
+    return { id: req.input, name: 'Bilbo' };
+  }),
+  createUser: t.procedure
     // validate input with Zod
-    input: z.object({ name: z.string().min(5) }),
-    async resolve({ input }) {
+    .input(z.object({ name: z.string().min(5) }))
+    .mutation(({ input }) => {
       return {
         created: true,
         newName: input.name,
       };
-    },
-  });
+    })
+});
 
 const frameworkOptions: TrpcFrameworkOptions<CustomContext> = {
   createContext: () => ({ currentDate: new Date() }),
@@ -93,13 +90,12 @@ import { z } from 'zod';
 
 type TrpcContext = TrpcAdapterContext<unknown>;
 
-const appRouter = trpc
-  .router<TrpcContext>()
-  .mutation('sqs', {
-    input: z.object({
-      Records: z.array(z.any()),
-    }),
-    async resolve({ input, ctx }) {
+const t = trpc.initTRPC.context<TrpcContext>().create();
+
+const appRouter = t.router({
+  sqs: t.procedure
+    .input(z.object({Records: z.array(z.any())}))
+    .mutation(({ctx, input}) => {
       if (ctx.getHeader('host') !== 'sqs.amazonaws.com')
         throw new TRPCError({
           code: 'UNAUTHORIZED',
@@ -110,8 +106,8 @@ const appRouter = trpc
 
       // Do whatever you want
       // and you dont need to return nothing
-    },
-  });
+    }),
+});
 ```
 
 :::warning About another adapters
@@ -144,17 +140,17 @@ import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
 type CustomContext = { potato: boolean };
 type TrpcContext = TrpcAdapterContext<CustomContext>;
 
-const appRouter = trpc
-  .router<TrpcContext>()
-  .mutation('add', {
-    async resolve({ ctx }) {
+const t = trpc.initTRPC.context<TrpcContext>().create();
+const appRouter = t.router({
+  add: t.procedure
+    .mutation(({ ctx }) => {
       // get the request url
       const requestUrl = ctx.getUrl();
 
       // this will change the status code of the request to 204.
       ctx.setStatus(204);
-    },
-  });
+    }),
+});
 
 const frameworkOptions: TrpcFrameworkOptions<TrpcContext> = {
   // you can return a promise

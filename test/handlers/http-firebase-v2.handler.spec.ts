@@ -1,28 +1,13 @@
 import { HttpsOptions } from 'firebase-functions/lib/v2/providers/https';
+import { describe, expect, it, vitest } from 'vitest';
 import {
   FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
-import { HttpFirebaseV2Handler } from '../../src/handlers/firebase/http-firebase-v2.handler';
+import { HttpFirebaseV2Handler } from '../../src/handlers/firebase';
 import { FrameworkMock } from '../mocks/framework.mock';
-
-jest.mock('firebase-admin', () => {
-  const packages = {
-    '12.x': 'firebase-admin-8',
-    latest: 'firebase-admin',
-  };
-  const version = process.env.TEST_NODE_VERSION || 'latest';
-
-  // Require the original module.
-  const originalModule = jest.requireActual(packages[version]);
-
-  return {
-    __esModule: true,
-    ...originalModule,
-  };
-});
 
 describe(HttpFirebaseV2Handler.name, () => {
   it('should forward correctly the request to framework', async () => {
@@ -85,7 +70,8 @@ describe(HttpFirebaseV2Handler.name, () => {
       });
 
       const framework: FrameworkContract<unknown> = {
-        sendRequest: jest.fn(
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        sendRequest: vitest.fn(
           async (
             app: null,
             req: ServerlessRequest,
@@ -119,7 +105,7 @@ describe(HttpFirebaseV2Handler.name, () => {
     };
     const factory = new HttpFirebaseV2Handler(options);
 
-    const spyMethod = jest.spyOn(factory, 'onRequestWithOptions' as any);
+    const spyMethod = vitest.spyOn(factory, 'onRequestWithOptions' as any);
 
     factory.getHandler(null, new FrameworkMock(200, {}));
 

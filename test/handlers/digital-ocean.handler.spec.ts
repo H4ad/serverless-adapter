@@ -1,7 +1,8 @@
+import { describe, expect, it, vitest } from 'vitest';
 import { ILogger } from '../../src';
 import { HttpFunctionAdapter } from '../../src/adapters/digital-ocean';
 import { DefaultHandler } from '../../src/handlers/default';
-import { DigitalOceanHandler } from '../../src/handlers/digital-ocean/digital-ocean.handler';
+import { DigitalOceanHandler } from '../../src/handlers/digital-ocean';
 import { PromiseResolver } from '../../src/resolvers/promise';
 import { createHttpTriggerEvent } from '../adapters/azure/utils/http-trigger';
 import { FrameworkMock } from '../mocks/framework.mock';
@@ -18,16 +19,16 @@ describe(DigitalOceanHandler.name, () => {
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
   const logger: ILogger = {
-    debug: jest.fn(),
-    error: jest.fn(),
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
+    debug: vitest.fn(),
+    error: vitest.fn(),
+    verbose: vitest.fn(),
+    info: vitest.fn(),
+    warn: vitest.fn(),
   };
 
   it('should call default handler with correct params', () => {
-    const defaultServerlessHandler = jest.fn(() => Promise.resolve(response));
-    const defaultGetHandler = jest
+    const defaultServerlessHandler = vitest.fn(() => Promise.resolve(response));
+    const defaultGetHandler = vitest
       .spyOn(DefaultHandler.prototype, 'getHandler')
       .mockImplementation(() => defaultServerlessHandler);
 

@@ -8,7 +8,8 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
-  getDefaultIfUndefined,
+  StripBasePathFn,
+  buildStripBasePath,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,
@@ -56,7 +57,18 @@ export class AlbAdapter
    *
    * @param options - The options to customize the {@link AlbAdapter}
    */
-  constructor(protected readonly options?: AlbAdapterOptions) {}
+  constructor(protected readonly options?: AlbAdapterOptions) {
+    this.stripPathFn = buildStripBasePath(this.options?.stripBasePath);
+  }
+
+  //#endregion
+
+  //#region Protected Properties
+
+  /**
+   * Strip base path function
+   */
+  protected stripPathFn: StripBasePathFn;
 
   //#endregion
 
@@ -175,12 +187,7 @@ export class AlbAdapter
    * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: ALBEvent): string {
-    const stripBasePath = getDefaultIfUndefined(
-      this.options?.stripBasePath,
-      '',
-    );
-    const replaceRegex = new RegExp(`^${stripBasePath}`);
-    const path = event.path.replace(replaceRegex, '');
+    const path = this.stripPathFn(event.path);
 
     const queryParams = event.headers
       ? event.queryStringParameters

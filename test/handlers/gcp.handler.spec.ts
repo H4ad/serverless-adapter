@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { GCPHandler } from '../../src/handlers/gcp/index';
-import { FrameworkContract } from '../../src/index';
+import { describe, expect, it, vitest } from 'vitest';
+import { FrameworkContract } from '../../src';
+import { GCPHandler } from '../../src/handlers/gcp';
 import { FrameworkMock } from '../mocks/framework.mock';
 
 class TestGCPHandler<TApp> extends GCPHandler<TApp> {
@@ -18,17 +19,17 @@ describe(GCPHandler.name, () => {
     const gcpHandler = new TestGCPHandler(functionName);
     const mockFramework = new FrameworkMock(204, {});
 
-    const mockedData = Symbol('Mocked') as any;
+    const mockedData = 'Mocked' as any;
     const mockedFn = () => mockedData;
 
-    jest.mock('@google-cloud/functions-framework', () => ({
+    vitest.mock('@google-cloud/functions-framework', () => ({
       http: (name, fn) => {
-        expect(name).toEqual(functionName);
-        expect(fn).toEqual(mockedData);
+        expect(name).toEqual('test');
+        expect(fn).toEqual('Mocked');
       },
     }));
 
-    jest.spyOn(gcpHandler, 'onRequestCallback').mockImplementation(mockedFn);
+    vitest.spyOn(gcpHandler, 'onRequestCallback').mockImplementation(mockedFn);
 
     const handler = gcpHandler.getHandler(null, mockFramework);
 

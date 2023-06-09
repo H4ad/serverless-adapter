@@ -9,10 +9,10 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
-  getDefaultIfUndefined,
+  StripBasePathFn,
+  buildStripBasePath,
   getEventBodyAsBuffer,
-  getFlattenedHeadersMap,
-  getMultiValueHeadersMap,
+  getFlattenedHeadersMapAndCookies,
   getPathWithQueryStringParams,
 } from '../../core';
 
@@ -65,7 +65,18 @@ export class ApiGatewayV2Adapter
    *
    * @param options - The options to customize the {@link ApiGatewayV2Adapter}
    */
-  constructor(protected readonly options?: ApiGatewayV2Options) {}
+  constructor(protected readonly options?: ApiGatewayV2Options) {
+    this.stripPathFn = buildStripBasePath(this.options?.stripBasePath);
+  }
+
+  //#endregion
+
+  //#region Protected Properties
+
+  /**
+   * Strip base path function
+   */
+  protected stripPathFn: StripBasePathFn;
 
   //#endregion
 
@@ -97,8 +108,10 @@ export class ApiGatewayV2Adapter
   public getRequest(event: APIGatewayProxyEventV2): AdapterRequest {
     const method = event.requestContext.http.method;
     const path = this.getPathFromEvent(event);
-
-    const headers = getFlattenedHeadersMap(event.headers, ',', true);
+    // accords https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    // all headers are lowercased and cannot be array
+    // so no need to format, just a shallow copy will work here
+    const headers = { ...event.headers };
 
     if (event.cookies) headers.cookie = event.cookies.join('; ');
 
@@ -111,7 +124,8 @@ export class ApiGatewayV2Adapter
       );
 
       body = bufferBody;
-      headers['content-length'] = String(contentLength);
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      headers['content-length'] = contentLength + '';
     }
 
     const remoteAddress = event.requestContext.http.sourceIp;
@@ -135,8 +149,8 @@ export class ApiGatewayV2Adapter
     statusCode,
     response,
   }: GetResponseAdapterProps<APIGatewayProxyEventV2>): APIGatewayProxyStructuredResultV2 {
-    const headers = getFlattenedHeadersMap(responseHeaders);
-    const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
+    const { cookies, headers } =
+      getFlattenedHeadersMapAndCookies(responseHeaders);
 
     const transferEncodingHeader: string | undefined =
       headers['transfer-encoding'];
@@ -155,10 +169,6 @@ export class ApiGatewayV2Adapter
         'chunked encoding in response is not supported by API Gateway V2',
       );
     }
-
-    const cookies = multiValueHeaders['set-cookie'];
-
-    if (headers) delete headers['set-cookie'];
 
     return {
       statusCode,
@@ -205,13 +215,7 @@ export class ApiGatewayV2Adapter
    * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEventV2): string {
-    const stripBasePath = getDefaultIfUndefined(
-      this.options?.stripBasePath,
-      '',
-    );
-    const replaceRegex = new RegExp(`^${stripBasePath}`);
-    const path = event.rawPath.replace(replaceRegex, '');
-
+    const path = this.stripPathFn(event.rawPath);
     const queryParams = event.rawQueryString;
 
     return getPathWithQueryStringParams(path, queryParams || {});

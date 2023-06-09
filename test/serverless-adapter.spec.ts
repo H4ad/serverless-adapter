@@ -1,3 +1,4 @@
+import { describe, expect, it, vitest } from 'vitest';
 import {
   BinarySettings,
   DEFAULT_BINARY_CONTENT_TYPES,
@@ -17,11 +18,11 @@ describe('ServerlessAdapter', () => {
   it('should have correct default values', () => {
     const defaultLoggerSymbol = Symbol('createDefaultLogger');
 
-    jest
+    vitest
       .spyOn(logger, 'createDefaultLogger')
       .mockReturnValue(defaultLoggerSymbol as any);
     const oldEnv = process.env;
-    jest.resetModules();
+    vitest.resetModules();
     process.env = { ...oldEnv, NODE_ENV: 'test' };
 
     const adapter = ServerlessAdapter.new(null);
@@ -42,7 +43,7 @@ describe('ServerlessAdapter', () => {
     expect(adapter['handler']).toBeUndefined();
     expect(adapter['app']).toEqual(null);
 
-    jest.resetModules();
+    vitest.resetModules();
     process.env = { ...oldEnv, NODE_ENV: 'development' };
     const developmentAdapter = ServerlessAdapter.new(null);
 
@@ -55,7 +56,7 @@ describe('ServerlessAdapter', () => {
     const app = null;
 
     const mockedHandler: HandlerContract<any, any, any, any, any, any> = {
-      getHandler: jest.fn(() => NO_OP),
+      getHandler: vitest.fn(() => NO_OP),
     };
 
     const adapter = new ApiGatewayV2Adapter();
@@ -82,7 +83,7 @@ describe('ServerlessAdapter', () => {
       framework,
       [adapter],
       resolver,
-      binarySettings,
+      expect.objectContaining(binarySettings),
       respondWithErrors,
       logger,
     );

@@ -98,7 +98,6 @@
           // Fields
           "protected-abstract-field",
           "public-abstract-field",
-          "private-abstract-field",
           "protected-static-field",
           "public-static-field",
           "private-static-field",
@@ -120,7 +119,6 @@
           "private-instance-get",
           "protected-abstract-get",
           "public-abstract-get",
-          "private-abstract-get",
           "decorated-get",
           "abstract-get",
           "protected-get",
@@ -132,7 +130,6 @@
           // Setters
           "protected-abstract-set",
           "public-abstract-set",
-          "private-abstract-set",
           "abstract-set",
           "protected-decorated-set",
           "public-decorated-set",
@@ -159,7 +156,6 @@
           "private-decorated-method",
           "public-abstract-method",
           "protected-abstract-method",
-          "private-abstract-method",
           "public-instance-method",
           "protected-instance-method",
           "private-instance-method"

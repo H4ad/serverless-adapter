@@ -1,3 +1,4 @@
+import { describe, expect, it, vitest } from 'vitest';
 import {
   AdapterContract,
   AdapterRequest,
@@ -18,7 +19,7 @@ class TestHandler<
   TResponse,
   TReturn,
 > extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
-  getHandler = jest.fn();
+  getHandler = vitest.fn();
 
   /**
    * {@inheritDoc}
@@ -53,7 +54,7 @@ describe(BaseHandler.name, () => {
 
     adapters.forEach(adapter => {
       // @ts-ignore
-      adapter.canHandle = jest.fn(adapter.canHandle.bind(adapter));
+      adapter.canHandle = vitest.fn(adapter.canHandle.bind(adapter));
     });
 
     expect(

@@ -9,9 +9,9 @@ import {
   OnErrorProps,
 } from '../../contracts';
 import {
-  getDefaultIfUndefined,
+  StripBasePathFn,
+  buildStripBasePath,
   getEventBodyAsBuffer,
-  getFlattenedHeadersMap,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
 } from '../../core';
@@ -62,7 +62,18 @@ export class ApiGatewayV1Adapter
    *
    * @param options - The options to customize the {@link ApiGatewayV1Adapter}
    */
-  constructor(protected readonly options?: ApiGatewayV1Options) {}
+  constructor(protected readonly options?: ApiGatewayV1Options) {
+    this.stripPathFn = buildStripBasePath(this.options?.stripBasePath);
+  }
+
+  //#endregion
+
+  //#region Protected Properties
+
+  /**
+   * Strip base path function
+   */
+  protected stripPathFn: StripBasePathFn;
 
   //#endregion
 
@@ -100,7 +111,22 @@ export class ApiGatewayV1Adapter
    */
   public getRequest(event: APIGatewayProxyEvent): AdapterRequest {
     const method = event.httpMethod;
-    const headers = getFlattenedHeadersMap(event.headers, ',', true);
+    const headers = { ...event.headers };
+
+    for (const multiValueHeaderKey of Object.keys(
+      event.multiValueHeaders || {},
+    )) {
+      const headerValue = event.multiValueHeaders[multiValueHeaderKey];
+
+      // event.headers by default only stick with first value if they see multiple headers
+      // the other values will only appear on multiValueHeaderKey, in this case
+      // we look for headers with more than 1 length which is the wrong values on event.headers
+      // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+      if (!headerValue || headerValue?.length <= 1) continue;
+
+      headers[multiValueHeaderKey] = headerValue.join(',');
+    }
+
     const path = this.getPathFromEvent(event);
 
     let body: Buffer | undefined;
@@ -112,7 +138,8 @@ export class ApiGatewayV1Adapter
       );
 
       body = bufferBody;
-      headers['content-length'] = String(contentLength);
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      headers['content-length'] = contentLength + '';
     }
 
     const remoteAddress = event.requestContext.identity.sourceIp;
@@ -138,12 +165,10 @@ export class ApiGatewayV1Adapter
   }: GetResponseAdapterProps<APIGatewayProxyEvent>): APIGatewayProxyResult {
     const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
 
-    const transferEncodingHeader: string[] =
-      multiValueHeaders['transfer-encoding'];
-
-    const hasTransferEncodingChunked =
-      transferEncodingHeader &&
-      transferEncodingHeader.some(value => value.includes('chunked'));
+    const transferEncodingHeader = multiValueHeaders['transfer-encoding'];
+    const hasTransferEncodingChunked = transferEncodingHeader?.some(value =>
+      value.includes('chunked'),
+    );
 
     if (hasTransferEncodingChunked) {
       throw new Error(
@@ -198,14 +223,23 @@ export class ApiGatewayV1Adapter
    * @param event - The event sent by serverless
    */
   protected getPathFromEvent(event: APIGatewayProxyEvent): string {
-    const stripBasePath = getDefaultIfUndefined(
-      this.options?.stripBasePath,
-      '',
-    );
-    const replaceRegex = new RegExp(`^${stripBasePath}`);
-    const path = event.path.replace(replaceRegex, '');
+    const path = this.stripPathFn(event.path);
+    const queryParams = event.multiValueQueryStringParameters || {};
 
-    const queryParams = event.queryStringParameters || {};
+    if (event.queryStringParameters) {
+      for (const queryStringKey of Object.keys(event.queryStringParameters)) {
+        const queryStringValue = event.queryStringParameters[queryStringKey];
+
+        if (queryStringValue === undefined) continue;
+
+        if (!Array.isArray(queryParams[queryStringKey]))
+          queryParams[queryStringKey] = [];
+
+        if (queryParams[queryStringKey]!.includes(queryStringValue)) continue;
+
+        queryParams[queryStringKey]!.push(queryStringValue);
+      }
+    }
 
     return getPathWithQueryStringParams(path, queryParams);
   }

@@ -1,10 +1,13 @@
 import { join } from 'path';
-import { CloudFrontRequest } from 'aws-lambda/common/cloudfront';
-import type { CloudFrontHeaders } from 'aws-lambda/common/cloudfront';
+import type {
+  CloudFrontHeaders,
+  CloudFrontRequest,
+} from 'aws-lambda/common/cloudfront';
 import type {
   CloudFrontRequestEvent,
   CloudFrontRequestResult,
 } from 'aws-lambda/trigger/cloudfront-request';
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   BothValueHeaders,
   DelegatedResolver,
@@ -233,7 +236,7 @@ describe(LambdaEdgeAdapter.name, () => {
         const body = JSON.stringify(cloudFrontRequest);
 
         const log = {
-          error: jest.fn(message =>
+          error: vitest.fn(message =>
             expect(message).toContain('Max response size exceeded'),
           ) as any,
         } as ILogger;
@@ -428,7 +431,7 @@ describe(LambdaEdgeAdapter.name, () => {
         const body = JSON.stringify(cloudFrontRequest);
 
         const log = {
-          error: jest.fn(message =>
+          error: vitest.fn(message =>
             expect(message).toContain('Max response size exceeded'),
           ) as any,
         } as ILogger;
@@ -445,7 +448,7 @@ describe(LambdaEdgeAdapter.name, () => {
         expect(result).toBeDefined();
         expect(log.error).toHaveBeenCalledTimes(1);
 
-        const onResponseSizeExceedLimit = jest.fn();
+        const onResponseSizeExceedLimit = vitest.fn();
 
         const customAdapter2 = new LambdaEdgeAdapter({
           originMaxResponseSizeInBytes: 0,
@@ -489,8 +492,8 @@ describe(LambdaEdgeAdapter.name, () => {
         const log = {} as ILogger;
 
         const resolver: DelegatedResolver<CloudFrontRequestResult> = {
-          fail: jest.fn(),
-          succeed: jest.fn(),
+          fail: vitest.fn(),
+          succeed: vitest.fn(),
         };
 
         const error = new Error('Test error');

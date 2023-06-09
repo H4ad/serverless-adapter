@@ -1,3 +1,4 @@
+import { describe, expect, it, vitest } from 'vitest';
 import { NO_OP, ServerlessRequest } from '../../src';
 
 describe('ServerlessRequest', () => {
@@ -50,10 +51,10 @@ describe('ServerlessRequest', () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    request.push = jest.fn(request.push);
+    request.push = vitest.fn(request.push);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    request._read = jest.fn(request._read);
+    request._read = vitest.fn(request._read);
 
     request._read(Math.random());
 

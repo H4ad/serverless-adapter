@@ -1,4 +1,5 @@
 import { ObjectReadableMock } from 'stream-mock';
+import { describe, expect, it, vitest } from 'vitest';
 import {
   ServerlessRequest,
   ServerlessResponse,
@@ -155,11 +156,11 @@ describe('ServerlessResponse', () => {
         method: 'GET',
       });
 
-      expect(() => response.connection.write(testedData)).toThrowError(
+      expect(() => response.connection!.write(testedData)).toThrowError(
         'response.write()',
       );
 
-      expect(() => response.connection.write(testedData)).toThrowError(
+      expect(() => response.connection!.write(testedData)).toThrowError(
         'response.write()',
       );
     }
@@ -171,7 +172,7 @@ describe('ServerlessResponse', () => {
 
       response._header = null as any;
 
-      expect(() => response.connection.write(testedData)).toThrowError(
+      expect(() => response.connection!.write(testedData)).toThrowError(
         'response.write()',
       );
     }
@@ -191,10 +192,10 @@ describe('ServerlessResponse', () => {
 
       response._header = null as any;
 
-      const callback = jest.fn();
+      const callback = vitest.fn();
 
       expect(() =>
-        response.connection.write(testedData, callback),
+        response.connection!.write(testedData, callback),
       ).not.toThrowError();
 
       expect(callback).toHaveBeenCalled();
@@ -216,8 +217,8 @@ describe('ServerlessResponse', () => {
       method: 'GET',
     });
 
-    response.callNativeWriteHead = jest.fn();
-    response.setHeader = jest.fn();
+    response.callNativeWriteHead = vitest.fn();
+    response.setHeader = vitest.fn();
 
     expect(() => response.writeHead(200, { test1: 'true' })).not.toThrowError();
     expect(() =>
