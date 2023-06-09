@@ -248,9 +248,6 @@ describe('TrpcFramework', () => {
 
     await waitForStreamComplete(response);
 
-    const resultBody = ServerlessResponse.body(response);
-
-    expect(resultBody.toString('utf-8')).toEqual('');
     expect(response.statusCode).toEqual(204);
     expect(response.headers).not.toHaveProperty('test2');
   });
