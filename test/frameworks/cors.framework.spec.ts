@@ -215,7 +215,7 @@ async function handleRestExpects<TApp>(
   else expect(spySendRequest).not.toHaveBeenCalled();
 }
 
-describe(CorsFramework.name, () => {
+describe('CorsFramework', () => {
   describe('express', () => {
     for (const corsTest of corsOptions) {
       it(`${corsTest.method}: ${corsTest.name}`, async () => {
@@ -275,10 +275,12 @@ describe(CorsFramework.name, () => {
   describe('trpc', () => {
     for (const corsTest of corsOptions) {
       it(`${corsTest.method}: ${corsTest.name}`, async () => {
-        const app = trpc.router();
+        const t = trpc.initTRPC.create();
 
-        app.query('/', {
-          resolve: () => 'ok',
+        const app = t.router({
+          ['/']: t.procedure.query(() => {
+            return 'ok';
+          }),
         });
 
         await handleRestExpects(app, new TrpcFramework(), corsTest);

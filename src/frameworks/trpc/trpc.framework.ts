@@ -134,7 +134,7 @@ export type TrpcAdapterContext<TContext> = TContext & TrpcAdapterBaseContext;
  * @public
  */
 export type TrpcFrameworkOptions<TContext> = Omit<
-  NodeHTTPHandlerOptions<AnyRouter<TContext>, IncomingMessage, ServerResponse>,
+  NodeHTTPHandlerOptions<AnyRouter, IncomingMessage, ServerResponse>,
   'router' | 'createContext'
 > & {
   createContext?: (
@@ -150,8 +150,10 @@ export type TrpcFrameworkOptions<TContext> = Omit<
  * @breadcrumb Frameworks / TrpcFramework
  * @public
  */
-export class TrpcFramework<TContext extends TrpcAdapterBaseContext>
-  implements FrameworkContract<AnyRouter<TContext>>
+export class TrpcFramework<
+  TContext extends TrpcAdapterBaseContext,
+  TRouter extends AnyRouter = AnyRouter,
+> implements FrameworkContract<TRouter>
 {
   //#region Constructor
 
@@ -167,8 +169,8 @@ export class TrpcFramework<TContext extends TrpcAdapterBaseContext>
   /**
    * {@inheritDoc}
    */
-  public sendRequest(
-    app: AnyRouter<TContext>,
+  public sendRequest<TRouter extends AnyRouter>(
+    app: TRouter,
     request: IncomingMessage,
     response: ServerResponse,
   ): void {
@@ -222,7 +224,7 @@ export class TrpcFramework<TContext extends TrpcAdapterBaseContext>
     >,
   ): TContext | Promise<TContext> {
     const createContextFromOptions: NodeHTTPCreateContextFn<
-      AnyRouter<Omit<TContext, keyof TrpcAdapterBaseContext>>,
+      AnyRouter,
       IncomingMessage,
       ServerResponse
     > = getDefaultIfUndefined(

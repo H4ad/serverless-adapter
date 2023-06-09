@@ -1,6 +1,6 @@
 import * as http from 'http';
-import { describe, expect, it, vitest } from 'vitest';
 import supertest from 'supertest';
+import { describe, expect, it, vitest } from 'vitest';
 import { ILogger } from '../../src';
 import { DummyAdapter } from '../../src/adapters/dummy';
 import {
@@ -10,7 +10,7 @@ import {
 import { DummyResolver } from '../../src/resolvers/dummy';
 import { FrameworkMock } from '../mocks/framework.mock';
 
-describe(HttpHuaweiHandler.name, () => {
+describe('HttpHuaweiHandler', () => {
   const app = null;
 
   const response = { batata: true };
@@ -28,7 +28,7 @@ describe(HttpHuaweiHandler.name, () => {
 
   it('should create correctly mocked server and test default constants', async () => {
     const listenMock = vitest.fn();
-    const closeMock = vitest.fn();
+    const closeMock = vitest.fn(callback => callback());
     const addEventListenerMock = vitest.fn();
     const createServerMock = vitest.fn(
       () =>
@@ -55,12 +55,7 @@ describe(HttpHuaweiHandler.name, () => {
       logger,
     );
 
-    expect(addEventListenerMock).toHaveBeenCalledWith(
-      'request',
-      expect.any(Function),
-    );
-
-    expect(createServerMock).toHaveBeenCalledWith(app, framework);
+    expect(createServerMock).toHaveBeenCalledWith(expect.any(Function));
     expect(listenMock).toHaveBeenCalledWith(
       DEFAULT_HUAWEI_LISTEN_PORT,
       expect.any(Function),

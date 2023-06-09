@@ -366,11 +366,12 @@ describe('BodyParserFramework', () => {
         : it;
 
       itFn(bodyParserTest.name, async () => {
-        const app = trpc
-          .router<TrpcAdapterContext<unknown>>()
-          .mutation('body', {
-            input: inp => inp,
-            resolve: ctx => {
+        const t = trpc.initTRPC.context<TrpcAdapterContext<unknown>>().create();
+
+        const app = t.router({
+          body: t.procedure
+            .input(inp => inp)
+            .mutation(ctx => {
               const body = (ctx.ctx.request as any).body;
 
               if (bodyParserTest.expectedBody)
@@ -378,8 +379,8 @@ describe('BodyParserFramework', () => {
               else expect(body).not.toEqual(bodyParserTest.notExpectedBody);
 
               return 'ok';
-            },
-          });
+            }),
+        });
 
         await handleRestExpects(app, new TrpcFramework(), bodyParserTest);
       });

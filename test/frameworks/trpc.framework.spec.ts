@@ -19,12 +19,11 @@ type TrpcContext = TrpcAdapterContext<unknown>;
 
 function createHandler(
   method: 'get' | 'post' | 'delete' | 'put',
-): TestRouteBuilderHandler<AnyRouter<TrpcContext>, AnyRouter<TrpcContext>> {
+): TestRouteBuilderHandler<ReturnType<typeof createRouter>, AnyRouter> {
   return (app, path, handler) => {
     if (method === 'get') {
-      return app.query(path, {
-        input: inp => inp,
-        resolve: ({ ctx, input }) => {
+      return app.router({
+        [path]: app.procedure.query(({ ctx, input }) => {
           const [statusCode, resultBody, headers] = handler(
             ctx.getHeaders(),
             input,
@@ -36,38 +35,39 @@ function createHandler(
           ctx.setStatus(statusCode);
 
           return resultBody;
-        },
+        }),
       });
     } else {
-      return app.mutation(path, {
-        input: inp => inp,
-        resolve: ({ ctx, input }) => {
-          const [statusCode, resultBody, headers] = handler(
-            ctx.getHeaders(),
-            input,
-          );
+      return app.router({
+        [path]: app.procedure
+          .input(inp => inp)
+          .mutation(({ ctx, input }) => {
+            const [statusCode, resultBody, headers] = handler(
+              ctx.getHeaders(),
+              input,
+            );
 
-          for (const header of Object.keys(headers))
-            ctx.setHeader(header, headers[header]);
+            for (const header of Object.keys(headers))
+              ctx.setHeader(header, headers[header]);
 
-          ctx.setStatus(statusCode);
+            ctx.setStatus(statusCode);
 
-          return resultBody;
-        },
+            return resultBody;
+          }),
       });
     }
   };
 }
 
 function createRouter() {
-  return trpc.router<TrpcContext>();
+  return trpc.initTRPC.context<TrpcContext>().create();
 }
 
 const validTestOptions = frameworkTestOptions.filter(
   ([method]) => method === 'post' || method === 'get',
 );
 
-describe(TrpcFramework.name, () => {
+describe('TrpcFramework', () => {
   for (const [
     method,
     path,
@@ -138,11 +138,11 @@ describe(TrpcFramework.name, () => {
 
       const resultBody = ServerlessResponse.body(response);
 
-      expect(resultBody.toString('utf-8')).toEqual(
+      expect(
         expectedValue !== undefined
           ? expectedValue
-          : JSON.stringify({ id: null, result: { type: 'data', data: body } }),
-      );
+          : JSON.stringify({ result: { data: body } }),
+      ).toEqual(resultBody.toString('utf-8'));
       expect(response.statusCode).toBe(statusCode);
       expect(ServerlessResponse.headers(response)).toHaveProperty(
         'response-header',
@@ -156,13 +156,13 @@ describe(TrpcFramework.name, () => {
     type CustomContext = TrpcAdapterContext<Context>;
 
     const currentDate = new Date();
-
-    const app = trpc.router<CustomContext>().query('test', {
-      resolve: function ({ ctx }) {
+    const t = trpc.initTRPC.context<CustomContext>().create();
+    const app = t.router({
+      test: t.procedure.query(function ({ ctx }) {
         expect(ctx).toHaveProperty('currentDate');
 
         ctx.setStatus(201);
-      },
+      }),
     });
 
     const request = new ServerlessRequest({
@@ -201,8 +201,7 @@ describe(TrpcFramework.name, () => {
     const secondResultBody = ServerlessResponse.body(secondResponse);
 
     const emptyResponse = JSON.stringify({
-      id: null,
-      result: { type: 'data' },
+      result: {},
     });
 
     expect(firstResultBody.toString('utf-8')).toEqual(emptyResponse);
@@ -210,8 +209,9 @@ describe(TrpcFramework.name, () => {
   });
 
   it('should correctly send default methods inside context', async () => {
-    const app = createRouter().query('test', {
-      resolve: function ({ ctx }) {
+    const t = createRouter();
+    const app = t.router({
+      test: t.procedure.query(({ ctx }) => {
         expect(ctx.request).toBeDefined();
         expect(ctx.response).toBeDefined();
 
@@ -225,8 +225,9 @@ describe(TrpcFramework.name, () => {
         ctx.setStatus(204);
         ctx.setHeader('test2', 'batata');
         ctx.removeHeader('test2');
-      },
+      }),
     });
+
     const framework = new TrpcFramework<TrpcAdapterContext<unknown>>();
 
     const request = new ServerlessRequest({
