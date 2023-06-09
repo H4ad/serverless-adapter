@@ -86,6 +86,13 @@ export const handler = ServerlessAdapter.new(app)
 
 See how to use this library [here](https://viniciusl.com.br/serverless-adapter/docs/category/getting-started).
 
+# Breaking Changes
+
+I will not consider updating/breaking compatibility of a NodeJS framework as a significant change,
+because I had a lot of supported frameworks and if I created a major version for each one it would be a mess.
+
+So if you want predictability, fix the version with `~` instead of `^`.
+
 # Examples
 
 You can see some examples of how to use this library [here](https://github.com/H4ad/serverless-adapter-examples).
