@@ -1,6 +1,6 @@
 {
   "name": "@h4ad/serverless-adapter",
-  "version": "0.0.0-development",
+  "version": "2.17.0",
   "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Digital Ocean and many other clouds.",
   "main": "./lib/index.js",
   "files": [
@@ -35,7 +35,7 @@
     "url": "https://github.com/H4ad"
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=18.0.0"
   },
   "keywords": [
     "aws",
@@ -77,10 +77,10 @@
   "devDependencies": {
     "@apollo/server": "^4.7.1",
     "@azure/functions": "^3.5.1",
-    "@deepkit/app": "1.0.1-alpha.94",
-    "@deepkit/framework": "1.0.1-alpha.94",
-    "@deepkit/http": "1.0.1-alpha.94",
-    "@deepkit/workflow": "1.0.1-alpha.94",
+    "@deepkit/app": "1.0.1-alpha.98",
+    "@deepkit/framework": "1.0.1-alpha.99",
+    "@deepkit/http": "1.0.1-alpha.98",
+    "@deepkit/workflow": "1.0.1-alpha.97",
     "@google-cloud/functions-framework": "^3.2.0",
     "@hapi/hapi": "^21.3.2",
     "@microsoft/api-documenter": "7.22.4",
@@ -88,6 +88,10 @@
     "@microsoft/api-extractor-model": "7.26.8",
     "@microsoft/tsdoc": "0.14.2",
     "@rushstack/node-core-library": "3.58.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.0.2",
     "@trpc/server": "^9.27.4",
     "@types/aws-lambda": "^8.10.115",
     "@types/body-parser": "^1.19.2",
@@ -212,11 +216,6 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
   },
   "publishConfig": {
     "access": "public"
