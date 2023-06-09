@@ -76,7 +76,7 @@ describe(HttpHuaweiHandler.name, () => {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  it.only('should create correctly http server', async () => {
+  it('should create correctly http server', async () => {
     const handlerFactory = new HttpHuaweiHandler();
     const framework = new FrameworkMock(200, response);
 
@@ -103,7 +103,7 @@ describe(HttpHuaweiHandler.name, () => {
     );
   });
 
-  it.only('should forward correctly the request to framework', async () => {
+  it('should forward correctly the request to framework', async () => {
     let httpServer!: http.Server;
 
     const handlerFactory = new HttpHuaweiHandler({
@@ -137,7 +137,7 @@ describe(HttpHuaweiHandler.name, () => {
     await expect(dispose()).resolves.toBeUndefined();
   });
 
-  it.only('should throw error if something wrong occours on dispose', async () => {
+  it('should throw error if something wrong occours on dispose', async () => {
     const error = new Error('something wrong occours');
 
     const mockServer = {
