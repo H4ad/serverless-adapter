@@ -8,8 +8,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "build": "vite build",
-    "postbuild": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
     "build:docs": "tsc -p tsconfig.doc.json --emitDeclarationOnly",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
