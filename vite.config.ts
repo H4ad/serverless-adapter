@@ -11,6 +11,7 @@ export default defineConfig({
       platform: 'node',
       target: 'node18',
       sourcemap: 'external',
+      minifyIdentifiers: false,
     },
     build: {
       outDir: 'lib',
