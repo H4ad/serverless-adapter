@@ -1,6 +1,7 @@
 /**
  * Get the data from a buffer, string, or Uint8Array
  *
+ * @breadcrumb Network
  * @param data - The data that was written inside the stream
  */
 export function getString(data: Buffer | string | unknown) {

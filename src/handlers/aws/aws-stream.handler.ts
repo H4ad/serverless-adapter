@@ -23,13 +23,25 @@ import { ServerlessRequest, ServerlessStreamResponse } from '../../network';
 
 //#endregion
 
+/**
+ * @breadcrumb Handlers / AwsStreamHandler
+ * @public
+ */
 export type AWSResponseStream = Writable;
 
+/**
+ * @breadcrumb Handlers / AwsStreamHandler
+ * @public
+ */
 export type AWSStreamResponseMetadata = Pick<
   APIGatewayProxyStructuredResultV2,
   'statusCode' | 'headers' | 'cookies'
 >;
 
+/**
+ * @breadcrumb Handlers / AwsStreamHandler
+ * @public
+ */
 declare const awslambda: {
   streamifyResponse: (
     handler: (
