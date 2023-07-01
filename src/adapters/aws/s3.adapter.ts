@@ -33,7 +33,7 @@ export interface S3AdapterOptions {
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-s3.html | Event Reference}
+ * {@link https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html | Event Reference}
  *
  * @example
  * ```typescript

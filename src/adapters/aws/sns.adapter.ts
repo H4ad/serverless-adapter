@@ -33,7 +33,7 @@ export interface SNSAdapterOptions {
  *
  * The option of `responseWithErrors` is ignored by this adapter and we always call `resolver.fail` with the error.
  *
- * {@link https://docs.aws.amazon.com/pt_br/lambda/latest/dg/with-sns.html | Event Reference}
+ * {@link https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html | Event Reference}
  *
  * @example
  * ```typescript
