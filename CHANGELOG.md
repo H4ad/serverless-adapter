@@ -1,5 +1,18 @@
 CHANGES:
 
+# [3.1.0](https://github.com/H4ad/serverless-adapter/compare/v3.0.0...v3.1.0) (2023-07-01)
+
+
+### Bug Fixes
+
+* **build:** disable minify identifiers ([0a285a6](https://github.com/H4ad/serverless-adapter/commit/0a285a6b2249d56ce39a762872bcc7cfb4515f8c))
+* **package:** types not being emitted ([2bc1244](https://github.com/H4ad/serverless-adapter/commit/2bc124456f41855798ed7d5c4a132b2d83bf16fd))
+
+
+### Features
+
+* **aws:** added adapter for request lambda edge ([b8791da](https://github.com/H4ad/serverless-adapter/commit/b8791da9c4718a837d9ae01d89bba7b30067dc52))
+
 # [3.0.0](https://github.com/H4ad/serverless-adapter/compare/v2.17.0...v3.0.0) (2023-06-09)
 
 
