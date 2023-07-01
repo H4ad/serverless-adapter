@@ -1,7 +1,68 @@
 ---
-title: Lambda Edge
-description: See more about how to integrate with AWS Lambda Edge.
+title: Lambda@Edge
+description: See more about how to integrate with AWS Lambda@Edge.
 ---
+
+The adapter to handle requests from [AWS Lambda@Edge](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-the-edge.html).
+
+We have two implementations that works with Lambda@Edge:
+
+## RequestLambdaEdgeAdapter
+
+This is the most useful implementation as it allows you to return a response during `viewer-request` and `origin-request` events.
+Also, this means that you cannot use this adapter to handle `viewer-response` and `origin-response` events.
+
+In short, it works like when you deploy your code using Vercel and you have an `api` folder, but instead of being deployed to Vercel, it is deployed to Lambda@Edge.
+
+### Customizing
+
+You can remove the base path with the `stripBasePath` option inside [RequestLambdaEdgeAdapterOptions](/docs/api/Adapters/AWS/RequestLambdaEdgeAdapter/RequestLambdaEdgeAdapterOptions).
+
+:::caution
+
+When configuring your API with some `basePath` such as `/api`, you must send the request on path `/api/my/path` or set `stripBasePath` to `/api`.
+
+:::
+
+### How to use
+
+To add support to AWS Lambda@Edge you do the following:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { RequestLambdaEdgeAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new DefaultHandler())
+  // .setFramework(new ExpressFramework())
+  // .setResolver(new PromiseResolver())
+  .addAdapter(new RequestLambdaEdgeAdapter())
+  // customizing:
+  // .addAdapter(new RequestLambdaEdgeAdapter({ stripBasePath: '/api' }))
+  .build();
+```
+
+### Caution with limits
+
+AWS Lambda@Edge has some limits, and one of them is response size, which is 1MB for `origin-request` and 40KB for `viewer-request`, [see more here](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-restrictions.html).
+
+### `viewer request` or `source request`?
+
+I personally prefer using `origin-request` because it can return a larger response, plus you can configure the cache behavior to cache the response, which is not possible with `viewer-request`.
+
+### Cache
+
+As I mentioned above, you can cache the response when using `origin-request`, the only problem if you set the default cache option it will cache everything!
+
+You can control the cache timing by setting the `cache-control` header, but for `GET` and `HEAD` requests, even with `no-store` or `no-cache` set in `cache-control`, if you send the request fast enough it will return the value from the cache.
+
+The `POST`, `DELETE`, etc... methods are not cached, so don't worry about them.
+
+In resume, you can cache the response, but you need to know what you want to do and also understand how to set the cache switch correctly, so [read the docs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html).
+
+## LambdaEdgeAdapter
 
 Honestly, I added this adapter because @vendia/serverless-adapter had already added support for Lambda Edge, but reading my implementation and @vendia's implementation, I never knew if it actually worked because I didn't test it on AWS.
 
