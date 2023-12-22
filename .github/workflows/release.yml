@@ -1,31 +1,42 @@
 name: Release
+
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  release:
-    name: Release
+  release-please:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Release Please
+        uses: google-github-actions/release-please-action@v4
+        id: release
         with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN_GITHUB }}
+          release-type: node
+
+      - name: Checkout Code
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+
+      - name: Use Node 20.x
+        uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.release_created }}
         with:
-          node-version: lts/*
-      - name: Install dependencies
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Deps
         run: npm ci
-      - name: Test
-        run: npm test
-      - name: Build
-        run: npm run build
-      - name: Release
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: NPM Publish
+        run: npm publish
+        if: ${{ steps.release.outputs.release_created }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
-      - name: Code Coverage
-        run: npm run coverage
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
