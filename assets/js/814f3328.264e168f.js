@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[2535],{5641:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"AWS Lambda Response Streaming","permalink":"/blog/aws-lambda-response-streaming"},{"title":"Updates and Releases","permalink":"/blog/updates-and-releases"},{"title":"The Beginning","permalink":"/blog/the-beginning"}]}')}}]);
