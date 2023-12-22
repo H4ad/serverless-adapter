@@ -1,6 +1,52 @@
+# Changelog
+
+## [3.2.0](https://github.com/H4ad/serverless-adapter/compare/v3.1.0...v3.2.0) (2023-12-22)
+
+
+### Features
+
+* **firebase:** bump supported firebase functions to 4.x ([b717240](https://github.com/H4ad/serverless-adapter/commit/b717240a808d7d81905745347b17969e7caaf6f5))
+
+
+### Documentation
+
+* **readme:** removed semantic release badge ([fe85304](https://github.com/H4ad/serverless-adapter/commit/fe8530439df4ed48d3542127227ae98954fd84a5))
+
+
+### Miscellaneous Chores
+
+* **benchmark:** bump package versions ([b6aa539](https://github.com/H4ad/serverless-adapter/commit/b6aa539bb499fcadd2393c7bf010dfe6d726f2d5))
+* bootstrap releases for path: . ([e68506e](https://github.com/H4ad/serverless-adapter/commit/e68506ea9c5a5fb8492b7cc7bb03400c95700668))
+* bump @apollo/server from 4.7.4 to 4.9.3 ([52c8b83](https://github.com/H4ad/serverless-adapter/commit/52c8b83db4d8b80120aea6ccb32e8b4580466168))
+* bump semver from 5.7.1 to 5.7.2 in /benchmark ([0a6a3e0](https://github.com/H4ad/serverless-adapter/commit/0a6a3e0a0e536f43e2c61f307f955b01a97e1169))
+* bump semver from 5.7.1 to 5.7.2 in /www ([49c7baf](https://github.com/H4ad/serverless-adapter/commit/49c7baf364e251d78da4349ab35c6b69837a003d))
+* bump vite from 4.3.5 to 4.4.9 ([ecd1252](https://github.com/H4ad/serverless-adapter/commit/ecd125253229ed032f21606238fbc27fc74d5e95))
+* bump vite from 4.4.9 to 5.0.10 ([8eadf40](https://github.com/H4ad/serverless-adapter/commit/8eadf405eea86facff1268b9fb4d5d153a873fbb))
+* bump word-wrap from 1.2.3 to 1.2.4 ([218d3a9](https://github.com/H4ad/serverless-adapter/commit/218d3a906c0b18156110c4c8fe155d0f183fca29))
+* **docs:** update to docusaurus v3 ([51a104e](https://github.com/H4ad/serverless-adapter/commit/51a104e000e867ae3601a70408cec8d0ab2d8cc3))
+* **package:** bump package versions ([fe0a0fc](https://github.com/H4ad/serverless-adapter/commit/fe0a0fc35c687037dfa172dbb667c4451d539ad8))
+* **release-please:** set latest version ([69110ec](https://github.com/H4ad/serverless-adapter/commit/69110ec1f418831ac4a49545d1bf40c291212293))
+* **semantic-release:** removed unused package ([2c60275](https://github.com/H4ad/serverless-adapter/commit/2c602753ecd3fcdff23567ec8a77e317ebd7f9fe))
+
+
+### Continuous Integration
+
+* **codeql:** run only when changing code files ([93d8f1c](https://github.com/H4ad/serverless-adapter/commit/93d8f1c029e2c84e5c4b1366ecddc9b1b11c6fa5))
+* **codeql:** updated configuration ([9ffa3e8](https://github.com/H4ad/serverless-adapter/commit/9ffa3e8b5f4c7df8772cd64ef8640646879f713f))
+* **docs:** only trigger when update workflows of docs ([c1e7f8a](https://github.com/H4ad/serverless-adapter/commit/c1e7f8aefdaf18a12f5a26c2b0cbc94f4c830322))
+* **pr:** only run when update specific files ([0085520](https://github.com/H4ad/serverless-adapter/commit/0085520b20edb0a33111bdb7780195805d31b0af))
+* **pr:** stop running the pr on main ([7c7a05a](https://github.com/H4ad/serverless-adapter/commit/7c7a05a78928a2ef96d67dae38f6f56b25361575))
+* **release-please:** try fix issues with release please config ([46577f2](https://github.com/H4ad/serverless-adapter/commit/46577f2c79bcc9f20b9925f6fa629f534d63a4f9))
+* **release:** added coverage ([57f1e09](https://github.com/H4ad/serverless-adapter/commit/57f1e09d63936546764708880e5dd5e799c332b6))
+* **release:** added provenance during publish ([1161e42](https://github.com/H4ad/serverless-adapter/commit/1161e4227fb63ad272ba740ba186de63d40955c3))
+* **release:** include all commits on release ([9185a0b](https://github.com/H4ad/serverless-adapter/commit/9185a0b6ab34174905669cfdd084b2cc9afe54bb))
+* **release:** moved configuration to the correct place ([b8c6156](https://github.com/H4ad/serverless-adapter/commit/b8c6156eb3d7df06f1c370965e91abc850217adc))
+* **release:** use release manager instead of merge-and-release ([ef278e6](https://github.com/H4ad/serverless-adapter/commit/ef278e6efc2732e5e21d2e3ae9d32fb96ac1edc2))
+* **workflows:** bump action versions ([647e694](https://github.com/H4ad/serverless-adapter/commit/647e694ce6919925c5df4188450e49faa5ec3fc8))
+
 CHANGES:
 
-# [3.1.0](https://github.com/H4ad/serverless-adapter/compare/v3.0.0...v3.1.0) (2023-07-01)
+## [3.1.0](https://github.com/H4ad/serverless-adapter/compare/v3.0.0...v3.1.0) (2023-07-01)
 
 
 ### Bug Fixes
@@ -13,7 +59,7 @@ CHANGES:
 
 * **aws:** added adapter for request lambda edge ([b8791da](https://github.com/H4ad/serverless-adapter/commit/b8791da9c4718a837d9ae01d89bba7b30067dc52))
 
-# [3.0.0](https://github.com/H4ad/serverless-adapter/compare/v2.17.0...v3.0.0) (2023-06-09)
+## [3.0.0](https://github.com/H4ad/serverless-adapter/compare/v2.17.0...v3.0.0) (2023-06-09)
 
 
 ### Bug Fixes
