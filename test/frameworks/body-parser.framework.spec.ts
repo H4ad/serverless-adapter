@@ -259,7 +259,7 @@ describe('BodyParserFramework', () => {
           res.send('ok');
         });
 
-        app.use((err, req, res: ServerResponse, _) => {
+        app.use((err, __, res: ServerResponse, _) => {
           res.emit('error', err);
         });
 
@@ -411,7 +411,7 @@ describe('BodyParserFramework', () => {
 
       const customOptions: Options & BodyParserOptions = {
         limit: 4,
-        customErrorHandler: (req, response, err) => {
+        customErrorHandler: (__, response, _) => {
           response.statusCode = 400;
           response.end('ok');
         },

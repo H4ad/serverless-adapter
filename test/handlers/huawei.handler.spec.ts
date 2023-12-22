@@ -36,7 +36,7 @@ describe('HttpHuaweiHandler', () => {
           listen: listenMock,
           close: closeMock,
           addEventListener: addEventListenerMock,
-        } as unknown as http.Server),
+        }) as unknown as http.Server,
     );
 
     const handlerFactory = new HttpHuaweiHandler({
@@ -72,7 +72,9 @@ describe('HttpHuaweiHandler', () => {
   }
 
   it('should create correctly http server', async () => {
-    const handlerFactory = new HttpHuaweiHandler();
+    const handlerFactory = new HttpHuaweiHandler({
+      port: 0,
+    });
     const framework = new FrameworkMock(200, response);
 
     const dispose = handlerFactory.getHandler(
@@ -102,6 +104,7 @@ describe('HttpHuaweiHandler', () => {
     let httpServer!: http.Server;
 
     const handlerFactory = new HttpHuaweiHandler({
+      port: 0,
       httpServerFactory: requestListener => {
         const server = http.createServer(requestListener);
 

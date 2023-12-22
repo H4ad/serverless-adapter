@@ -282,7 +282,7 @@ it('onErrorWhileForwarding: should forward error dealing to base adapter', () =>
     event: {},
     log: createDefaultLogger(),
     error: new Error(),
-    delegatedResolver: { fail: vitest.fn, succeed: vitest.fn },
+    delegatedResolver: { fail: vitest.fn(), succeed: vitest.fn() },
     respondWithErrors: true,
   };
 

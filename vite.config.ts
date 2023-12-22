@@ -39,11 +39,11 @@ export default defineConfig({
   }),
   test: {
     coverage: {
+      include: ['src/**'],
       exclude: [
-        'src/**/types/**/*.ts',
+        'src/**/@types/**/*.ts',
         'src/**/index.doc.ts',
         'src/**/index.ts',
-        'test/**/*.ts',
       ],
     },
   },

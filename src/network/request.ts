@@ -57,7 +57,7 @@ export class ServerlessRequest extends IncomingMessage {
       encrypted: true,
       readable: false,
       remoteAddress,
-      address: () => ({ port: HTTPS_PORT } as AddressInfo),
+      address: () => ({ port: HTTPS_PORT }) as AddressInfo,
       end: NO_OP,
       destroy: NO_OP,
     } as any);

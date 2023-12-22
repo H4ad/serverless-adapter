@@ -103,7 +103,7 @@ export class HttpTriggerV4Adapter
   public getRequest(event: HttpRequest): AdapterRequest {
     const path = this.getPathFromEvent(event);
 
-    const method = event.method;
+    const method = event.method!;
     const headers = getFlattenedHeadersMap(event.headers, ',', true);
 
     let body: Buffer | undefined;
@@ -121,7 +121,7 @@ export class HttpTriggerV4Adapter
     const remoteAddress = headers['x-forwarded-for'];
 
     return {
-      method: method as string,
+      method,
       path,
       headers,
       remoteAddress,
@@ -134,7 +134,6 @@ export class HttpTriggerV4Adapter
    */
   public getResponse({
     body,
-    isBase64Encoded,
     statusCode,
     headers: originalHeaders,
   }: GetResponseAdapterProps<HttpRequest>): HttpResponseSimple {
@@ -217,8 +216,8 @@ export class HttpTriggerV4Adapter
     const headerCookies = Array.isArray(setCookie)
       ? setCookie
       : setCookie
-      ? [setCookie]
-      : [];
+        ? [setCookie]
+        : [];
 
     return headerCookies.map(cookie => this.parseCookie(cookie));
   }
