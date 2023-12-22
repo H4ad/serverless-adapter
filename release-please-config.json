@@ -1,58 +1,70 @@
 {
   "packages": {
     ".": {
-      "changelog-path": "CHANGELOG.md",
       "release-type": "node",
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease": false,
       "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "separate-pull-requests": false,
+      "skip-github-release": false,
+      "versioning": "default",
+      "pull-request-header": ":robot: I have created a release *beep* *boop*",
+      "pull-request-title-pattern": "chore${scope}: release${component} ${version}",
+      "changelog-path": "CHANGELOG.md",
+      "changelog-host": "https://github.com",
+      "changelog-type": "default",
       "changelog-sections": [
         {
           "type": "feat",
-          "section": "Features",
-          "hidden": false
+          "section": "Features"
+        },
+        {
+          "type": "feature",
+          "section": "Features"
         },
         {
           "type": "fix",
-          "section": "Bug Fixes",
-          "hidden": false
-        },
-        {
-          "type": "docs",
-          "section": "Documentation",
-          "hidden": false
-        },
-        {
-          "type": "build",
-          "section": "Build Related",
-          "hidden": false
-        },
-        {
-          "type": "chore",
-          "section": "Chores",
-          "hidden": false
+          "section": "Bug Fixes"
         },
         {
           "type": "perf",
-          "section": "Performance Improvements",
-          "hidden": false
+          "section": "Performance Improvements"
         },
         {
-          "type": "ci",
-          "section": "CI",
-          "hidden": false
+          "type": "revert",
+          "section": "Reverts"
+        },
+        {
+          "type": "docs",
+          "section": "Documentation"
+        },
+        {
+          "type": "style",
+          "section": "Styles"
+        },
+        {
+          "type": "chore",
+          "section": "Miscellaneous Chores"
         },
         {
           "type": "refactor",
-          "section": "Refactoring",
-          "hidden": false
+          "section": "Code Refactoring"
         },
         {
           "type": "test",
-          "section": "Tests",
-          "hidden": false
+          "section": "Tests"
+        },
+        {
+          "type": "build",
+          "section": "Build System"
+        },
+        {
+          "type": "ci",
+          "section": "Continuous Integration"
         }
       ]
     }
