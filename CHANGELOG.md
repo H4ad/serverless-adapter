@@ -1,6 +1,15 @@
+# Changelog
+
+## [3.2.0](https://github.com/H4ad/serverless-adapter/compare/v3.1.0...v3.2.0) (2023-12-22)
+
+
+### Features
+
+* **firebase:** bump supported firebase functions to 4.x ([b717240](https://github.com/H4ad/serverless-adapter/commit/b717240a808d7d81905745347b17969e7caaf6f5))
+
 CHANGES:
 
-# [3.1.0](https://github.com/H4ad/serverless-adapter/compare/v3.0.0...v3.1.0) (2023-07-01)
+## [3.1.0](https://github.com/H4ad/serverless-adapter/compare/v3.0.0...v3.1.0) (2023-07-01)
 
 
 ### Bug Fixes
@@ -13,7 +22,7 @@ CHANGES:
 
 * **aws:** added adapter for request lambda edge ([b8791da](https://github.com/H4ad/serverless-adapter/commit/b8791da9c4718a837d9ae01d89bba7b30067dc52))
 
-# [3.0.0](https://github.com/H4ad/serverless-adapter/compare/v2.17.0...v3.0.0) (2023-06-09)
+## [3.0.0](https://github.com/H4ad/serverless-adapter/compare/v2.17.0...v3.0.0) (2023-06-09)
 
 
 ### Bug Fixes
