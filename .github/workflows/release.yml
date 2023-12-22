@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release-please:
@@ -40,7 +41,7 @@ jobs:
         run: npm run coverage
 
       - name: NPM Publish
-        run: npm publish
+        run: npm publish --provenance --access public
         if: ${{ steps.release.outputs.release_created }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
