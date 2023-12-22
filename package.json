@@ -115,7 +115,7 @@
     "eslint-plugin-tsdoc": "0.2.17",
     "express": "4.18.2",
     "fastify": "4.25.1",
-    "firebase-admin": "11.8.0",
+    "firebase-admin": "12.0.0",
     "firebase-functions": "3.24.1",
     "glob": "10.3.10",
     "husky": "8.0.3",
