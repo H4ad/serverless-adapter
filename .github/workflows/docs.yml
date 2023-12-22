@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/docs.yml'
       - 'www/**'
       - 'src/**'
       - 'scripts/**'
