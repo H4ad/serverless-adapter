@@ -1,6 +1,6 @@
 {
   "name": "@h4ad/serverless-adapter",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Digital Ocean and many other clouds.",
   "main": "./lib/index.js",
   "files": [
