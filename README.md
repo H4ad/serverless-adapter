@@ -18,7 +18,6 @@
 [![Issues][issues-img]][issues-url]
 [![Code Coverage][codecov-img]][codecov-url]
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
-[![Semantic Release][semantic-release-img]][semantic-release-url]
 
 Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Deepkit, Express, Koa, Hapi,
 Fastify, tRPC and Apollo Server), on top of AWS Lambda, Azure, Digital Ocean and many other clouds.
@@ -130,10 +129,6 @@ for existing and giving us a brilliant library that is the core of my current co
 [codecov-img]:https://codecov.io/gh/H4ad/serverless-adapter/branch/main/graph/badge.svg
 
 [codecov-url]:https://codecov.io/gh/H4ad/serverless-adapter
-
-[semantic-release-img]:https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-
-[semantic-release-url]:https://github.com/semantic-release/semantic-release
 
 [commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
 
