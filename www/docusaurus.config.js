@@ -1,8 +1,9 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const {
+  themes: { dracula: darkCodeTheme, github: lightCodeTheme },
+} = require('prism-react-renderer');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -23,11 +24,26 @@ const config = {
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
-          { from: '/docs/main/adapters/introduction', to: '/docs/main/advanced/adapters/introduction' },
-          { from: '/docs/main/adapters/creating-an-adapter', to: '/docs/main/advanced/adapters/creating-an-adapter' },
-          { from: '/docs/main/frameworks/cors', to: '/docs/main/frameworks/helpers/cors' },
-          { from: '/docs/main/frameworks/lazy', to: '/docs/main/frameworks/helpers/lazy' },
-          { from: '/docs/main/handlers/default', to: '/docs/main/handlers/aws' },
+          {
+            from: '/docs/main/adapters/introduction',
+            to: '/docs/main/advanced/adapters/introduction',
+          },
+          {
+            from: '/docs/main/adapters/creating-an-adapter',
+            to: '/docs/main/advanced/adapters/creating-an-adapter',
+          },
+          {
+            from: '/docs/main/frameworks/cors',
+            to: '/docs/main/frameworks/helpers/cors',
+          },
+          {
+            from: '/docs/main/frameworks/lazy',
+            to: '/docs/main/frameworks/helpers/lazy',
+          },
+          {
+            from: '/docs/main/handlers/default',
+            to: '/docs/main/handlers/aws',
+          },
         ],
       },
     ],
@@ -55,7 +71,7 @@ const config = {
   ],
 
   themeConfig:
-  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
         title: 'Serverless Adapter',

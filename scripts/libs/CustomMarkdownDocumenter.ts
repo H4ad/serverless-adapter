@@ -354,7 +354,7 @@ export class CustomMarkdownDocumenter {
 
     if (filename.includes('ignored.md')) return;
 
-    FileSystem.writeFile(filename, pageContent, {
+    FileSystem.writeFile(filename, pageContent.replaceAll('{', '\\{'), {
       ensureFolderExists: true,
       convertLineEndings: this._documenterConfig
         ? this._documenterConfig.newlineKind
