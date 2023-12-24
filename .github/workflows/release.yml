@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@v4
 
       - name: Release Please
