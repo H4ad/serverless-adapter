@@ -1,17 +1,17 @@
 //#region Imports
 
 import type { Context, SQSBatchItemFailure } from 'aws-lambda';
-import {
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,
   OnErrorProps,
-} from '../../../contracts/index';
+} from '../../../contracts';
 import {
   EmptyResponse,
-  IEmptyResponse,
+  type IEmptyResponse,
   getEventBodyAsBuffer,
-} from '../../../core/index';
+} from '../../../core';
 
 //#endregion
 
@@ -93,7 +93,7 @@ export abstract class AwsSimpleAdapter<TEvent>
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is TEvent {
+  public canHandle(_: unknown): _ is TEvent {
     throw new Error('not implemented.');
   }
 

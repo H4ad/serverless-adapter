@@ -101,7 +101,7 @@ Is your application instance creation asynchronous? Look the [LazyFramework](./l
 If you want to customize the error messages, like when the size limit is exceeded, you can use `customErrorHandler`, like this:
 
 ```ts
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { HttpError } from 'http-errors';
 import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
 

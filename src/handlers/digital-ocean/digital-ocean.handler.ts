@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 //#region Imports
 
-import { BinarySettings } from '../../@types';
-import { DigitalOceanHttpEvent } from '../../@types/digital-ocean';
-import {
+import type { BinarySettings } from '../../@types';
+import type { DigitalOceanHttpEvent } from '../../@types/digital-ocean';
+import type {
   AdapterContract,
   FrameworkContract,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
-import { ILogger } from '../../core';
+import type { ILogger } from '../../core';
 import { DefaultHandler } from '../default';
 
 //#endregion
@@ -29,7 +29,7 @@ export class DigitalOceanHandler<
   /**
    * {@inheritDoc}
    */
-  public getHandler(
+  public override getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
     adapters: AdapterContract<TEvent, void, TResponse>[],

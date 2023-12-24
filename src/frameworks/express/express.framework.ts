@@ -1,8 +1,8 @@
 //#region
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { Express } from 'express';
-import { FrameworkContract } from '../../contracts';
+import type { FrameworkContract } from '../../contracts';
 
 //#endregion
 

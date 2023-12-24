@@ -1,9 +1,9 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
-import { FrameworkContract } from '../../contracts/index';
-import { ServerlessRequest } from '../../network/index';
-import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core/index';
+import type { IncomingMessage, ServerResponse } from 'http';
+import type { FrameworkContract } from '../../contracts';
+import { ServerlessRequest } from '../../network';
+import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core';
 
 //#endregion
 

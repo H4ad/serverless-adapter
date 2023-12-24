@@ -1,8 +1,8 @@
 //#region Imports
 
-import util from 'util';
-import { BinarySettings, SingleValueHeaders } from '../../@types';
-import {
+import util from 'node:util';
+import type { BinarySettings, SingleValueHeaders } from '../../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
@@ -11,7 +11,7 @@ import {
 } from '../../contracts';
 import {
   BaseHandler,
-  ILogger,
+  type ILogger,
   isBinary,
   setCurrentInvoke,
   waitForStreamComplete,

@@ -1,6 +1,6 @@
 //#region Imports
 
-import { Readable, Writable } from 'stream';
+import { Readable, Writable } from 'node:stream';
 
 //#endregion
 
@@ -39,7 +39,7 @@ export function waitForStreamComplete<TStream extends Readable | Writable>(
     // but I'll leave it at that because I didn't write that code, so I couldn't figure out what the author thought when he wrote this.
     let isComplete = false;
 
-    function complete(err) {
+    function complete(err: any) {
       /* istanbul ignore next */
       if (isComplete) return;
 

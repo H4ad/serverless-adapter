@@ -1,8 +1,8 @@
 //#region
 
-import { IncomingMessage, ServerResponse } from 'http';
-import { ApolloServer, BaseContext, HeaderMap } from '@apollo/server';
-import { FrameworkContract } from '../../contracts';
+import type { IncomingMessage, ServerResponse } from 'http';
+import { type ApolloServer, type BaseContext, HeaderMap } from '@apollo/server';
+import type { FrameworkContract } from '../../contracts';
 import { ServerlessRequest } from '../../network';
 import { getDefaultIfUndefined } from '../../core';
 

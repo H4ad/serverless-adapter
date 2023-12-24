@@ -1,6 +1,6 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { ObjectReadableMock } from 'stream-mock';
 import { FrameworkContract } from '../../src';
 

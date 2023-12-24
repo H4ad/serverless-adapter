@@ -1,7 +1,7 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import { IncomingMessage } from 'http';
-import { AddressInfo } from 'net';
-import { SingleValueHeaders } from '../@types';
+import { IncomingMessage } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import type { SingleValueHeaders } from '../@types';
 import { NO_OP } from '../core';
 
 const HTTPS_PORT = 443;

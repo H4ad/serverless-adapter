@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { describe, expect, it, vitest } from 'vitest';
 import { FrameworkContract } from '../../src';
 import { GCPHandler } from '../../src/handlers/gcp';

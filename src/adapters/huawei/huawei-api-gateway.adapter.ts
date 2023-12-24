@@ -1,11 +1,11 @@
 //#region Imports
 
-import {
+import type {
   HuaweiApiGatewayEvent,
   HuaweiApiGatewayResponse,
   HuaweiContext,
 } from '../../@types/huawei';
-import {
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,

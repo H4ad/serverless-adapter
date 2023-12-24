@@ -1,8 +1,8 @@
 //#region
 
-import { ServerResponse } from 'http';
+import type { ServerResponse } from 'http';
 import { HttpKernel, HttpResponse, RequestBuilder } from '@deepkit/http';
-import { FrameworkContract } from '../../contracts';
+import type { FrameworkContract } from '../../contracts';
 import { getFlattenedHeadersMap } from '../../core';
 import { ServerlessRequest } from '../../network';
 

@@ -1,6 +1,6 @@
 //#region Imports
 
-import { SingleValueHeaders } from '../headers';
+import type { SingleValueHeaders } from '../headers';
 
 //#endregion
 

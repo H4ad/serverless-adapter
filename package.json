@@ -2,22 +2,25 @@
   "name": "@h4ad/serverless-adapter",
   "version": "3.1.0",
   "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Digital Ocean and many other clouds.",
-  "main": "./lib/index.js",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.cts",
   "files": [
     "lib/**/*"
   ],
   "scripts": {
     "prepare": "husky install",
-    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "build:docs": "tsc -p tsconfig.doc.json --emitDeclarationOnly",
+    "build": "tsup",
+    "build:docs": "tsc -p tsconfig.doc.json",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
     "coverage": "codecov",
     "lint": "eslint ./src/ ./test/  --fix",
     "docs:generate": "npm run docs:generate:parsing && npm run docs:generate:markdown && npm run docs:generate:api-pages",
-    "docs:generate:parsing": "npm run build:docs && ts-node scripts/parse-docs.ts",
-    "docs:generate:markdown": "ts-node scripts/generate-markdown.ts",
-    "docs:generate:api-pages": "ts-node scripts/generate-api-pages.ts",
+    "docs:generate:parsing": "npm run build:docs && npx tsx scripts/parse-docs.ts",
+    "docs:generate:markdown": "npx tsx ./scripts/generate-markdown.ts",
+    "docs:generate:api-pages": "npx tsx ./scripts/generate-api-pages.ts",
     "test:watch": "vitest --watch",
     "test": "vitest --run --coverage",
     "typecheck": "tsc --noEmit"
@@ -85,6 +88,7 @@
     "@microsoft/api-extractor": "7.39.0",
     "@microsoft/api-extractor-model": "7.28.3",
     "@microsoft/tsdoc": "0.14.2",
+    "@npmcli/package-json": "5.0.0",
     "@rushstack/node-core-library": "3.62.0",
     "@trpc/server": "10.44.1",
     "@types/aws-lambda": "8.10.130",
@@ -102,6 +106,7 @@
     "commitizen": "4.3.0",
     "cors": "2.8.5",
     "cz-conventional-changelog": "3.3.0",
+    "esbuild": "0.19.10",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.29.1",
@@ -119,6 +124,7 @@
     "stream-mock": "2.0.5",
     "supertest": "6.3.3",
     "ts-node": "10.9.2",
+    "tsup": "8.0.1",
     "typedoc": "0.25.4",
     "typescript": "~5.3.3",
     "vite": "5.0.10",
@@ -212,5 +218,287 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      },
+      "require": {
+        "types": "./lib/index.d.cts",
+        "default": "./lib/index.cjs"
+      }
+    },
+    "./adapters/apollo-server": {
+      "import": {
+        "types": "./lib/adapters/apollo-server/index.d.ts",
+        "default": "./lib/adapters/apollo-server/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/apollo-server/index.d.cts",
+        "default": "./lib/adapters/apollo-server/index.cjs"
+      }
+    },
+    "./adapters/aws": {
+      "import": {
+        "types": "./lib/adapters/aws/index.d.ts",
+        "default": "./lib/adapters/aws/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/aws/index.d.cts",
+        "default": "./lib/adapters/aws/index.cjs"
+      }
+    },
+    "./adapters/azure": {
+      "import": {
+        "types": "./lib/adapters/azure/index.d.ts",
+        "default": "./lib/adapters/azure/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/azure/index.d.cts",
+        "default": "./lib/adapters/azure/index.cjs"
+      }
+    },
+    "./adapters/digital-ocean": {
+      "import": {
+        "types": "./lib/adapters/digital-ocean/index.d.ts",
+        "default": "./lib/adapters/digital-ocean/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/digital-ocean/index.d.cts",
+        "default": "./lib/adapters/digital-ocean/index.cjs"
+      }
+    },
+    "./adapters/dummy": {
+      "import": {
+        "types": "./lib/adapters/dummy/index.d.ts",
+        "default": "./lib/adapters/dummy/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/dummy/index.d.cts",
+        "default": "./lib/adapters/dummy/index.cjs"
+      }
+    },
+    "./adapters/huawei": {
+      "import": {
+        "types": "./lib/adapters/huawei/index.d.ts",
+        "default": "./lib/adapters/huawei/index.js"
+      },
+      "require": {
+        "types": "./lib/adapters/huawei/index.d.cts",
+        "default": "./lib/adapters/huawei/index.cjs"
+      }
+    },
+    "./frameworks/apollo-server": {
+      "import": {
+        "types": "./lib/frameworks/apollo-server/index.d.ts",
+        "default": "./lib/frameworks/apollo-server/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/apollo-server/index.d.cts",
+        "default": "./lib/frameworks/apollo-server/index.cjs"
+      }
+    },
+    "./frameworks/body-parser": {
+      "import": {
+        "types": "./lib/frameworks/body-parser/index.d.ts",
+        "default": "./lib/frameworks/body-parser/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/body-parser/index.d.cts",
+        "default": "./lib/frameworks/body-parser/index.cjs"
+      }
+    },
+    "./frameworks/cors": {
+      "import": {
+        "types": "./lib/frameworks/cors/index.d.ts",
+        "default": "./lib/frameworks/cors/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/cors/index.d.cts",
+        "default": "./lib/frameworks/cors/index.cjs"
+      }
+    },
+    "./frameworks/deepkit": {
+      "import": {
+        "types": "./lib/frameworks/deepkit/index.d.ts",
+        "default": "./lib/frameworks/deepkit/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/deepkit/index.d.cts",
+        "default": "./lib/frameworks/deepkit/index.cjs"
+      }
+    },
+    "./frameworks/express": {
+      "import": {
+        "types": "./lib/frameworks/express/index.d.ts",
+        "default": "./lib/frameworks/express/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/express/index.d.cts",
+        "default": "./lib/frameworks/express/index.cjs"
+      }
+    },
+    "./frameworks/fastify": {
+      "import": {
+        "types": "./lib/frameworks/fastify/index.d.ts",
+        "default": "./lib/frameworks/fastify/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/fastify/index.d.cts",
+        "default": "./lib/frameworks/fastify/index.cjs"
+      }
+    },
+    "./frameworks/hapi": {
+      "import": {
+        "types": "./lib/frameworks/hapi/index.d.ts",
+        "default": "./lib/frameworks/hapi/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/hapi/index.d.cts",
+        "default": "./lib/frameworks/hapi/index.cjs"
+      }
+    },
+    "./frameworks/koa": {
+      "import": {
+        "types": "./lib/frameworks/koa/index.d.ts",
+        "default": "./lib/frameworks/koa/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/koa/index.d.cts",
+        "default": "./lib/frameworks/koa/index.cjs"
+      }
+    },
+    "./frameworks/lazy": {
+      "import": {
+        "types": "./lib/frameworks/lazy/index.d.ts",
+        "default": "./lib/frameworks/lazy/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/lazy/index.d.cts",
+        "default": "./lib/frameworks/lazy/index.cjs"
+      }
+    },
+    "./frameworks/trpc": {
+      "import": {
+        "types": "./lib/frameworks/trpc/index.d.ts",
+        "default": "./lib/frameworks/trpc/index.js"
+      },
+      "require": {
+        "types": "./lib/frameworks/trpc/index.d.cts",
+        "default": "./lib/frameworks/trpc/index.cjs"
+      }
+    },
+    "./handlers/aws": {
+      "import": {
+        "types": "./lib/handlers/aws/index.d.ts",
+        "default": "./lib/handlers/aws/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/aws/index.d.cts",
+        "default": "./lib/handlers/aws/index.cjs"
+      }
+    },
+    "./handlers/azure": {
+      "import": {
+        "types": "./lib/handlers/azure/index.d.ts",
+        "default": "./lib/handlers/azure/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/azure/index.d.cts",
+        "default": "./lib/handlers/azure/index.cjs"
+      }
+    },
+    "./handlers/default": {
+      "import": {
+        "types": "./lib/handlers/default/index.d.ts",
+        "default": "./lib/handlers/default/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/default/index.d.cts",
+        "default": "./lib/handlers/default/index.cjs"
+      }
+    },
+    "./handlers/digital-ocean": {
+      "import": {
+        "types": "./lib/handlers/digital-ocean/index.d.ts",
+        "default": "./lib/handlers/digital-ocean/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/digital-ocean/index.d.cts",
+        "default": "./lib/handlers/digital-ocean/index.cjs"
+      }
+    },
+    "./handlers/firebase": {
+      "import": {
+        "types": "./lib/handlers/firebase/index.d.ts",
+        "default": "./lib/handlers/firebase/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/firebase/index.d.cts",
+        "default": "./lib/handlers/firebase/index.cjs"
+      }
+    },
+    "./handlers/gcp": {
+      "import": {
+        "types": "./lib/handlers/gcp/index.d.ts",
+        "default": "./lib/handlers/gcp/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/gcp/index.d.cts",
+        "default": "./lib/handlers/gcp/index.cjs"
+      }
+    },
+    "./handlers/huawei": {
+      "import": {
+        "types": "./lib/handlers/huawei/index.d.ts",
+        "default": "./lib/handlers/huawei/index.js"
+      },
+      "require": {
+        "types": "./lib/handlers/huawei/index.d.cts",
+        "default": "./lib/handlers/huawei/index.cjs"
+      }
+    },
+    "./resolvers/aws-context": {
+      "import": {
+        "types": "./lib/resolvers/aws-context/index.d.ts",
+        "default": "./lib/resolvers/aws-context/index.js"
+      },
+      "require": {
+        "types": "./lib/resolvers/aws-context/index.d.cts",
+        "default": "./lib/resolvers/aws-context/index.cjs"
+      }
+    },
+    "./resolvers/callback": {
+      "import": {
+        "types": "./lib/resolvers/callback/index.d.ts",
+        "default": "./lib/resolvers/callback/index.js"
+      },
+      "require": {
+        "types": "./lib/resolvers/callback/index.d.cts",
+        "default": "./lib/resolvers/callback/index.cjs"
+      }
+    },
+    "./resolvers/dummy": {
+      "import": {
+        "types": "./lib/resolvers/dummy/index.d.ts",
+        "default": "./lib/resolvers/dummy/index.js"
+      },
+      "require": {
+        "types": "./lib/resolvers/dummy/index.d.cts",
+        "default": "./lib/resolvers/dummy/index.cjs"
+      }
+    },
+    "./resolvers/promise": {
+      "import": {
+        "types": "./lib/resolvers/promise/index.d.ts",
+        "default": "./lib/resolvers/promise/index.js"
+      },
+      "require": {
+        "types": "./lib/resolvers/promise/index.d.cts",
+        "default": "./lib/resolvers/promise/index.cjs"
+      }
+    }
   }
 }

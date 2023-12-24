@@ -1,7 +1,7 @@
 //#region Imports
 
-import { ILogger } from '../core';
-import { AdapterContract } from './adapter.contract';
+import type { ILogger } from '../core';
+import type { AdapterContract } from './adapter.contract';
 
 //#endregion
 

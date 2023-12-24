@@ -1,9 +1,9 @@
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
-import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
+import type { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { IndentedWriter } from '@microsoft/api-documenter/lib/utils/IndentedWriter';
 
 export class MarkdownEmitter extends CustomMarkdownEmitter {
-  protected writePlainText(
+  protected override writePlainText(
     text: string,
     context: IMarkdownEmitterContext,
   ): void {

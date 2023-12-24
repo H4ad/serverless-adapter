@@ -2,7 +2,7 @@
 
 import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { getDefaultIfUndefined } from '../../core';
-import { AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
+import { type AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -76,14 +76,14 @@ export class DynamoDBAdapter extends AwsSimpleAdapter<DynamoDBStreamEvent> {
   /**
    * {@inheritDoc}
    */
-  public getAdapterName(): string {
+  public override getAdapterName(): string {
     return DynamoDBAdapter.name;
   }
 
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is DynamoDBStreamEvent {
+  public override canHandle(event: unknown): event is DynamoDBStreamEvent {
     const dynamoDBevent = event as Partial<DynamoDBStreamEvent>;
 
     if (!Array.isArray(dynamoDBevent?.Records)) return false;

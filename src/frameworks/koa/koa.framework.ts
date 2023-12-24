@@ -1,8 +1,8 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type Application from 'koa';
-import { FrameworkContract } from '../../contracts';
+import type { FrameworkContract } from '../../contracts';
 
 //#endregion
 

@@ -1,7 +1,11 @@
 //#region Imports
 
-import { AdapterContract, AdapterRequest, OnErrorProps } from '../../contracts';
-import { EmptyResponse, IEmptyResponse } from '../../core';
+import type {
+  AdapterContract,
+  AdapterRequest,
+  OnErrorProps,
+} from '../../contracts';
+import { EmptyResponse, type IEmptyResponse } from '../../core';
 
 //#endregion
 

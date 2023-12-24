@@ -83,7 +83,7 @@ const logLevels: Record<
   none: [],
 };
 
-const lazyPrint = value => {
+const lazyPrint = (value: () => any | unknown) => {
   if (typeof value === 'function') return value();
 
   return value;
@@ -91,7 +91,7 @@ const lazyPrint = value => {
 
 const print =
   (fn: string) =>
-  (message, ...additional) =>
+  (message: any, ...additional: (() => any)[]) =>
     console[fn](message, ...additional.map(lazyPrint));
 
 /**

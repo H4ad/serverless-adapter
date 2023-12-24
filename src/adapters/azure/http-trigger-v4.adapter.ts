@@ -1,14 +1,14 @@
 //#region Imports
 
-import { URL } from 'url';
+import { URL } from 'node:url';
 import type {
   Context,
   Cookie,
   HttpRequest,
   HttpResponseSimple,
 } from '@azure/functions';
-import { BothValueHeaders } from '../../@types';
-import {
+import type { BothValueHeaders } from '../../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,

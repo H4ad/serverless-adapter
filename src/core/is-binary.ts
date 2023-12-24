@@ -2,7 +2,7 @@
 
 //#region Imports
 
-import { BinarySettings, BothValueHeaders } from '../@types';
+import type { BinarySettings, BothValueHeaders } from '../@types';
 
 //#endregion
 

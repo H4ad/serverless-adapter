@@ -1,13 +1,13 @@
 //#region Imports
 
-import {
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,
   OnErrorProps,
 } from '../../contracts';
 import {
-  ILogger,
+  type ILogger,
   getDefaultIfUndefined,
   getEventBodyAsBuffer,
 } from '../../core';

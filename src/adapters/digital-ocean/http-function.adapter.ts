@@ -1,8 +1,12 @@
 //#region Imports
 
-import { DigitalOceanHttpEvent } from '../../@types/digital-ocean';
-import { DigitalOceanHttpResponse } from '../../@types/digital-ocean/digital-ocean-http-response';
-import {
+//#region Imports
+
+import type {
+  DigitalOceanHttpEvent,
+  DigitalOceanHttpResponse,
+} from '../../@types/digital-ocean';
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,

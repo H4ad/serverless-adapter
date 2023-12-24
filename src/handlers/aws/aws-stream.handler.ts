@@ -1,11 +1,11 @@
 //#region Imports
 
-import { Writable } from 'stream';
-import util from 'util';
+import { Writable } from 'node:stream';
+import { inspect } from 'node:util';
 import type { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
-import { BinarySettings } from '../../@types';
-import {
+import type { BinarySettings } from '../../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
@@ -14,7 +14,7 @@ import {
 } from '../../contracts';
 import {
   BaseHandler,
-  ILogger,
+  type ILogger,
   getFlattenedHeadersMap,
   setCurrentInvoke,
   waitForStreamComplete,
@@ -102,7 +102,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
       AWSStreamContext,
       AWSStreamResponseMetadata
     >[],
-    resolverFactory: ResolverContract<
+    _resolverFactory: ResolverContract<
       unknown,
       unknown,
       unknown,
@@ -169,7 +169,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
   ): void {
     log.debug('SERVERLESS_ADAPTER:PROXY', () => ({
       event,
-      context: util.inspect(context, { depth: null }),
+      context: inspect(context, { depth: null }),
       binarySettings,
       respondWithErrors,
     }));
@@ -243,8 +243,8 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
    * @param event - The event sent by serverless
    * @param context - The context sent by serverless
    * @param adapter - The adapter resolved to this event
+   * @param _binarySettings - The binary settings
    * @param log - The instance of logger
-   * @param binarySettings - The binary settings
    */
   protected async forwardRequestToFramework(
     app: TApp,
@@ -256,7 +256,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
       AWSStreamContext,
       AWSStreamResponseMetadata
     >,
-    binarySettings: BinarySettings,
+    _binarySettings: BinarySettings,
     log: ILogger,
   ): Promise<void> {
     const requestValues = adapter.getRequest(event, context, log);

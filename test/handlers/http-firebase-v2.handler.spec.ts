@@ -1,7 +1,7 @@
-import { HttpsOptions } from 'firebase-functions/lib/v2/providers/https';
+import type { HttpsOptions } from 'firebase-functions/v2/https';
 import { describe, expect, it, vitest } from 'vitest';
 import {
-  FrameworkContract,
+  type FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
@@ -73,7 +73,7 @@ describe(HttpFirebaseV2Handler.name, () => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         sendRequest: vitest.fn(
           async (
-            app: null,
+            _app: null,
             req: ServerlessRequest,
             res: ServerlessResponse,
           ) => {
