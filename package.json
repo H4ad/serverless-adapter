@@ -75,7 +75,7 @@
   "devDependencies": {
     "@apollo/server": "4.9.5",
     "@azure/functions": "3.5.1",
-    "@deepkit/app": "1.0.1-alpha.98",
+    "@deepkit/app": "1.0.1-alpha.108",
     "@deepkit/framework": "1.0.1-alpha.99",
     "@deepkit/http": "1.0.1-alpha.98",
     "@deepkit/workflow": "1.0.1-alpha.97",
