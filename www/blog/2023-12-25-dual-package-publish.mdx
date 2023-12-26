@@ -14,6 +14,8 @@ image: https://images.unsplash.com/photo-1429743305873-d4065c15f93e
 
 
 
+
+
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ![Two paths inside a forest!](https://images.unsplash.com/photo-1429743305873-d4065c15f93e)
@@ -27,8 +29,10 @@ my packages as `@h4ad/serverless-adapter/adapters/aws`.
 You can use it by installing the new version:
 
 ```bash
-npm i @h4ad/serverless-adapter@4.0.0
+npm i @h4ad/serverless-adapter@4.0.1
 ```
+
+> The version 4.0.0 was released with a bug that didn't include the package files, so I released the version 4.0.1 to fix this issue.
 
 In the previous version, since I only export to `commonjs`, you need to import the files as `/lib/adapters/aws`, which is not bad, but not exactly good.
 This was necessary because I can't export all files in the default `export` as this will lead you to install all frameworks supported by this library.
