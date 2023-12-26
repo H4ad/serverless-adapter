@@ -1,5 +1,32 @@
 # Changelog
 
+## [4.0.0](https://github.com/H4ad/serverless-adapter/compare/v3.2.0...v4.0.0) (2023-12-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* Now we support dual package publish, and the import can fail.
+
+### Features
+
+* added support for dual package publish ([dd0803f](https://github.com/H4ad/serverless-adapter/commit/dd0803ff5ebcabf22120da88b74a720c3661f846))
+
+
+### Bug Fixes
+
+* **dual-package-publish:** issue with imports lib when moduleResolution is node ([4dac8aa](https://github.com/H4ad/serverless-adapter/commit/4dac8aa07ef015f3b0fd8f8d766705271e93c111))
+
+
+### Documentation
+
+* **blog:** added blogpost about dual package publish ([006e8a9](https://github.com/H4ad/serverless-adapter/commit/006e8a94b02152e4857cda7951e285ff2b449430))
+* updated documentation for dual package publish ([03ee217](https://github.com/H4ad/serverless-adapter/commit/03ee21746bee785d840ab26a1ec5ddf2bd6dea90))
+
+
+### Continuous Integration
+
+* **release:** fixed issue with release-please skipping release ([8dfb582](https://github.com/H4ad/serverless-adapter/commit/8dfb582742481f7e37e076f00c51d32907f401fd))
+
 ## [3.2.0](https://github.com/H4ad/serverless-adapter/compare/v3.1.0...v3.2.0) (2023-12-22)
 
 
