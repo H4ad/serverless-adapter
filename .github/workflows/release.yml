@@ -36,6 +36,7 @@ jobs:
 
       - name: Build
         run: npm run build
+        if: ${{ steps.release.outputs.release_created }}
 
       - name: Get Coverage Info
         if: ${{ steps.release.outputs.release_created }}
