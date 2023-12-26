@@ -1,11 +1,23 @@
 //#region Imports
 
+import { IncomingMessage, ServerResponse } from 'node:http';
 // eslint-disable-next-line import/no-unresolved
 import { https } from 'firebase-functions/v2';
-import { FrameworkContract, HandlerContract } from '../../contracts';
+import type { FrameworkContract, HandlerContract } from '../../contracts';
 import { RawRequest } from '../base';
 
 //#endregion
+
+/**
+ * The HTTP handler that is exposed when you use {@link HttpFirebaseV2Handler}.
+ *
+ * @breadcrumb Handlers / HttpFirebaseHandler
+ * @public
+ */
+export type FirebaseHttpHandler = (
+  request: IncomingMessage,
+  response: ServerResponse,
+) => void | Promise<void>;
 
 /**
  * The class that implements a handler for Firebase Https Events
@@ -39,7 +51,7 @@ export class HttpFirebaseV2Handler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-  ): ReturnType<HttpFirebaseV2Handler<TApp>['onRequestCallback']> {
+  ): FirebaseHttpHandler {
     if (this.options) {
       return this.onRequestWithOptions(
         this.options,
@@ -47,7 +59,9 @@ export class HttpFirebaseV2Handler<TApp>
       );
     }
 
-    return https.onRequest(this.onRequestCallback(app, framework));
+    return https.onRequest(
+      this.onRequestCallback(app, framework),
+    ) as unknown as FirebaseHttpHandler;
   }
 
   //#endregion
@@ -60,8 +74,8 @@ export class HttpFirebaseV2Handler<TApp>
   protected onRequestWithOptions(
     options: https.HttpsOptions,
     callback: ReturnType<HttpFirebaseV2Handler<TApp>['onRequestCallback']>,
-  ): ReturnType<HttpFirebaseV2Handler<TApp>['onRequestCallback']> {
-    return https.onRequest(options, callback);
+  ): FirebaseHttpHandler {
+    return https.onRequest(options, callback) as unknown as FirebaseHttpHandler;
   }
 
   //#endregion

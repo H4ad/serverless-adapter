@@ -1,8 +1,8 @@
-import { ServerResponse } from 'http';
-import { Socket } from 'net';
-import { Writable } from 'stream';
-import { BothValueHeaders } from '../@types';
-import { ILogger, NO_OP, parseHeaders } from '../core';
+import { ServerResponse } from 'node:http';
+import type { Socket } from 'node:net';
+import type { Writable } from 'node:stream';
+import type { BothValueHeaders } from '../@types';
+import { type ILogger, NO_OP, parseHeaders } from '../core';
 import { getString } from './utils';
 
 const endChunked = '0\r\n\r\n';

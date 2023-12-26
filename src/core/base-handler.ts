@@ -1,7 +1,7 @@
 //#region Imports
 
-import { BinarySettings } from '../@types';
-import {
+import type { BinarySettings } from '../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
@@ -10,7 +10,7 @@ import {
   ServerlessHandler,
 } from '../contracts';
 import { ServerlessRequest, ServerlessResponse } from '../network';
-import { ILogger } from './index';
+import type { ILogger } from './index';
 
 //#endregion
 

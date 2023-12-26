@@ -2,14 +2,14 @@
 
 import type { APIGatewayProxyResult, Context } from 'aws-lambda';
 import type { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
-import {
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,
   OnErrorProps,
 } from '../../contracts';
 import {
-  StripBasePathFn,
+  type StripBasePathFn,
   buildStripBasePath,
   getEventBodyAsBuffer,
   getMultiValueHeadersMap,

@@ -1,6 +1,6 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
-import { IncomingMessage, ServerResponse } from 'http';
-import { Socket } from 'net';
+import { IncomingMessage, ServerResponse } from 'node:http';
+import type { Socket } from 'node:net';
 import { NO_OP } from '../core';
 import { getString } from './utils';
 
@@ -121,12 +121,15 @@ export class ServerlessResponse extends ServerResponse {
     return Object.assign(headers, res[HEADERS]);
   }
 
-  setHeader(key: string, value: number | string | readonly string[]): any {
+  override setHeader(
+    key: string,
+    value: number | string | readonly string[],
+  ): any {
     if (this._wroteHeader) this[HEADERS][key] = value;
     else super.setHeader(key, value);
   }
 
-  writeHead(
+  override writeHead(
     statusCode: number,
     statusMessage?: string | any | any[],
     obj?: any | any[],

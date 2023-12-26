@@ -1,5 +1,24 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts", "src/index.doc.ts"],
-  "exclude": ["benchmark/**/*.ts", "vite.config.ts"]
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "vitest/globals"
+    ],
+    "lib": [
+      "esnext"
+    ],
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "scripts/**/*.ts",
+    "vite.config.ts",
+    "tsup.config.ts"
+  ],
+  "exclude": [
+    "benchmark/**/*.ts"
+  ]
 }

@@ -2,7 +2,7 @@
 
 import type { SNSEvent } from 'aws-lambda';
 import { getDefaultIfUndefined } from '../../core';
-import { AwsSimpleAdapter } from './base/index';
+import { AwsSimpleAdapter } from './base';
 
 //#endregion
 
@@ -69,14 +69,14 @@ export class SNSAdapter extends AwsSimpleAdapter<SNSEvent> {
   /**
    * {@inheritDoc}
    */
-  public getAdapterName(): string {
+  public override getAdapterName(): string {
     return SNSAdapter.name;
   }
 
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is SNSEvent {
+  public override canHandle(event: unknown): event is SNSEvent {
     const snsEvent = event as Partial<SNSEvent>;
 
     if (!Array.isArray(snsEvent?.Records)) return false;

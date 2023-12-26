@@ -69,14 +69,14 @@ export class S3Adapter extends AwsSimpleAdapter<S3Event> {
   /**
    * {@inheritDoc}
    */
-  public getAdapterName(): string {
+  public override getAdapterName(): string {
     return S3Adapter.name;
   }
 
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is S3Event {
+  public override canHandle(event: unknown): event is S3Event {
     const s3Event = event as Partial<S3Event>;
 
     if (!Array.isArray(s3Event?.Records)) return false;

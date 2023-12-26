@@ -22,7 +22,7 @@ function build(): void {
   const filename = join(outputFolder, 'Introduction.md');
   const introductionMarkdownContent = readFileSync(filename);
 
-  const introductionContent = `---\ntitle: Introduction\nsidebar_position: -1\n---${introductionMarkdownContent}`;
+  const introductionContent = `---\ntitle: Introduction\nsidebar_position: -1\n---\n\n${introductionMarkdownContent}`;
 
   writeFileSync(filename, introductionContent);
 }

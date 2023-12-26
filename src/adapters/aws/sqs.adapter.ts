@@ -2,7 +2,7 @@
 
 import type { SQSEvent } from 'aws-lambda';
 import { getDefaultIfUndefined } from '../../core';
-import { AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
+import { type AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
 
 //#endregion
 
@@ -70,14 +70,14 @@ export class SQSAdapter extends AwsSimpleAdapter<SQSEvent> {
   /**
    * {@inheritDoc}
    */
-  public getAdapterName(): string {
+  public override getAdapterName(): string {
     return SQSAdapter.name;
   }
 
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is SQSEvent {
+  public override canHandle(event: unknown): event is SQSEvent {
     const sqsEvent = event as Partial<SQSEvent>;
 
     if (!Array.isArray(sqsEvent?.Records)) return false;

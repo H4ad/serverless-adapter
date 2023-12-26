@@ -1,5 +1,5 @@
-import { OutgoingHttpHeaders } from 'http2';
-import { ApolloServer, BaseContext, HeaderMap } from '@apollo/server';
+import type { OutgoingHttpHeaders } from 'http';
+import { ApolloServer, type BaseContext, HeaderMap } from '@apollo/server';
 import { describe, expect, it, vitest } from 'vitest';
 import {
   ServerlessRequest,

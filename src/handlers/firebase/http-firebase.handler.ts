@@ -1,9 +1,8 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
 // eslint-disable-next-line import/no-unresolved
-import { https } from 'firebase-functions/v1';
-import { FrameworkContract, HandlerContract } from '../../contracts';
+import { type HttpsFunction, https } from 'firebase-functions/v1';
+import type { FrameworkContract, HandlerContract } from '../../contracts';
 import { RawRequest } from '../base';
 
 //#endregion
@@ -28,7 +27,7 @@ export class HttpFirebaseHandler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-  ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
+  ): HttpsFunction {
     return https.onRequest(this.onRequestCallback(app, framework));
   }
 

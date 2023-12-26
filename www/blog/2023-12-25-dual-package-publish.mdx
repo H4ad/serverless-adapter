@@ -1,0 +1,304 @@
+---
+slug: dual-package-publish
+title: Support for Dual Package Publish
+authors: [h4ad]
+tags: [serverless-adapter, cjs, esm, npm, package, publish]
+image: https://images.unsplash.com/photo-1429743305873-d4065c15f93e
+---
+
+
+
+
+
+
+
+
+
+
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+![Two paths inside a forest!](https://images.unsplash.com/photo-1429743305873-d4065c15f93e)
+> Image by [Jens Lelie](https://unsplash.com/@madebyjens) on [Unsplash](https://unsplash.com)
+
+This feature was initially asked by [ClementCornut](https://github.com/ClementCornut) on issue [#127](https://github.com/H4ad/serverless-adapter/issues/127).
+
+Initially I was a little unsure whether to publish `esm` and `cjs`, but then I started to like the idea of exporting
+my packages as `@h4ad/serverless-adapter/adapters/aws`.
+
+You can use it by installing the new version:
+
+```bash
+npm i @h4ad/serverless-adapter@4.0.0
+```
+
+In the previous version, since I only export to `commonjs`, you need to import the files as `/lib/adapters/aws`, which is not bad, but not exactly good.
+This was necessary because I can't export all files in the default `export` as this will lead you to install all frameworks supported by this library.
+
+But ok, I had some problems while adding support for dual-package publishing which I want to share with you only,
+and especially for my future version if you want to add support for dual-package publishing in your modules.
+
+## Vite
+
+I already use `vitest` test my package and to build the previous versions,
+it works great and is specially fast to run the tests (5.82s to run 456 tests across 52 files).
+
+But the configuration to build was a little bit nightmare:
+
+```ts title="vite.config.ts"
+// some initial configuration lines...
+  ...(!isTest && {
+    esbuild: {
+      format: 'cjs',
+      platform: 'node',
+      target: 'node18',
+      sourcemap: 'external',
+      minifyIdentifiers: false,
+    },
+    build: {
+      outDir: 'lib',
+      emptyOutDir: true,
+      sourcemap: true,
+      lib: {
+        entry: path.resolve(__dirname, 'src/index.ts'),
+        formats: ['cjs'],
+      },
+      rollupOptions: {
+        external: ['yeoman-generator'],
+        input: glob.sync(path.resolve(__dirname, 'src/**/*.ts')),
+        output: {
+          preserveModules: true,
+          entryFileNames: entry => {
+            const { name } = entry;
+
+            const fileName = `${name}.js`;
+
+            return fileName;
+          },
+        },
+      },
+    },
+  }),
+```
+
+All of this configuration was necessary as I need to build my package to match exactly the same structure as `src`,
+which was needed for users to import as `/lib/adapters/aws`.
+
+On the first attempt, I just tried to extend this configuration, but I spent a few hours and managed to generate
+a good package output, but it was missing some details that were very painful to bear, such as correctly emitting `d.cts`.
+
+If you want to see how it turned out, if you want to try doing this using `vite` directly,
+[here is vite.config.ts](https://github.com/H4ad/serverless-adapter/blob/f642739334687b0a22312074a6e225e9f8ac8124/vite.config.ts).
+
+But then I started to give up and [tweeted about it](https://twitter.com/vinii_joga10/status/1738954683853451760).
+
+## Suggestions from Twitter
+
+I got some incredible helpful messages on twitter and I will cover those suggestions that I applied to be able to finally support dual package publish.
+
+### Re-exporting on mjs
+
+This was a suggestion from [Matteo Collina](https://twitter.com/matteocollina), he also sent me the package [snap](https://github.com/mcollina/snap) which does this re-export,
+which I also saw being used in [Orama](https://github.com/oramasearch/orama/blob/main/packages/orama/src/cjs/index.cts), is basically doing this:
+
+<BrowserWindow url="https://nodejs.org/api/packages.html#approach-2-isolate-state">
+  Your state:
+
+  ```js title="./node_modules/pkg/state.cjs"
+  import Date from 'date';
+  const someDate = new Date();
+  ```
+
+  Define/export on `cjs`.
+
+  ```js title="./node_modules/pkg/index.cjs"
+  const state = require('./state.cjs');
+  module.exports.state = state;
+  ```
+
+  Re-export on `mjs`.
+
+  ```js title="./node_modules/pkg/index.mjs"
+  import state from './state.cjs';
+  export {
+  state,
+};
+  ```
+</BrowserWindow>
+
+This way, I solve the problem of state isolation, but I will need:
+
+- or manually export all these files
+- or use a tool to automate this process
+
+Both ways will be a bit painful to maintain, so I didn't go that route.
+
+This approach can be fine if your library maintains state and the codebase is pure javascript.
+
+### tsup
+
+Instead of trying to go through this configuration hell in `vite`, [Michele Riva](https://twitter.com/MicheleRivaCode)
+suggested [tsup](https://tsup.egoist.dev/) which is incredibly easy to use.
+
+I spent less than 10 minutes to generate almost the same output as the previous configuration with `vite`,
+but this time the output was correct, with `d.cts` files being generated.
+
+My configuration file now looks like this:
+
+```ts title="tsup.config.ts"
+export default defineConfig({
+  outDir: './lib',
+  clean: true,
+  dts: true,
+  format: ['esm', 'cjs'],
+  // the libEntries is basically all the entries I need to export,
+  // like: adapters/aws, frameworks/fastify, etc...
+  entry: ['src/index.ts', ...libEntries],
+  sourcemap: true,
+  skipNodeModulesBundle: true,
+  minify: true,
+  target: 'es2022',
+  tsconfig: './tsconfig.build.json',
+  keepNames: true,
+  bundle: true,
+});
+```
+
+Since I have a lot of things to export, I also automate the configuration of `exports` in `package.json` with:
+
+```ts title="tsup.config.ts"
+// I do the same for adapters, frameworks and handlers
+const resolvers = ['aws-context', 'callback', 'dummy', 'promise'];
+
+const libEntries = [
+  ...resolvers.map(resolver => `src/resolvers/${resolver}/index.ts`),
+];
+
+const createExport = (filePath: string) => ({
+  import: {
+    types: `./lib/${filePath}.d.ts`,
+    default: `./lib/${filePath}.js`,
+  },
+  require: {
+    types: `./lib/${filePath}.d.cts`,
+    default: `./lib/${filePath}.cjs`,
+  },
+});
+
+const createExportReducer =
+  (initialPath: string) => (acc: object, name: string) => {
+    acc[`./${initialPath}/${name}`] = createExport(
+      `${initialPath}/${name}/index`,
+    );
+
+    return acc;
+  };
+
+const packageExports = {
+  '.': createExport('index'),
+  ...resolvers.reduce(createExportReducer('resolvers'), {}),
+  // and I also do the same for adapters, frameworks and handlers.
+};
+
+// this command does the magic to update my package.json
+execSync(`npm pkg set exports='${JSON.stringify(packageExports)}' --json`);
+```
+
+This works incredible and also keep my `package.json` updated.
+
+### publint
+
+The [publint](https://publint.dev/) is a tool that I learned on [ESM Modernization Lessons](https://blog.isquaredsoftware.com/2023/08/esm-modernization-lessons/#early-attempts) inside `Early Attempts`,
+this article was a suggestion by [Luca Micieli](https://twitter.com/LucaRams23).
+
+With this tool, I detect several problems with the `exports` configuration and this will make your life a lot easier.
+
+But this tool has a problem that they didn't catch, and this problem was pointed out by [Michele Riva](https://twitter.com/MicheleRivaCode), instead:
+
+```json title="package.json"
+"exports": {
+  "resolvers/promise": {
+```
+
+I should export it with the prefix `./`:
+
+```json title="package.json"
+"exports": {
+  "./resolvers/promise": {
+```
+
+This small detail can make your configuration fail.
+
+### verdaccio
+
+The [verdaccio](https://verdaccio.org/) was suggested by [Abhijeet Prasad](https://twitter.com/imabhiprasad), with this tool you can have your private registry that you can use to test,
+Abhijeet use this tool on [Sentry](https://sentry.io/) SDKs to do e2e tests.
+
+With this tool, I was able to make sure the package was working correctly with the new dual package publish.
+
+### Wrong `moduleResolution`
+
+It took me a while to realize, but while testing the changes in a sample project, the imports still failed because TypeScript couldn't find the files.
+
+So I remember the suggestion from [sami](https://twitter.com/samijaber_) who gave me some examples of projects he uses
+in [BuilderIO/hidration-overlay](https://github.com/BuilderIO/hydration-overlay/tree/main/tests),
+and I understand the difference between `moduleResolution`, in my project it was configured for `node`,
+in his project it was configured for `bundler`.
+
+When I changed this setting, all imports started working and imports using `/lib/adapters/aws` started failing.
+
+If you're like me and have no idea what this setting is about, the documentation says:
+
+<BrowserWindow url="https://www.typescriptlang.org/tsconfig#moduleResolution">
+  Specify the module resolution strategy:
+
+  'node16' or 'nodenext' for modern versions of Node.js. Node.js v12 and later supports both ECMAScript imports and
+  CommonJS require, which resolve using different algorithms. These moduleResolution values, when combined with the
+  corresponding module values, picks the right algorithm for each resolution based on whether Node.js will see an import
+  or require in the output JavaScript code.
+
+  'node10' (previously called 'node') for Node.js versions older than v10, which only support CommonJS require. You
+  probably won’t need to use node10 in modern code.
+
+  'bundler' for use with bundlers. Like node16 and nodenext, this mode supports package.json "imports" and "exports",
+  but unlike the Node.js resolution modes, bundler never requires file extensions on relative paths in imports.
+</BrowserWindow>
+
+Make sense why it was not working at all, `node` was not built to support `exports`, and only `nodenext` and `bundler` should work correctly.
+
+## Doubling the package size
+
+Something I saw that made me a little worried was the size of this package, since I need to export the code, types and source maps twice, the package
+went from `~600Kb` to `~1.5Mb`.
+
+I enabled minification to try to reduce the amount of code shipped, but if you use this library and don't have any kind of minification/bundling
+during your build, I highly recommend you look into these libraries to help you with the size of your zip file being uploaded:
+
+- [@h4ad/node-modules-packer](https://github.com/H4ad/node-modules-packer)
+- [ncc](https://github.com/vercel/ncc)
+- [zip-it-and-ship-it](https://github.com/netlify/zip-it-and-ship-it)
+
+## Conclusions
+
+The `esm` packages was a nightmare to support some time ago but the ecosystem is starting solving problems with new tools to bundle your project
+instead of having to fight with your own configuration files.
+
+The `cjs` is a no-brain solution, almost no configuration and it works great but maybe is not ideal for your consumers/clients, some of them can have issues
+like [ClementCornut](https://github.com/ClementCornut) that needed to import the files with the full path `import awsPkg from "@h4ad/serverless-adapter/lib/adapters/aws/index.js";`.
+
+When I started adding this feature, I had no knowledge of how to publish double packages, I basically go-horse in the early hours
+of my implementation and then I started learning more about how it works and how to properly configure the package.
+
+This makes me realize that dual-package publishing isn't the nightmare I initially thought, I just didn't learn from the
+previous mistakes other people made and I should have read more articles about it before I started implementing it.
+
+My sincere thanks to:
+
+- [Abhijeet Prasad](https://twitter.com/imabhiprasad)
+- [Luca Micieli](https://twitter.com/LucaRams23)
+- [Matteo Collina](https://twitter.com/matteocollina)
+- [Michele Riva](https://twitter.com/MicheleRivaCode)
+- [sami](https://twitter.com/samijaber_)
+
+Without you, it will probably take me a lot longer to be able to convince myself to go ahead and try again to add support
+for dual-package publish after the first failures.

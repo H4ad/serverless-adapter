@@ -29,9 +29,9 @@ To use, you can import [HttpFirebaseV2Handler](../../api/Handlers/HttpFirebaseHa
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { DummyAdapter } from '@h4ad/serverless-adapter/lib/adapters/dummy';
-import { HttpFirebaseV2Handler } from '@h4ad/serverless-adapter/lib/handlers/firebase';
-import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
+import { DummyAdapter } from '@h4ad/serverless-adapter/adapters/dummy';
+import { HttpFirebaseV2Handler } from '@h4ad/serverless-adapter/handlers/firebase';
+import { DummyResolver } from '@h4ad/serverless-adapter/resolvers/dummy';
 import app from './app';
 
 export const helloWorld = ServerlessAdapter.new(app)

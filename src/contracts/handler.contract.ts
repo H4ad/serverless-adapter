@@ -1,10 +1,10 @@
 //#region Imports
 
-import { BinarySettings } from '../@types';
-import { ILogger } from '../core';
-import { AdapterContract } from './adapter.contract';
-import { FrameworkContract } from './framework.contract';
-import { ResolverContract } from './resolver.contract';
+import type { BinarySettings } from '../@types';
+import type { ILogger } from '../core';
+import type { AdapterContract } from './adapter.contract';
+import type { FrameworkContract } from './framework.contract';
+import type { ResolverContract } from './resolver.contract';
 
 //#endregion
 

@@ -1,14 +1,14 @@
 //#region Imports
 
 import type { ALBEvent, ALBResult, Context } from 'aws-lambda';
-import {
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,
   OnErrorProps,
 } from '../../contracts';
 import {
-  StripBasePathFn,
+  type StripBasePathFn,
   buildStripBasePath,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,

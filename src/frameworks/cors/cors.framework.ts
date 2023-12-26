@@ -1,8 +1,8 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
-import cors, { CorsOptions } from 'cors';
-import { FrameworkContract } from '../../contracts';
+import type { IncomingMessage, ServerResponse } from 'http';
+import cors, { type CorsOptions } from 'cors';
+import type { FrameworkContract } from '../../contracts';
 import { getDefaultIfUndefined } from '../../core';
 
 //#endregion

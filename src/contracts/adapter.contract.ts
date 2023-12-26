@@ -1,9 +1,9 @@
 //#region Imports
 
-import { BothValueHeaders, SingleValueHeaders } from '../@types';
-import { ILogger } from '../core';
+import type { BothValueHeaders, SingleValueHeaders } from '../@types';
+import type { ILogger } from '../core';
 import { ServerlessResponse } from '../network';
-import { DelegatedResolver } from './resolver.contract';
+import type { DelegatedResolver } from './resolver.contract';
 
 //#endregion
 

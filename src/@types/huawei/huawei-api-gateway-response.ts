@@ -1,6 +1,6 @@
 //#region Imports
 
-import { MultiValueHeaders } from '../headers';
+import type { MultiValueHeaders } from '../headers';
 
 //#endregion
 

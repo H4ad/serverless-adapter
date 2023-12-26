@@ -1,4 +1,4 @@
-import * as http from 'http';
+import { type Server, createServer } from 'node:http';
 import supertest from 'supertest';
 import { describe, expect, it, vitest } from 'vitest';
 import { ILogger } from '../../src';
@@ -36,7 +36,7 @@ describe('HttpHuaweiHandler', () => {
           listen: listenMock,
           close: closeMock,
           addEventListener: addEventListenerMock,
-        }) as unknown as http.Server,
+        }) as unknown as Server,
     );
 
     const handlerFactory = new HttpHuaweiHandler({
@@ -101,12 +101,12 @@ describe('HttpHuaweiHandler', () => {
   });
 
   it('should forward correctly the request to framework', async () => {
-    let httpServer!: http.Server;
+    let httpServer!: Server;
 
     const handlerFactory = new HttpHuaweiHandler({
       port: 0,
       httpServerFactory: requestListener => {
-        const server = http.createServer(requestListener);
+        const server = createServer(requestListener);
 
         httpServer = server;
 
@@ -141,7 +141,7 @@ describe('HttpHuaweiHandler', () => {
     const mockServer = {
       listen: vitest.fn(),
       close: vitest.fn(cb => cb(error)),
-    } as unknown as http.Server;
+    } as unknown as Server;
 
     const handlerFactory = new HttpHuaweiHandler({
       httpServerFactory: () => {

@@ -2,7 +2,7 @@
 
 import type { EventBridgeEvent } from 'aws-lambda';
 import { getDefaultIfUndefined } from '../../core';
-import { AwsSimpleAdapter } from './base/index';
+import { AwsSimpleAdapter } from './base';
 
 //#endregion
 
@@ -83,14 +83,14 @@ export class EventBridgeAdapter extends AwsSimpleAdapter<EventBridgeEventAll> {
   /**
    * {@inheritDoc}
    */
-  public getAdapterName(): string {
+  public override getAdapterName(): string {
     return EventBridgeAdapter.name;
   }
 
   /**
    * {@inheritDoc}
    */
-  public canHandle(event: unknown): event is EventBridgeEventAll {
+  public override canHandle(event: unknown): event is EventBridgeEventAll {
     const eventBridgeEvent = event as Partial<EventBridgeEventAll>;
 
     // thanks to @cnuss in https://github.com/vendia/serverless-express/blob/b5da6070b8dd2fb674c1f7035dd7edfef1dc83a2/src/event-sources/utils.js#L87

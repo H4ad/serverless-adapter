@@ -1,7 +1,7 @@
 //#region Imports
 
 import type { Context } from 'aws-lambda';
-import {
+import type {
   DelegatedResolver,
   Resolver,
   ResolverContract,

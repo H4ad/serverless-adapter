@@ -1,6 +1,6 @@
 // credits to: https://github.com/b4nst/stream-mock/pull/64/files#diff-52aee274967f2fcfa3ffa78ebba2f510dd23d176aa92ccf8c0ad4843373f5ce7
 
-import { Readable, ReadableOptions } from 'stream';
+import { Readable, ReadableOptions } from 'node:stream';
 import { IReadableMock } from 'stream-mock';
 
 /**

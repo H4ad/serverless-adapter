@@ -1,6 +1,6 @@
 import * as path from 'path';
 import {
-  IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
+  type IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
   MarkdownDocumenterAccessor,
   MarkdownDocumenterFeatureContext,
 } from '@microsoft/api-documenter/lib';
@@ -27,15 +27,13 @@ import {
   ApiOptionalMixin,
   ApiPackage,
   ApiParameterListMixin,
-  ApiPropertyItem,
   ApiReleaseTagMixin,
   ApiReturnTypeMixin,
-  ApiStaticMixin,
   ApiTypeAlias,
   Excerpt,
   ExcerptToken,
   ExcerptTokenKind,
-  IResolveDeclarationReferenceResult,
+  type IResolveDeclarationReferenceResult,
   ReleaseTag,
 } from '@microsoft/api-extractor-model';
 import {
@@ -1063,36 +1061,6 @@ export class CustomMarkdownDocumenter {
     return new DocTableCell({ configuration }, section.nodes);
   }
 
-  private _createModifiersCell(apiItem: ApiItem): DocTableCell {
-    const configuration: TSDocConfiguration = this._tsdocConfiguration;
-
-    const section: DocSection = new DocSection({ configuration });
-
-    if (ApiStaticMixin.isBaseClassOf(apiItem)) {
-      if (apiItem.isStatic) {
-        section.appendNodeInParagraph(
-          new DocCodeSpan({ configuration, code: 'static' }),
-        );
-      }
-    }
-
-    return new DocTableCell({ configuration }, section.nodes);
-  }
-
-  private _createPropertyTypeCell(apiItem: ApiItem): DocTableCell {
-    const configuration: TSDocConfiguration = this._tsdocConfiguration;
-
-    const section: DocSection = new DocSection({ configuration });
-
-    if (apiItem instanceof ApiPropertyItem) {
-      section.appendNode(
-        this._createParagraphForTypeExcerpt(apiItem.propertyTypeExcerpt),
-      );
-    }
-
-    return new DocTableCell({ configuration }, section.nodes);
-  }
-
   private _writeBreadcrumb(output: DocSection, apiItem: ApiItem): void {
     const breadcrumbDivider = [
       new DocPlainText({
@@ -1150,6 +1118,7 @@ export class CustomMarkdownDocumenter {
     let firstNode: boolean = true;
     for (const node of docSection.nodes) {
       if (firstNode) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (node.kind === DocNodeKind.Paragraph) {
           output.appendNodesInParagraph(node.getChildNodes());
           firstNode = false;
@@ -1181,8 +1150,11 @@ export class CustomMarkdownDocumenter {
       if (breadcrumb) {
         const breadcrumbContent = breadcrumb.content
           .getChildNodes()
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           .filter(block => block.kind === DocNodeKind.Paragraph)
+          // @ts-ignore
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])
+          // @ts-ignore
           .filter(block => block.kind === DocNodeKind.PlainText)
           .map((plainText: DocPlainText) => plainText.text)
           .join('');

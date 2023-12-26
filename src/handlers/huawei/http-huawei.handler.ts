@@ -1,16 +1,16 @@
 //#region Imports
 
-import * as http from 'http';
-import { RequestListener } from 'http';
-import { BinarySettings } from '../../@types';
-import {
+import type { RequestListener } from 'http';
+import { type Server, createServer } from 'node:http';
+import type { BinarySettings } from '../../@types';
+import type {
   AdapterContract,
   FrameworkContract,
   HandlerContract,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
-import { ILogger, getDefaultIfUndefined } from '../../core';
+import { type ILogger, getDefaultIfUndefined } from '../../core';
 
 //#endregion
 
@@ -39,7 +39,7 @@ export type HttpHuaweiHandlerOptions = {
   /**
    * The factory to create a http server to use to listen huawei requests
    */
-  httpServerFactory?: (requestListener: RequestListener) => http.Server;
+  httpServerFactory?: (requestListener: RequestListener) => Server;
 };
 
 /**
@@ -72,10 +72,10 @@ export class HttpHuaweiHandler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-    _: AdapterContract<void, void, void>[],
-    __: ResolverContract<void, void, void, void, void>,
-    binarySettings: BinarySettings,
-    respondWithErrors: boolean,
+    _adapters: AdapterContract<void, void, void>[],
+    _resolver: ResolverContract<void, void, void, void, void>,
+    _binarySettings: BinarySettings,
+    _respondWithErrors: boolean,
     log: ILogger,
   ): ServerlessHandler<Promise<void>> {
     const requestListener: RequestListener = (req, res) => {
@@ -117,8 +117,8 @@ export class HttpHuaweiHandler<TApp>
    *
    * @param requestListener - O método que lidará com as requisições recebidas
    */
-  protected createHttpServer(requestListener: RequestListener): http.Server {
-    return http.createServer(requestListener);
+  protected createHttpServer(requestListener: RequestListener): Server {
+    return createServer(requestListener);
   }
 
   //#endregion

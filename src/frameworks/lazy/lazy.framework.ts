@@ -1,8 +1,8 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
-import { FrameworkContract } from '../../contracts';
-import { ILogger, createDefaultLogger } from '../../core';
+import type { IncomingMessage, ServerResponse } from 'http';
+import type { FrameworkContract } from '../../contracts';
+import { type ILogger, createDefaultLogger } from '../../core';
 
 //#endregion
 
@@ -84,7 +84,7 @@ export class LazyFramework<TApp> implements FrameworkContract<null> {
    * {@inheritDoc}
    */
   public sendRequest(
-    app: null,
+    _app: null,
     request: IncomingMessage,
     response: ServerResponse,
   ): void {

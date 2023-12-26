@@ -1,6 +1,6 @@
 //#region Imports
 
-import {
+import type {
   DelegatedResolver,
   Resolver,
   ResolverContract,

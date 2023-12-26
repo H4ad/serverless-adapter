@@ -1,7 +1,7 @@
-import { ServerResponse } from 'http';
+import type { ServerResponse } from 'http';
 import * as trpc from '@trpc/server';
-import { Options } from 'body-parser';
-import express, { Express } from 'express';
+import type { Options } from 'body-parser';
+import express, { type Express } from 'express';
 import fastify from 'fastify';
 import Application from 'koa';
 import { SpyInstance, describe, expect, it, vitest } from 'vitest';

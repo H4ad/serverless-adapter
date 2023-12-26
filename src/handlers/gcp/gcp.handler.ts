@@ -1,8 +1,8 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { http } from '@google-cloud/functions-framework';
-import { FrameworkContract, HandlerContract } from '../../contracts';
+import type { FrameworkContract, HandlerContract } from '../../contracts';
 import { RawRequest } from '../base';
 
 //#endregion

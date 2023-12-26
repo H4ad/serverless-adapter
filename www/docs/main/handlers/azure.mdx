@@ -34,7 +34,7 @@ If you want to log using the original instance [createDefaultLogger](../../api/C
 you can set the `useContextLogWhenInternalLogger` option to `false` for [AzureHandlerOptions](../../api/Handlers/AzureHandler/AzureHandlerOptions).
 
 ```typescript
-import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
+import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
 
 const handler = new AzureHandler({
   useContextLogWhenInternalLogger: false,
@@ -68,9 +68,9 @@ Then, you can import and call the method [setHandler](../../api/ServerlessAdapte
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
-import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/lib/adapters/azure';
+import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
+import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
+import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/adapters/azure';
 import app from './app';
 
 export default ServerlessAdapter.new(app)

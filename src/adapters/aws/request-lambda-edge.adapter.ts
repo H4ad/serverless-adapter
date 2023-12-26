@@ -9,15 +9,15 @@ import type {
   CloudFrontRequestEvent,
   CloudFrontRequestResult,
 } from 'aws-lambda/trigger/cloudfront-request';
-import { BothValueHeaders, SingleValueHeaders } from '../../@types';
-import {
+import type { BothValueHeaders, SingleValueHeaders } from '../../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,
   OnErrorProps,
 } from '../../contracts';
 import {
-  StripBasePathFn,
+  type StripBasePathFn,
   buildStripBasePath,
   getDefaultIfUndefined,
   getEventBodyAsBuffer,

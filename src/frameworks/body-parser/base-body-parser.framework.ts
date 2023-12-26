@@ -1,9 +1,9 @@
 //#region Imports
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { NextHandleFunction } from 'connect';
 import type { HttpError } from 'http-errors';
-import { FrameworkContract } from '../../contracts';
+import type { FrameworkContract } from '../../contracts';
 import { getDefaultIfUndefined } from '../../core';
 
 //#endregion
@@ -116,12 +116,12 @@ export class BaseBodyParserFramework<TApp> implements FrameworkContract<TApp> {
   /**
    * The default function to handle errors
    *
-   * @param request - The referecene for request
+   * @param _request - The referecene for request
    * @param response - The reference for response
    * @param error - The error throwed by body-parser
    */
   protected defaultHandleOnError(
-    request: IncomingMessage,
+    _request: IncomingMessage,
     response: ServerResponse,
     error: HttpError<any>,
   ): void {

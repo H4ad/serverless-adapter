@@ -10,8 +10,12 @@ import type {
   CloudFrontRequestEvent,
   CloudFrontRequestResult,
 } from 'aws-lambda/trigger/cloudfront-request';
-import { BothValueHeaders, Concrete, SingleValueHeaders } from '../../@types';
-import {
+import type {
+  BothValueHeaders,
+  Concrete,
+  SingleValueHeaders,
+} from '../../@types';
+import type {
   AdapterContract,
   AdapterRequest,
   GetResponseAdapterProps,

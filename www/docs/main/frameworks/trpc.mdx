@@ -22,9 +22,9 @@ Then, you just need to use the [TrpcFramework](../../api/Frameworks/TrpcFramewor
 ```ts title="index.ts"
 import * as trpc from '@trpc/server';
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
-import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
-import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/frameworks/trpc';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/frameworks/cors';
 import { z } from 'zod';
 
 type CustomContext = { currentDate: Date };
@@ -85,7 +85,7 @@ With this behavior, to integrate with [SQSAdapter](/docs/main/adapters/aws/sqs),
 ```typescript title="index.ts"
 import type { SQSEvent } from 'aws-lambda';
 import * as trpc from '@trpc/server';
-import { TrpcAdapterContext } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
+import { TrpcAdapterContext } from '@h4ad/serverless-adapter/frameworks/trpc';
 import { z } from 'zod';
 
 type TrpcContext = TrpcAdapterContext<unknown>;
@@ -133,9 +133,9 @@ like the code below:
 ```typescript title="index.ts"
 import * as trpc from '@trpc/server';
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/trpc';
-import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
-import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
+import { TrpcFramework, TrpcAdapterContext, TrpcFrameworkOptions } from '@h4ad/serverless-adapter/frameworks/trpc';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/frameworks/cors';
 
 type CustomContext = { potato: boolean };
 type TrpcContext = TrpcAdapterContext<CustomContext>;

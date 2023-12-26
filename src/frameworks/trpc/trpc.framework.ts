@@ -1,15 +1,15 @@
 //#region
 
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { AnyRouter, DataTransformer } from '@trpc/server';
 import {
-  NodeHTTPCreateContextFn,
-  NodeHTTPCreateContextFnOptions,
-  NodeHTTPHandlerOptions,
+  type NodeHTTPCreateContextFn,
+  type NodeHTTPCreateContextFnOptions,
+  type NodeHTTPHandlerOptions,
   nodeHTTPRequestHandler,
 } from '@trpc/server/adapters/node-http';
-import { SingleValueHeaders } from '../../@types';
-import { FrameworkContract } from '../../contracts';
+import type { SingleValueHeaders } from '../../@types';
+import type { FrameworkContract } from '../../contracts';
 import { getDefaultIfUndefined, getFlattenedHeadersMap } from '../../core';
 
 //#endregion

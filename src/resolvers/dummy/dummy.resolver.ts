@@ -1,6 +1,6 @@
 //#region Imports
 
-import { Resolver, ResolverContract } from '../../contracts';
+import type { Resolver, ResolverContract } from '../../contracts';
 
 //#endregion
 

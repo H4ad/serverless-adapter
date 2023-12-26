@@ -1,6 +1,6 @@
 //#region Imports
 
-import { BothValueHeaders } from '../index';
+import type { BothValueHeaders } from '../index';
 
 //#endregion
 

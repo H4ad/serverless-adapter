@@ -18,10 +18,10 @@ To add support to Api Gateway you do the following:
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/lib/adapters/huawei';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
-import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
-import { CallbackResolver } from '@h4ad/serverless-adapter/lib/resolvers/callback';
+import { HuaweiApiGatewayAdapter } from '@h4ad/serverless-adapter/adapters/huawei';
+import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/handlers/default';
+import { CallbackResolver } from '@h4ad/serverless-adapter/resolvers/callback';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)

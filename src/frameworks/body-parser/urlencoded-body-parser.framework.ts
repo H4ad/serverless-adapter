@@ -1,10 +1,10 @@
 //#region Imports
 
-import { OptionsUrlencoded, urlencoded } from 'body-parser';
-import { FrameworkContract } from '../../contracts';
+import { type OptionsUrlencoded, urlencoded } from 'body-parser';
+import { type FrameworkContract } from '../../contracts';
 import {
   BaseBodyParserFramework,
-  BodyParserOptions,
+  type BodyParserOptions,
 } from './base-body-parser.framework';
 
 //#endregion
@@ -36,7 +36,7 @@ export class UrlencodedBodyParserFramework<TApp>
    * Default Constructor
    */
   constructor(
-    protected readonly framework: FrameworkContract<TApp>,
+    framework: FrameworkContract<TApp>,
     options?: UrlencodedBodyParserFrameworkOptions,
   ) {
     super(framework, urlencoded(options), options);

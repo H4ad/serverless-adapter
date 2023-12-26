@@ -2,14 +2,18 @@
 //#region Imports
 
 import type { Context } from '@azure/functions';
-import { BinarySettings } from '../../@types';
-import {
+import type { BinarySettings } from '../../@types';
+import type {
   AdapterContract,
   FrameworkContract,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
-import { ILogger, getDefaultIfUndefined, isInternalLogger } from '../../core';
+import {
+  type ILogger,
+  getDefaultIfUndefined,
+  isInternalLogger,
+} from '../../core';
 import { DefaultHandler } from '../default';
 
 //#endregion
@@ -60,7 +64,7 @@ export class AzureHandler<
   /**
    * {@inheritDoc}
    */
-  public getHandler(
+  public override getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
     adapters: AdapterContract<TEvent, Context, TResponse>[],

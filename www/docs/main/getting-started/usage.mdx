@@ -17,12 +17,20 @@ We need to pass to [Serverless Adapter](/docs/api/ServerlessAdapter) the instanc
 - Handler: [Default Handler](../handlers/aws).
 - Resolver: [Promise Resolver](../resolvers/promise).
 
+:::warning
+If you are using `Typescript`, imports will only work exactly as in the example
+if you set your `moduleResolution` to `nodenext` or `bundler` in your `tsconfig.json`.
+
+If you don't want to change this, you should append `/lib` after the package name,
+like `@h4ad/serverless-adapter/lib/frameworks/express/index`.
+:::
+
 ```ts
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
-import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
-import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express';
+import { DefaultHandler } from '@h4ad/serverless-adapter/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/adapters/aws';
 
 const express = require('express');
 

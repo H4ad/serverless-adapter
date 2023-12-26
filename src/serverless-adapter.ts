@@ -1,7 +1,7 @@
 //#region Imports
 
-import { BinarySettings } from './@types';
-import {
+import type { BinarySettings } from './@types';
+import type {
   AdapterContract,
   FrameworkContract,
   HandlerContract,
@@ -11,7 +11,7 @@ import {
 import {
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
-  ILogger,
+  type ILogger,
   createDefaultLogger,
 } from './core';
 

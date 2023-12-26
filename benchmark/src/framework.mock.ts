@@ -1,5 +1,5 @@
 import { FrameworkContract } from '@h4ad/serverless-adapter';
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { ObjectReadableMock } from 'stream-mock';
 
 /**
