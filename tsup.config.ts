@@ -45,7 +45,7 @@ const libEntries = [
 const createExport = (filePath: string) => ({
   import: {
     types: `./lib/${filePath}.d.ts`,
-    default: `./lib/${filePath}.js`,
+    default: `./lib/${filePath}.mjs`,
   },
   require: {
     types: `./lib/${filePath}.d.cts`,
@@ -56,6 +56,10 @@ const createExport = (filePath: string) => ({
 const createExportReducer =
   (initialPath: string) => (acc: object, name: string) => {
     acc[`./${initialPath}/${name}`] = createExport(
+      `${initialPath}/${name}/index`,
+    );
+
+    acc[`./lib/${initialPath}/${name}`] = createExport(
       `${initialPath}/${name}/index`,
     );
 
@@ -77,6 +81,10 @@ export default defineConfig({
   clean: true,
   dts: true,
   format: ['esm', 'cjs'],
+  outExtension: ({ format }) => ({
+    js: format === 'cjs' ? '.cjs' : '.mjs',
+  }),
+  cjsInterop: true,
   entry: ['src/index.ts', ...libEntries],
   sourcemap: true,
   skipNodeModulesBundle: true,
