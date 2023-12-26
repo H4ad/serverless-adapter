@@ -14,8 +14,6 @@ image: https://images.unsplash.com/photo-1429743305873-d4065c15f93e
 
 
 
-
-
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ![Two paths inside a forest!](https://images.unsplash.com/photo-1429743305873-d4065c15f93e)
@@ -151,6 +149,10 @@ export default defineConfig({
   clean: true,
   dts: true,
   format: ['esm', 'cjs'],
+  outExtension: ({ format }) => ({
+    js: format === 'cjs' ? '.cjs' : '.mjs',
+  }),
+  cjsInterop: true,
   // the libEntries is basically all the entries I need to export,
   // like: adapters/aws, frameworks/fastify, etc...
   entry: ['src/index.ts', ...libEntries],
@@ -163,6 +165,8 @@ export default defineConfig({
   bundle: true,
 });
 ```
+
+### package.json exports
 
 Since I have a lot of things to export, I also automate the configuration of `exports` in `package.json` with:
 
@@ -177,7 +181,7 @@ const libEntries = [
 const createExport = (filePath: string) => ({
   import: {
     types: `./lib/${filePath}.d.ts`,
-    default: `./lib/${filePath}.js`,
+    default: `./lib/${filePath}.mjs`,
   },
   require: {
     types: `./lib/${filePath}.d.cts`,
@@ -188,6 +192,10 @@ const createExport = (filePath: string) => ({
 const createExportReducer =
   (initialPath: string) => (acc: object, name: string) => {
     acc[`./${initialPath}/${name}`] = createExport(
+      `${initialPath}/${name}/index`,
+    );
+
+    acc[`./lib/${initialPath}/${name}`] = createExport(
       `${initialPath}/${name}/index`,
     );
 
@@ -205,6 +213,27 @@ execSync(`npm pkg set exports='${JSON.stringify(packageExports)}' --json`);
 ```
 
 This works incredible and also keep my `package.json` updated.
+
+### Module not found on moduleResolution `node`
+
+But there is one thing you should pay attention to, did you see that I export files with the prefix `./lib`?
+
+```json title="package.json"
+  "exports": {
+    "./adapters/apollo-server": {...},
+    "./lib/adapters/apollo-server": {...},
+  }
+```
+
+The content of both is the same, but I do this to be compatible with the resolution of `node`.
+Without this configuration, the `IDE` will show the import to `@h4ad/serverless-adapter/adapters/apollo-server` as resolved, but
+`node` will not be able to find the file during the runtime.
+
+And the interesting part of doing this is that people who import this package with `/lib` will still be able to import the code,
+and they won't need any code modifications.
+
+Maybe I could release this feature without it being a breaking change with this change, but to be on the safe side,
+I released it as a breaking change anyway.
 
 ### publint
 
