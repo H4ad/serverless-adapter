@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.1](https://github.com/H4ad/serverless-adapter/compare/v4.0.0...v4.0.1) (2023-12-26)
+
+
+### Bug Fixes
+
+* **ci:** missing build part while releasing new version ([5b7d184](https://github.com/H4ad/serverless-adapter/commit/5b7d18410acdc0aa547de2db63cf6347a5715b58))
+
+
+### Documentation
+
+* **blog:** added note about bug related to missing package files ([1d75d91](https://github.com/H4ad/serverless-adapter/commit/1d75d91fe8863c45ae2a7abe44aec6d51d96e44d))
+
 ## [4.0.0](https://github.com/H4ad/serverless-adapter/compare/v3.2.0...v4.0.0) (2023-12-26)
 
 
