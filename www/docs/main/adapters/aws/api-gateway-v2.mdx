@@ -115,8 +115,8 @@ To add support to AWS API Gateway V2 you do the following:
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
-import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/handlers/default';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)

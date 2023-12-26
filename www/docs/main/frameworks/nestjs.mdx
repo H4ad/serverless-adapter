@@ -32,8 +32,8 @@ So, to add support to NestJS, we have two ways:
 ```typescript title="index.ts"
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LazyFramework } from '@h4ad/serverless-adapter/lib/frameworks/lazy';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { LazyFramework } from '@h4ad/serverless-adapter/frameworks/lazy';
+import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -71,8 +71,8 @@ export const handler = ServerlessAdapter.new(null)
 ```typescript title="index.ts"
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { LazyFramework } from '@h4ad/serverless-adapter/lib/frameworks/lazy';
-import { FastifyFramework } from '@h4ad/serverless-adapter/lib/frameworks/fastify';
+import { LazyFramework } from '@h4ad/serverless-adapter/frameworks/lazy';
+import { FastifyFramework } from '@h4ad/serverless-adapter/frameworks/fastify';
 import { AppModule } from './app.module';
 
 async function bootstrap() {

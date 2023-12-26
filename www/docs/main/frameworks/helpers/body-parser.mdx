@@ -41,8 +41,8 @@ The first parameter is the instance of another framework, so if you want to use 
 
 ```ts
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/cors';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express';
+import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/frameworks/cors';
+import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express';
 
 const express = require('express');
 
@@ -68,9 +68,9 @@ If you want to combine with more frameworks, just add others like:
 
 ```ts
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { JsonBodyParserFramework, UrlencodedBodyParserFramework, RawBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
-import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
-import { ExpressFramework } from '@h4ad/serverless-adapter/lib/frameworks/express'; import {  } from './cors.framework';
+import { JsonBodyParserFramework, UrlencodedBodyParserFramework, RawBodyParserFramework } from '@h4ad/serverless-adapter/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/frameworks/cors';
+import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express'; import {  } from './cors.framework';
 
 const expressFramework = new ExpressFramework();
 
@@ -103,7 +103,7 @@ If you want to customize the error messages, like when the size limit is exceede
 ```ts
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { HttpError } from 'http-errors';
-import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { JsonBodyParserFramework, JsonBodyParserFrameworkOptions } from '@h4ad/serverless-adapter/frameworks/body-parser';
 
 const options: JsonBodyParserFrameworkOptions = {
   customErrorHandler: (req: IncomingMessage, response: ServerResponse, error: HttpError<any>) => {

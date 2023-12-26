@@ -86,9 +86,9 @@ To add support to Azure Http Trigger you do the following:
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { AzureHandler } from '@h4ad/serverless-adapter/lib/handlers/azure';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
-import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/lib/adapters/azure';
+import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
+import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
+import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/adapters/azure';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)

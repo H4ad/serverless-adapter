@@ -100,7 +100,7 @@ First, we need to create our new adapter class, let's define it as:
 ```typescript title="api-gateway-v2.adapter.ts"
 import type { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
-import { AdapterContract } from '@h4ad/serverless-adapter/lib/contracts';
+import { AdapterContract } from '@h4ad/serverless-adapter/contracts';
 
 export class ApiGatewayV2Adapter implements AdapterContract<APIGatewayProxyEventV2, Context, APIGatewayProxyStructuredResultV2> {}
 ```

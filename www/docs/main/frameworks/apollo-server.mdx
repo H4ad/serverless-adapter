@@ -34,9 +34,9 @@ Then, you just need to use the [ApolloServerFramework](/docs/api/Frameworks/Apol
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
-import { ApolloServerFramework } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
-import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { CorsFramework } from '@h4ad/serverless-adapter/frameworks/cors';
+import { ApolloServerFramework } from '@h4ad/serverless-adapter/frameworks/apollo-server';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/frameworks/body-parser';
 import { ApolloServer } from '@apollo/server';
 
 export const app = new ApolloServer({
@@ -117,7 +117,7 @@ Ok, after define the schema, let's create the apollo server instance.
 ```ts
 import { ApolloServer } from '@apollo/server';
 import { GraphQLError } from 'graphql/error/GraphQLError';
-import { DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+import { DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/frameworks/apollo-server';
 import type { SNSEvent, SQSEvent } from 'aws-lambda';
 
 export const app = new ApolloServer<DefaultServerlessApolloServerContext>({
@@ -170,13 +170,13 @@ Well, now we only need to expose the Apollo Server Instance using Serverless Ada
 
 ```ts
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { ApolloServerMutationAdapter } from '@h4ad/serverless-adapter/lib/adapters/apollo-server';
-import { ApiGatewayV2Adapter, SNSAdapter, SQSAdapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
-import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
-import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';
-import { CorsFramework } from '@h4ad/serverless-adapter/lib/frameworks/cors';
-import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
-import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/lib/frameworks/body-parser';
+import { ApolloServerMutationAdapter } from '@h4ad/serverless-adapter/adapters/apollo-server';
+import { ApiGatewayV2Adapter, SNSAdapter, SQSAdapter } from '@h4ad/serverless-adapter/adapters/aws';
+import { DefaultHandler } from '@h4ad/serverless-adapter/handlers/default';
+import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
+import { CorsFramework } from '@h4ad/serverless-adapter/frameworks/cors';
+import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/frameworks/apollo-server';
+import { JsonBodyParserFramework } from '@h4ad/serverless-adapter/frameworks/body-parser';
 
 const framework = new ApolloServerFramework<DefaultServerlessApolloServerContext>();
 const jsonBodyFramework = new JsonBodyParserFramework(framework);
@@ -239,7 +239,7 @@ By default, the context will be [DefaultServerlessApolloServerContext](/docs/api
 the creation of the context by passing `context` variable inside `ApolloServerFramework`, like:
 
 ```ts
-import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/lib/frameworks/apollo-server';
+import { ApolloServerFramework, DefaultServerlessApolloServerContext } from '@h4ad/serverless-adapter/frameworks/apollo-server';
 
 // I want the date when it's started, and also, i always recommend including the default context
 type MyCustomContext = { startedAt: Date } & DefaultServerlessApolloServerContext;

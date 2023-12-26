@@ -42,9 +42,9 @@ If you already use this library, just change [DefaultHandler](/docs/main/handler
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { AwsStreamHandler } from '@h4ad/serverless-adapter/lib/handlers/aws';
-import { DummyResolver } from '@h4ad/serverless-adapter/lib/resolvers/dummy';
-import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
+import { AwsStreamHandler } from '@h4ad/serverless-adapter/handlers/aws';
+import { DummyResolver } from '@h4ad/serverless-adapter/resolvers/dummy';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/adapters/aws';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)
