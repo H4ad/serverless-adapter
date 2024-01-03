@@ -87,3 +87,7 @@ export const handler = ServerlessAdapter.new(app)
   .build();
 ```
 
+### Transfer Encoding Chunked
+
+ALB currently didn't support chunked transfer, so the response body will be buffered
+without the special characters introduced by the chunked transfer keeping the body complete.

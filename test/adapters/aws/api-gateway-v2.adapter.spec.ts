@@ -287,6 +287,86 @@ describe(ApiGatewayV2Adapter.name, () => {
         }),
       ).toThrowError('is not supported');
     });
+
+    describe('when throwOnChunkedTransferEncoding=false', () => {
+      it('should NOT throw an error when framework send transfer-encoding=chunked in headers', () => {
+        const customAdapter = new ApiGatewayV2Adapter({
+          throwOnChunkedTransferEncoding: false,
+        });
+
+        const method = 'GET';
+        const path = '/collaborators/stream';
+        const requestBody = undefined;
+
+        const resultBody = '{"success":true}';
+        const resultStatusCode = 200;
+        const resultIsBase64Encoded = false;
+
+        const event = createApiGatewayV2(method, path, requestBody);
+        const resultHeaders = getFlattenedHeadersMap(event.headers);
+
+        resultHeaders['transfer-encoding'] = 'gzip,chunked';
+
+        const result1 = customAdapter.getResponse({
+          event,
+          log: {} as ILogger,
+          body: resultBody,
+          isBase64Encoded: resultIsBase64Encoded,
+          statusCode: resultStatusCode,
+          headers: resultHeaders,
+        });
+
+        expect(result1.headers!['transfer-encoding']).toBeUndefined();
+
+        const resultMultiValueHeaders = getMultiValueHeadersMap(event.headers);
+
+        resultMultiValueHeaders['transfer-encoding'] = ['gzip', 'chunked'];
+
+        const result2 = customAdapter.getResponse({
+          event,
+          log: {} as ILogger,
+          body: resultBody,
+          isBase64Encoded: resultIsBase64Encoded,
+          statusCode: resultStatusCode,
+          headers: resultMultiValueHeaders,
+        });
+
+        expect(result2.headers!['transfer-encoding']).toBeUndefined();
+      });
+
+      it('should NOT throw an error when framework send chunkedEncoding=true in response', () => {
+        const customAdapter = new ApiGatewayV2Adapter({
+          throwOnChunkedTransferEncoding: false,
+        });
+
+        const method = 'GET';
+        const path = '/collaborators/stream';
+        const requestBody = undefined;
+
+        const resultBody = '{"success":true}';
+        const resultStatusCode = 200;
+        const resultIsBase64Encoded = false;
+
+        const event = createApiGatewayV2(method, path, requestBody);
+        const resultHeaders = getFlattenedHeadersMap(event.headers);
+
+        const fakeChunkedResponse = new ServerlessResponse({ method });
+
+        fakeChunkedResponse.chunkedEncoding = true;
+
+        const result = customAdapter.getResponse({
+          event,
+          log: {} as ILogger,
+          body: resultBody,
+          isBase64Encoded: resultIsBase64Encoded,
+          statusCode: resultStatusCode,
+          headers: resultHeaders,
+          response: fakeChunkedResponse,
+        });
+
+        expect(result.headers!['transfer-encoding']).toBeUndefined();
+      });
+    });
   });
 
   describe('onErrorWhileForwarding', () => {

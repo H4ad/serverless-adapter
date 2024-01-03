@@ -139,8 +139,14 @@ export const handler = ServerlessAdapter.new(app)
   .build();
 ```
 
-:::danger
+### Transfer Encoding Chunked
 
-As per [know issues](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html), we throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+API Gateway V1 currently didn't support chunked transfer, so we throw an exception when you send the `transfer-encoding=chunked`.
 
-:::
+But, you can disable the exception by setting the `throwOnChunkedTransfer` to `false` in the [ApiGatewayV1Options](/docs/api/Adapters/AWS/ApiGatewayV1Adapter/ApiGatewayV1Options).
+
+```ts title="index.ts"
+new ApiGatewayV1Adapter({ throwOnChunkedTransfer: false })
+```
+
+The response body will be buffered without the special characters introduced by the chunked transfer keeping the body complete.

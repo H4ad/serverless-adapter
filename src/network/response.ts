@@ -5,6 +5,7 @@ import { NO_OP } from '../core';
 import { getString } from './utils';
 
 const headerEnd = '\r\n\r\n';
+const endChunked = '0\r\n\r\n';
 
 const BODY = Symbol('Response body');
 const HEADERS = Symbol('Response headers');
@@ -50,6 +51,11 @@ export class ServerlessResponse extends ServerResponse {
     this.chunkedEncoding = false;
     this._header = '';
 
+    // this ignore is used because I need to ignore these write calls:
+    // https://github.com/nodejs/node/blob/main/lib/_http_outgoing.js#L934-L935
+    // https://github.com/nodejs/node/blob/main/lib/_http_outgoing.js#L937
+    let writesToIgnore = 1;
+
     const socket: Partial<Socket> & { _writableState: any } = {
       _writableState: {},
       writable: true,
@@ -68,15 +74,23 @@ export class ServerlessResponse extends ServerResponse {
           encoding = null;
         }
 
-        if (this._header === '' || this._wroteHeader) addData(this, data);
-        else {
+        if (this._header === '' || this._wroteHeader) {
+          if (!this.chunkedEncoding) addData(this, data);
+          else {
+            if (writesToIgnore > 0) writesToIgnore--;
+            else if (data !== endChunked) {
+              addData(this, data);
+              writesToIgnore = 3;
+            }
+          }
+        } else {
           const string = getString(data);
           const index = string.indexOf(headerEnd);
 
           if (index !== -1) {
             const remainder = string.slice(index + headerEnd.length);
 
-            if (remainder) addData(this, remainder);
+            if (remainder && !this.chunkedEncoding) addData(this, remainder);
 
             this._wroteHeader = true;
           }
