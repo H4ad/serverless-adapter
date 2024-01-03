@@ -11,6 +11,7 @@ import type {
 import {
   type StripBasePathFn,
   buildStripBasePath,
+  getDefaultIfUndefined,
   getEventBodyAsBuffer,
   getMultiValueHeadersMap,
   getPathWithQueryStringParams,
@@ -31,6 +32,16 @@ export interface ApiGatewayV1Options {
    * @defaultValue ''
    */
   stripBasePath?: string;
+
+  /**
+   * Throw an exception when you send the `transfer-encoding=chunked`, currently, API Gateway doesn't support chunked transfer.
+   * If this is set to `false`, we will remove the `transfer-encoding` header from the response and buffer the response body
+   * while we remove the special characters inserted by the chunked encoding.
+   *
+   * @remarks To learn more https://github.com/H4ad/serverless-adapter/issues/165
+   * @defaultValue true
+   */
+  throwOnChunkedTransferEncoding?: boolean;
 }
 
 /**
@@ -165,21 +176,21 @@ export class ApiGatewayV1Adapter
   }: GetResponseAdapterProps<APIGatewayProxyEvent>): APIGatewayProxyResult {
     const multiValueHeaders = getMultiValueHeadersMap(responseHeaders);
 
+    const shouldThrowOnChunkedTransferEncoding = getDefaultIfUndefined(
+      this.options?.throwOnChunkedTransferEncoding,
+      true,
+    );
     const transferEncodingHeader = multiValueHeaders['transfer-encoding'];
     const hasTransferEncodingChunked = transferEncodingHeader?.some(value =>
       value.includes('chunked'),
     );
 
-    if (hasTransferEncodingChunked) {
-      throw new Error(
-        'chunked encoding in headers is not supported by API Gateway V1',
-      );
-    }
-
-    if (response?.chunkedEncoding) {
-      throw new Error(
-        'chunked encoding in response is not supported by API Gateway V1',
-      );
+    if (hasTransferEncodingChunked || response?.chunkedEncoding) {
+      if (shouldThrowOnChunkedTransferEncoding) {
+        throw new Error(
+          'chunked encoding in headers is not supported by API Gateway V1',
+        );
+      } else delete multiValueHeaders['transfer-encoding'];
     }
 
     return {

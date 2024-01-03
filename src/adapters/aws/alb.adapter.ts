@@ -145,6 +145,15 @@ export class AlbAdapter
       ? getFlattenedHeadersMap(responseHeaders)
       : undefined;
 
+    if (headers && headers['transfer-encoding'] === 'chunked')
+      delete headers['transfer-encoding'];
+
+    if (
+      multiValueHeaders &&
+      multiValueHeaders['transfer-encoding']?.includes('chunked')
+    )
+      delete multiValueHeaders['transfer-encoding'];
+
     return {
       statusCode,
       body,

@@ -217,6 +217,71 @@ describe(ApiGatewayV1Adapter.name, () => {
         }),
       ).toThrowError('is not supported');
     });
+
+    describe('when throwOnChunkedTransferEncoding=false', () => {
+      it('should NOT throw an error when framework send chunkedEncoding=true in response', () => {
+        const customAdapter = new ApiGatewayV1Adapter({
+          throwOnChunkedTransferEncoding: false,
+        });
+
+        const method = 'GET';
+        const path = '/events/stream';
+        const requestBody = undefined;
+
+        const resultBody = '{"success":true}';
+        const resultStatusCode = 200;
+        const resultIsBase64Encoded = false;
+
+        const event = createApiGatewayV1(method, path, requestBody);
+        const resultHeaders = getFlattenedHeadersMap(event.headers);
+
+        const fakeChunkedResponse = new ServerlessResponse({ method });
+
+        fakeChunkedResponse.chunkedEncoding = true;
+
+        const result = customAdapter.getResponse({
+          event,
+          log: {} as ILogger,
+          body: resultBody,
+          isBase64Encoded: resultIsBase64Encoded,
+          statusCode: resultStatusCode,
+          headers: resultHeaders,
+          response: fakeChunkedResponse,
+        });
+
+        expect(result.multiValueHeaders!['transfer-encoding']).toBeUndefined();
+      });
+
+      it('should NOT throw an error when framework send transfer-encoding=chunked in headers', () => {
+        const customAdapter = new ApiGatewayV1Adapter({
+          throwOnChunkedTransferEncoding: false,
+        });
+
+        const method = 'GET';
+        const path = '/events/stream';
+        const requestBody = undefined;
+
+        const resultBody = '{"success":true}';
+        const resultStatusCode = 200;
+        const resultIsBase64Encoded = false;
+
+        const event = createApiGatewayV1(method, path, requestBody);
+        const resultHeaders = getFlattenedHeadersMap(event.headers);
+
+        resultHeaders['transfer-encoding'] = 'gzip,chunked';
+
+        const result = customAdapter.getResponse({
+          event,
+          log: {} as ILogger,
+          body: resultBody,
+          isBase64Encoded: resultIsBase64Encoded,
+          statusCode: resultStatusCode,
+          headers: resultHeaders,
+        });
+
+        expect(result.multiValueHeaders!['transfer-encoding']).toBeUndefined();
+      });
+    });
   });
 
   describe('onErrorWhileForwarding', () => {

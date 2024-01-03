@@ -256,6 +256,46 @@ describe(AlbAdapter.name, () => {
       );
       expect(result).toHaveProperty('isBase64Encoded', resultIsBase64Encoded);
     });
+
+    it('should remove the transfer-encoding header if it is chunked', () => {
+      const event = createAlbEventWithMultiValueHeaders('GET', '/events');
+      const responseHeaders = getFlattenedHeadersMap(event.multiValueHeaders!);
+      const responseMultiValueHeaders =
+        getMultiValueHeadersMap(responseHeaders);
+
+      responseHeaders['transfer-encoding'] = 'chunked';
+
+      const result = adapter.getResponse({
+        event,
+        headers: responseHeaders,
+        body: '',
+        log: {} as ILogger,
+        isBase64Encoded: false,
+        statusCode: 200,
+      });
+
+      expect(result).toHaveProperty('headers', undefined);
+      expect(result).toHaveProperty(
+        'multiValueHeaders',
+        responseMultiValueHeaders,
+      );
+
+      responseMultiValueHeaders['transfer-encoding'] = ['chunked'];
+
+      const event2 = createAlbEvent('GET', '/events');
+      const responseHeaders2 = getFlattenedHeadersMap(event2.headers!);
+
+      const result2 = adapter.getResponse({
+        event: event2,
+        headers: responseHeaders2,
+        body: '',
+        log: {} as ILogger,
+        isBase64Encoded: false,
+        statusCode: 200,
+      });
+
+      expect(result2).toHaveProperty('headers', responseHeaders2);
+    });
   });
 
   describe('onErrorWhileForwarding', () => {
