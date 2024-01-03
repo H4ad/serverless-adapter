@@ -114,7 +114,7 @@
     "eslint-plugin-prettier": "5.1.1",
     "eslint-plugin-tsdoc": "0.2.17",
     "express": "4.18.2",
-    "fastify": "4.25.1",
+    "fastify": "4.25.2",
     "firebase-admin": "11.11.1",
     "firebase-functions": "4.5.0",
     "glob": "10.3.10",
