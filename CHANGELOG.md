@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/H4ad/serverless-adapter/compare/v4.0.1...v4.1.0) (2024-01-03)
+
+
+### Features
+
+* **network:** support buffering transfer-encoding: chunked ([f19ffd1](https://github.com/H4ad/serverless-adapter/commit/f19ffd1f6b2da4cccbd2be6e48429c566719ade6))
+
 ## [4.0.1](https://github.com/H4ad/serverless-adapter/compare/v4.0.0...v4.0.1) (2023-12-26)
 
 
