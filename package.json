@@ -84,7 +84,7 @@
     "@deepkit/workflow": "1.0.1-alpha.97",
     "@google-cloud/functions-framework": "3.3.0",
     "@hapi/hapi": "21.3.2",
-    "@microsoft/api-documenter": "7.23.15",
+    "@microsoft/api-documenter": "7.23.16",
     "@microsoft/api-extractor": "7.39.0",
     "@microsoft/api-extractor-model": "7.28.3",
     "@microsoft/tsdoc": "0.14.2",
