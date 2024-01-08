@@ -1,18 +1,18 @@
-import type { ServerResponse } from 'http';
 import * as trpc from '@trpc/server';
 import type { Options } from 'body-parser';
 import express, { type Express } from 'express';
 import fastify from 'fastify';
 import Application from 'koa';
-import { SpyInstance, describe, expect, it, vitest } from 'vitest';
+import { type SpyInstance, describe, expect, it, vitest } from 'vitest';
+import polka from 'polka';
 import {
-  FrameworkContract,
+  type FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
 import {
-  BodyParserOptions,
+  type BodyParserOptions,
   JsonBodyParserFramework,
   RawBodyParserFramework,
   TextBodyParserFramework,
@@ -22,7 +22,11 @@ import { ExpressFramework } from '../../src/frameworks/express';
 import { FastifyFramework } from '../../src/frameworks/fastify';
 import { setNoOpForContentType } from '../../src/frameworks/fastify/helpers/no-op-content-parser';
 import { KoaFramework } from '../../src/frameworks/koa';
-import { TrpcAdapterContext, TrpcFramework } from '../../src/frameworks/trpc';
+import {
+  type TrpcAdapterContext,
+  TrpcFramework,
+} from '../../src/frameworks/trpc';
+import { PolkaFramework } from '../../src/frameworks/polka';
 
 type BodyParserTest = {
   name: string;
@@ -35,7 +39,14 @@ type BodyParserTest = {
   notExpectedBody?: any;
   status: number;
   expectSendRequestOfTheFrameworkToBeCalled: boolean;
-  skipFrameworks?: ('express' | 'fastify' | 'koa' | 'hapi' | 'trpc')[];
+  skipFrameworks?: (
+    | 'express'
+    | 'fastify'
+    | 'koa'
+    | 'hapi'
+    | 'trpc'
+    | 'polka'
+  )[];
 };
 
 const bodyParserOptions: BodyParserTest[] = [
@@ -259,7 +270,7 @@ describe('BodyParserFramework', () => {
           res.send('ok');
         });
 
-        app.use((err, __, res: ServerResponse, _) => {
+        app.use((err, __, res, _) => {
           res.emit('error', err);
         });
 
@@ -290,7 +301,7 @@ describe('BodyParserFramework', () => {
           res.send('ok');
         });
 
-        app.setErrorHandler((err, req, reply) => {
+        app.setErrorHandler((err, _req, reply) => {
           reply.raw.emit('error', err);
         });
 
@@ -383,6 +394,28 @@ describe('BodyParserFramework', () => {
         });
 
         await handleRestExpects(app, new TrpcFramework(), bodyParserTest);
+      });
+    }
+  });
+
+  describe('polka', () => {
+    for (const bodyParserTest of bodyParserOptions) {
+      const itFn = bodyParserTest?.skipFrameworks?.includes('polka')
+        ? it.skip
+        : it;
+
+      itFn(bodyParserTest.name, async () => {
+        const app = polka();
+
+        app.post('/body', (req, res) => {
+          if (bodyParserTest.expectedBody)
+            expect(req.body).toEqual(bodyParserTest.expectedBody);
+          else expect(req.body).not.toEqual(bodyParserTest.notExpectedBody);
+
+          res.end('ok');
+        });
+
+        await handleRestExpects(app, new PolkaFramework(), bodyParserTest);
       });
     }
   });

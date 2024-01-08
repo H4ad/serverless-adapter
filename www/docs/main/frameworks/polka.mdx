@@ -1,0 +1,44 @@
+---
+title: Polka
+description: See more about how to integrate with Polka.
+---
+
+First, you need to ensure you have the libs installed, so run this code:
+
+```bash
+npm i --save polka
+npm i --save-dev @types/polka
+```
+
+Then, you need you just need to use the [PolkaFramework](../../api/Frameworks/PolkaFramework) when you create your adapter, like:
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { PolkaFramework } from '@h4ad/serverless-adapter/frameworks/polka';
+
+const Polka = require('Polka');
+
+const app = Polka();
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new PolkaFramework())
+  // continue to set the other options here.
+  //.setHandler(new DefaultHandler())
+  //.setResolver(new PromiseResolver())
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
+:::tip
+
+Is your application instance creation asynchronous? Look the [LazyFramework](./helpers/lazy) which helps you in asynchronous startup.
+
+:::
+
+:::tip
+
+Need to deal with CORS? See [CorsFramework](./helpers/cors) which helps you to add correct headers.
+
+:::

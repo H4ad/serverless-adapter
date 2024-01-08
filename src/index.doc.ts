@@ -17,6 +17,7 @@ export * from './frameworks/fastify';
 export * from './frameworks/koa';
 export * from './frameworks/hapi';
 export * from './frameworks/lazy';
+export * from './frameworks/polka';
 export * from './frameworks/trpc';
 export * from './handlers/azure';
 export * from './handlers/aws';
