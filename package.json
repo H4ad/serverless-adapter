@@ -47,6 +47,8 @@
     "lambda edge",
     "alb",
     "lambda",
+    "lambda streaming",
+    "response streaming",
     "apollo server",
     "express",
     "koa",
@@ -69,7 +71,8 @@
     "digital ocean functions",
     "digital ocean serverless",
     "gcp",
-    "google cloud functions"
+    "google cloud functions",
+    "polka"
   ],
   "bugs": {
     "url": "https://github.com/H4ad/serverless-adapter/issues"
@@ -97,6 +100,7 @@
     "@types/express": "4.17.21",
     "@types/koa": "2.13.12",
     "@types/node": "18.16.5",
+    "@types/polka": "0.5.7",
     "@types/supertest": "6.0.1",
     "@typescript-eslint/eslint-plugin": "6.15.0",
     "@typescript-eslint/parser": "6.15.0",
@@ -120,6 +124,7 @@
     "glob": "10.3.10",
     "husky": "8.0.3",
     "koa": "2.15.0",
+    "polka": "0.5.2",
     "prettier": "3.1.1",
     "stream-mock": "2.0.5",
     "supertest": "6.3.3",
@@ -528,6 +533,26 @@
       "require": {
         "types": "./lib/frameworks/lazy/index.d.cts",
         "default": "./lib/frameworks/lazy/index.cjs"
+      }
+    },
+    "./frameworks/polka": {
+      "import": {
+        "types": "./lib/frameworks/polka/index.d.ts",
+        "default": "./lib/frameworks/polka/index.mjs"
+      },
+      "require": {
+        "types": "./lib/frameworks/polka/index.d.cts",
+        "default": "./lib/frameworks/polka/index.cjs"
+      }
+    },
+    "./lib/frameworks/polka": {
+      "import": {
+        "types": "./lib/frameworks/polka/index.d.ts",
+        "default": "./lib/frameworks/polka/index.mjs"
+      },
+      "require": {
+        "types": "./lib/frameworks/polka/index.d.cts",
+        "default": "./lib/frameworks/polka/index.cjs"
       }
     },
     "./frameworks/trpc": {

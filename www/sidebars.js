@@ -140,6 +140,7 @@ const sidebars = {
         'main/frameworks/hapi',
         'main/frameworks/koa',
         'main/frameworks/nestjs',
+        'main/frameworks/polka',
         'main/frameworks/trpc',
         {
           type: 'category',
@@ -154,7 +155,7 @@ const sidebars = {
               dirName: 'main/frameworks/helpers',
             },
           ],
-        }
+        },
       ],
     },
     {
@@ -176,9 +177,9 @@ const sidebars = {
             'main/advanced/adapters/introduction',
             'main/advanced/adapters/creating-an-adapter',
           ],
-        }
+        },
       ],
-    }
+    },
   ],
   api: [
     {

@@ -20,6 +20,7 @@ const frameworks = [
   'hapi',
   'koa',
   'lazy',
+  'polka',
   'trpc',
 ];
 

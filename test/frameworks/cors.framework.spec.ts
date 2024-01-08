@@ -2,19 +2,24 @@ import * as trpc from '@trpc/server';
 import express from 'express';
 import fastify from 'fastify';
 import Application from 'koa';
-import { SpyInstance, describe, expect, it, vitest } from 'vitest';
+import { type SpyInstance, describe, expect, it, vitest } from 'vitest';
+import polka from 'polka';
 import {
-  BothValueHeaders,
-  FrameworkContract,
+  type BothValueHeaders,
+  type FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
 } from '../../src';
-import { CorsFramework, CorsFrameworkOptions } from '../../src/frameworks/cors';
+import {
+  CorsFramework,
+  type CorsFrameworkOptions,
+} from '../../src/frameworks/cors';
 import { ExpressFramework } from '../../src/frameworks/express';
 import { FastifyFramework } from '../../src/frameworks/fastify';
 import { KoaFramework } from '../../src/frameworks/koa';
 import { TrpcFramework } from '../../src/frameworks/trpc';
+import { PolkaFramework } from '../../src/frameworks/polka';
 
 type CorsTest = {
   name: string;
@@ -284,6 +289,18 @@ describe('CorsFramework', () => {
         });
 
         await handleRestExpects(app, new TrpcFramework(), corsTest);
+      });
+    }
+  });
+
+  describe('polka', () => {
+    for (const corsTest of corsOptions) {
+      it(`${corsTest.method}: ${corsTest.name}`, async () => {
+        const app = polka();
+
+        app.get('/', (_, res) => res.end('ok'));
+
+        await handleRestExpects(app, new PolkaFramework(), corsTest);
       });
     }
   });
