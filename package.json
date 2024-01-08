@@ -89,7 +89,7 @@
     "@microsoft/api-extractor-model": "7.28.3",
     "@microsoft/tsdoc": "0.14.2",
     "@npmcli/package-json": "5.0.0",
-    "@rushstack/node-core-library": "3.62.0",
+    "@rushstack/node-core-library": "3.63.0",
     "@trpc/server": "10.44.1",
     "@types/aws-lambda": "8.10.130",
     "@types/body-parser": "1.19.5",
