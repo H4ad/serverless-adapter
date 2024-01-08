@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.2.0](https://github.com/H4ad/serverless-adapter/compare/v4.1.0...v4.2.0) (2024-01-08)
+
+
+### Features
+
+* **frameworks:** added support for polka ([39377cb](https://github.com/H4ad/serverless-adapter/commit/39377cb16b20bdba7b724663b8076a6a394851a6))
+
+
+### Miscellaneous Chores
+
+* bump @apollo/server from 4.9.5 to 4.10.0 ([cf4e1d9](https://github.com/H4ad/serverless-adapter/commit/cf4e1d9485fe174c68ae1b70dc2c6d6e7a220c02))
+* bump @rushstack/node-core-library from 3.62.0 to 3.63.0 ([19c88e0](https://github.com/H4ad/serverless-adapter/commit/19c88e01c74a8e4735ba66f6b5b77b2cbd579897))
+* bump @vitest/coverage-v8 from 1.1.0 to 1.1.3 ([3e67b23](https://github.com/H4ad/serverless-adapter/commit/3e67b23dba80b00c65667c312578f07d39111919))
+* bump eslint-plugin-prettier from 5.1.1 to 5.1.2 ([83fc5e5](https://github.com/H4ad/serverless-adapter/commit/83fc5e5cac5a08701815a6c73563a51866fdcbf9))
+* bump fastify from 4.25.1 to 4.25.2 ([e048b11](https://github.com/H4ad/serverless-adapter/commit/e048b117034c2f4e7f3b25467dd24fa3b754e684))
+* bump follow-redirects from 1.15.3 to 1.15.4 in /www ([af12bbd](https://github.com/H4ad/serverless-adapter/commit/af12bbd55d264dc2be668e24cb1f551e333f33ba))
+* bump koa from 2.14.2 to 2.15.0 ([164c97b](https://github.com/H4ad/serverless-adapter/commit/164c97ba10e6d0ee4661bc980d279262f4a982c1))
+* bump vite from 5.0.10 to 5.0.11 ([0478492](https://github.com/H4ad/serverless-adapter/commit/04784922a49429a57f9bbbd4773e42c069ce2cca))
+
 ## [4.1.0](https://github.com/H4ad/serverless-adapter/compare/v4.0.1...v4.1.0) (2024-01-03)
 
 
