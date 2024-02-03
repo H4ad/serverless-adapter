@@ -1,5 +1,5 @@
 {
-  "name": "@h4ad/serverless-adapter",
+  "name": "@altalune/serverless-adapter",
   "version": "4.2.0",
   "description": "Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Express, Koa, Hapi, Fastify and many others), on top of AWS, Azure, Digital Ocean and many other clouds.",
   "type": "module",
@@ -27,13 +27,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/H4ad/serverless-adapter.git"
+    "url": "git+https://github.com/hrz8/serverless-adapter.git"
   },
   "license": "MIT",
   "author": {
-    "name": "Vinícius Lourenço",
-    "email": "H4ad@users.noreply.github.com",
-    "url": "https://github.com/H4ad"
+    "name": "Hirzi Nurfakhrian",
+    "email": "hirzinurfakhrian@gmail.com",
+    "url": "https://github.com/hrz8"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -75,9 +75,9 @@
     "polka"
   ],
   "bugs": {
-    "url": "https://github.com/H4ad/serverless-adapter/issues"
+    "url": "https://github.com/hrz8/serverless-adapter/issues"
   },
-  "homepage": "https://github.com/H4ad/serverless-adapter#readme",
+  "homepage": "https://github.com/hrz8/serverless-adapter#readme",
   "devDependencies": {
     "@apollo/server": "4.10.0",
     "@azure/functions": "3.5.1",

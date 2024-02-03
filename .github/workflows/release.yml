@@ -1,9 +1,9 @@
-name: Release
+name: Release NPM package
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -17,33 +17,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Release Please
-        uses: google-github-actions/release-please-action@v4
-        id: release
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN_GITHUB }}
-
       - name: Use Node 20.x
         uses: actions/setup-node@v4
-        if: ${{ steps.release.outputs.release_created }}
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Deps
         run: npm ci
-        if: ${{ steps.release.outputs.release_created }}
 
       - name: Build
         run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
 
       - name: Get Coverage Info
-        if: ${{ steps.release.outputs.release_created }}
         run: npm run coverage
 
       - name: NPM Publish
         run: npm publish --provenance --access public
-        if: ${{ steps.release.outputs.release_created }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
