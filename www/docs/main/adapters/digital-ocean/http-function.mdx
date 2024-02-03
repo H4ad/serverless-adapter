@@ -41,25 +41,28 @@ This adapter transforms every request coming from DigitalOcean Functions into an
 
 ```json title="digital-ocean-http-function-event-example.json"
 {
-  "__ow_method": "post",
-  "__ow_query": "potato=true",
-  "__ow_body": "{\"test\":true}",
-  "__ow_headers": {
-    "accept": "*/*",
-    "accept-encoding": "gzip",
-    "cdn-loop": "cloudflare",
-    "cf-connecting-ip": "45.444.444.444",
-    "cf-ipcountry": "BR",
-    "cf-ray": "xxxxxxxxxxx-GRU",
-    "cf-visitor": "{\"scheme\":\"https\"}",
-    "host": "ccontroller",
-    "user-agent": "insomnia/2022.4.2",
-    "x-custom": "potato",
-    "x-forwarded-for": "45.444.444.444",
-    "x-forwarded-proto": "https",
-    "x-request-id": "xxxxxxxxxxxxxxxx"
+  "http": {
+    "method": "post",
+    "queryString": "potato=true",
+    "body": "{\"test\":true}",
+    "headers": {
+      "accept": "*/*",
+      "accept-encoding": "gzip",
+      "cdn-loop": "cloudflare",
+      "cf-connecting-ip": "45.444.444.444",
+      "cf-ipcountry": "BR",
+      "cf-ray": "xxxxxxxxxxx-GRU",
+      "cf-visitor": "{\"scheme\":\"https\"}",
+      "host": "ccontroller",
+      "user-agent": "insomnia/2022.4.2",
+      "x-custom": "potato",
+      "x-forwarded-for": "45.444.444.444",
+      "x-forwarded-proto": "https",
+      "x-request-id": "xxxxxxxxxxxxxxxx"
+    },
+    "path": "/store"
   },
-  "__ow_path": "/store"
+  "additionalParams": "any"
 }
 ```
 

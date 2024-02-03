@@ -43,7 +43,7 @@ describe(HttpFunctionAdapter.name, () => {
       );
       const result = adapter.getRequest(event);
 
-      const remoteAddress = event.__ow_headers['x-forwarded-for'];
+      const remoteAddress = event.http.headers['x-forwarded-for'];
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
@@ -60,7 +60,10 @@ describe(HttpFunctionAdapter.name, () => {
       expect(result.headers['content-length']).toBe(String(contentLength));
       expect(result).toHaveProperty('remoteAddress', remoteAddress);
 
-      const resultPath = getPathWithQueryStringParams(path, event.__ow_query);
+      const resultPath = getPathWithQueryStringParams(
+        path,
+        event.http.queryString,
+      );
       expect(result).toHaveProperty('path', resultPath);
     });
 
@@ -88,7 +91,7 @@ describe(HttpFunctionAdapter.name, () => {
       );
       const result = adapter.getRequest(event);
 
-      const remoteAddress = event.__ow_headers['x-forwarded-for'];
+      const remoteAddress = event.http.headers['x-forwarded-for'];
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
@@ -98,7 +101,10 @@ describe(HttpFunctionAdapter.name, () => {
 
       expect(result).toHaveProperty('remoteAddress', remoteAddress);
 
-      const resultPath = getPathWithQueryStringParams(path, event.__ow_query);
+      const resultPath = getPathWithQueryStringParams(
+        path,
+        event.http.queryString,
+      );
       expect(result).toHaveProperty('path', resultPath);
     });
 
@@ -114,7 +120,7 @@ describe(HttpFunctionAdapter.name, () => {
       const event = createHttpFunctionEvent(method, path, body);
       const result = strippedAdapter.getRequest(event);
 
-      const remoteAddress = event.__ow_headers['x-forwarded-for'];
+      const remoteAddress = event.http.headers['x-forwarded-for'];
 
       expect(result).toHaveProperty('method', method);
       expect(result).toHaveProperty('headers');
@@ -127,7 +133,7 @@ describe(HttpFunctionAdapter.name, () => {
 
       const resultPath = getPathWithQueryStringParams(
         path.replace('/prod', ''),
-        event.__ow_query,
+        event.http.queryString,
       );
       expect(result).toHaveProperty('path', resultPath);
     });
@@ -151,7 +157,7 @@ describe(HttpFunctionAdapter.name, () => {
         {},
         queryParams,
       );
-      const resultHeaders = event.__ow_headers;
+      const resultHeaders = event.http.headers;
 
       const result = adapter.getResponse({
         event,

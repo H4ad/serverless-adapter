@@ -1,6 +1,6 @@
 //#region Imports
 
-import type { SingleValueHeaders } from '../headers';
+import type { DigitalOceanHttpRootEvent } from '../http';
 
 //#endregion
 
@@ -15,32 +15,12 @@ import type { SingleValueHeaders } from '../headers';
  */
 export interface DigitalOceanHttpEvent {
   /**
-   * The HTTP Method of the request
+   * The HTTP Object of the request
    */
-  __ow_method: string;
+  http: DigitalOceanHttpRootEvent;
 
   /**
-   * The query porams of the request
+   * Any field of the request
    */
-  __ow_query: string;
-
-  /**
-   * The body of the request.
-   */
-  __ow_body?: string;
-
-  /**
-   * Indicates if body is base64 string
-   */
-  __ow_isBase64Encoded?: boolean;
-
-  /**
-   * The HTTP Headers of the request
-   */
-  __ow_headers: SingleValueHeaders;
-
-  /**
-   * The path in the request
-   */
-  __ow_path: string;
+  [key: string]: any;
 }

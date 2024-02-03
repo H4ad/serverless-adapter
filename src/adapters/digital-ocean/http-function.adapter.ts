@@ -80,9 +80,9 @@ export class HttpFunctionAdapter
 
     return (
       !!digitalOceanHttpEvent &&
-      digitalOceanHttpEvent.__ow_path !== undefined &&
-      digitalOceanHttpEvent.__ow_method !== undefined &&
-      digitalOceanHttpEvent.__ow_headers !== undefined
+      digitalOceanHttpEvent.http?.path !== undefined &&
+      digitalOceanHttpEvent.http?.method !== undefined &&
+      digitalOceanHttpEvent.http?.headers !== undefined
     );
   }
 
@@ -90,16 +90,16 @@ export class HttpFunctionAdapter
    * {@inheritDoc}
    */
   public getRequest(event: DigitalOceanHttpEvent): AdapterRequest {
-    const headers = event.__ow_headers;
-    const method = event.__ow_method.toUpperCase();
+    const headers = event.http.headers;
+    const method = event.http.method.toUpperCase();
     const path = this.getPathFromEvent(event);
 
     let body: Buffer | undefined;
 
-    if (event.__ow_body) {
+    if (event.http.body) {
       const [bufferBody, contentLength] = getEventBodyAsBuffer(
-        event.__ow_body,
-        !!event.__ow_isBase64Encoded,
+        event.http.body,
+        !!event.http.isBase64Encoded,
       );
 
       body = bufferBody;
@@ -173,8 +173,8 @@ export class HttpFunctionAdapter
     );
     const replaceRegex = new RegExp(`^${stripBasePath}`);
 
-    const path = event.__ow_path.replace(replaceRegex, '');
-    const queryParams = event.__ow_query;
+    const path = event.http.path.replace(replaceRegex, '');
+    const queryParams = event.http.queryString;
 
     return getPathWithQueryStringParams(path, queryParams || {});
   }
