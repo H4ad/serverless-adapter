@@ -296,19 +296,9 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
           awsMetadata,
         );
 
-        // some status do not return body, and
-        // for some unknown reason, we cannot finish the stream without writing at least once
-        // so I have this thing just to fix this issue
-        // ref: https://stackoverflow.com/a/37303151
-        const isHundreadStatus = status >= 100 && status < 200;
-        const isNoContentStatus = status === 304 || status === 204;
-        const isHeadRequest = requestValues.method === 'HEAD';
-
-        if (isHundreadStatus || isNoContentStatus || isHeadRequest) {
-          finalResponse.write('');
-          // end the response to avoid waiting for nothing
-          response.end();
-        }
+        // We must call write with an empty string to trigger the awsMetadata to be sent
+        // https://github.com/aws/aws-lambda-nodejs-runtime-interface-client/blob/2ce88619fd176a5823bc5f38c5484d1cbdf95717/src/HttpResponseStream.js#L22
+        finalResponse.write('');
 
         return finalResponse;
       },
