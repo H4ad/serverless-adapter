@@ -301,7 +301,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
         // so I have this thing just to fix this issue
         // ref: https://stackoverflow.com/a/37303151
         const isHundreadStatus = status >= 100 && status < 200;
-        const isNoContentStatus = status === 304 || status === 204;
+        const isNoContentStatus = status >= 300 && status < 400;
         const isHeadRequest = requestValues.method === 'HEAD';
 
         if (isHundreadStatus || isNoContentStatus || isHeadRequest) {
