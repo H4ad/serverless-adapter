@@ -1,9 +1,9 @@
 import type { Cookie, HttpRequest, HttpResponseSimple } from '@azure/functions';
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
-  GetResponseAdapterProps,
-  ILogger,
+  type DelegatedResolver,
+  type GetResponseAdapterProps,
+  type ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getPathWithQueryStringParams,
@@ -303,7 +303,7 @@ describe(HttpTriggerV4Adapter.name, () => {
 
       const log = {} as ILogger;
 
-      const resolver: DelegatedResolver<HttpRequest> = {
+      const resolver: DelegatedResolver<HttpResponseSimple> = {
         fail: vitest.fn(),
         succeed: vitest.fn(),
       };

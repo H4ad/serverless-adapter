@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BothValueHeaders,
+  type BothValueHeaders,
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
   getContentType,

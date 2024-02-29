@@ -1,9 +1,9 @@
 import type { ALBEvent, ALBResult } from 'aws-lambda';
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
-  GetResponseAdapterProps,
-  ILogger,
+  type DelegatedResolver,
+  type GetResponseAdapterProps,
+  type ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getMultiValueHeadersMap,

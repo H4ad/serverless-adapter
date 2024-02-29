@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { AdapterContract, ILogger } from '../../../src';
+import type { AdapterContract, ILogger } from '../../../src';
 import { allEvents } from './events';
 
 export function createCanHandleTestsForAdapter<

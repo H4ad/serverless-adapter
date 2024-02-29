@@ -1,9 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 import { describe, expect, it, vitest } from 'vitest';
+import type { SQSEvent } from 'aws-lambda';
 import {
-  AdapterContract,
+  type AdapterContract,
   EmptyResponse,
-  GetResponseAdapterProps,
+  type GetResponseAdapterProps,
   ServerlessRequest,
   ServerlessResponse,
   createDefaultLogger,
@@ -11,7 +12,7 @@ import {
 } from '../../../src';
 import {
   ApolloServerMutationAdapter,
-  ApolloServerMutationAdapterOptions,
+  type ApolloServerMutationAdapterOptions,
 } from '../../../src/adapters/apollo-server';
 import {
   DynamoDBAdapter,
@@ -279,7 +280,7 @@ it('onErrorWhileForwarding: should forward error dealing to base adapter', () =>
   });
 
   const props = {
-    event: {},
+    event: {} as SQSEvent,
     log: createDefaultLogger(),
     error: new Error(),
     delegatedResolver: { fail: vitest.fn(), succeed: vitest.fn() },

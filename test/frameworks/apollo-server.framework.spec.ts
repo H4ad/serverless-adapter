@@ -8,12 +8,12 @@ import {
   waitForStreamComplete,
 } from '../../src';
 import {
-  ApolloServerContextArguments,
+  type ApolloServerContextArguments,
   ApolloServerFramework,
-  DefaultServerlessApolloServerContext,
+  type DefaultServerlessApolloServerContext,
 } from '../../src/frameworks/apollo-server';
 import { JsonBodyParserFramework } from '../../src/frameworks/body-parser';
-import { TestRouteBuilderMethods } from './utils';
+import { type TestRouteBuilderMethods } from './utils';
 
 export const frameworkTestOptions: [
   method: TestRouteBuilderMethods,

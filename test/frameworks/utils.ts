@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import {
-  FrameworkContract,
+  type FrameworkContract,
   NO_OP,
   ServerlessRequest,
   ServerlessResponse,

@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
-  GetResponseAdapterProps,
-  ILogger,
+  type DelegatedResolver,
+  type GetResponseAdapterProps,
+  type ILogger,
   getEventBodyAsBuffer,
   getPathWithQueryStringParams,
 } from '../../../src';
-import { DigitalOceanHttpEvent } from '../../../src/@types/digital-ocean';
-import { DigitalOceanHttpResponse } from '../../../src/@types/digital-ocean/digital-ocean-http-response';
+import {
+  type DigitalOceanHttpEvent,
+  type DigitalOceanHttpResponse,
+} from '../../../src/@types/digital-ocean';
 import { HttpFunctionAdapter } from '../../../src/adapters/digital-ocean';
 import { createCanHandleTestsForAdapter } from '../utils/can-handle';
 import { createHttpFunctionEvent } from './utils/http-function';

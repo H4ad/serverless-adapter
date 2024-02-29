@@ -1,6 +1,6 @@
 import { App } from '@deepkit/app';
 import {
-  HttpBody,
+  type HttpBody,
   HttpKernel,
   HttpModule,
   HttpRequest,
@@ -14,7 +14,7 @@ import {
   waitForStreamComplete,
 } from '../../src';
 import { HttpDeepkitFramework } from '../../src/frameworks/deepkit';
-import { TestRouteBuilderHandler } from './utils';
+import { type TestRouteBuilderHandler } from './utils';
 
 export function createDeepkitHandler(
   method: 'get' | 'post' | 'delete' | 'put',

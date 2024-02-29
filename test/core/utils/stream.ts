@@ -1,7 +1,7 @@
 // credits to: https://github.com/b4nst/stream-mock/pull/64/files#diff-52aee274967f2fcfa3ffa78ebba2f510dd23d176aa92ccf8c0ad4843373f5ce7
 
-import { Readable, ReadableOptions } from 'node:stream';
-import { IReadableMock } from 'stream-mock';
+import { Readable, type ReadableOptions } from 'node:stream';
+import type { IReadableMock } from 'stream-mock';
 
 /**
  * ErrorReadableMock is a readable stream that mocks error.
@@ -34,7 +34,7 @@ export default class ErrorReadableMock
   private expectedError: Error;
 
   // tslint:disable-next-line:function-name Not responsible of this function name
-  public _read() {
+  public override _read() {
     this.destroy(this.expectedError);
   }
 }

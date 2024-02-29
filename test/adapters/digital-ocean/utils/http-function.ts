@@ -1,4 +1,4 @@
-import { DigitalOceanHttpEvent } from '../../../../src/@types/digital-ocean';
+import { type DigitalOceanHttpEvent } from '../../../../src/@types/digital-ocean';
 
 export function createHttpFunctionEvent(
   method: string,

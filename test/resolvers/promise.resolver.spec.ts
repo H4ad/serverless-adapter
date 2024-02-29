@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import type { Context } from 'aws-lambda';
-import {
+import type {
   AdapterContract,
   ILogger,
   OnErrorProps,

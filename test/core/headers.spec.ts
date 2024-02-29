@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BothValueHeaders,
+  type BothValueHeaders,
   getFlattenedHeadersMap,
   getFlattenedHeadersMapAndCookies,
   getMultiValueHeadersMap,

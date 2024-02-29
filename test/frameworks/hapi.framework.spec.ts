@@ -1,7 +1,7 @@
 import { Server } from '@hapi/hapi';
 import { describe } from 'vitest';
 import { HapiFramework } from '../../src/frameworks/hapi';
-import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
+import { type TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(
   method: 'GET' | 'POST' | 'DELETE' | 'PUT',

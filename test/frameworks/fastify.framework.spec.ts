@@ -1,7 +1,7 @@
-import fastify, { FastifyInstance } from 'fastify';
+import fastify, { type FastifyInstance } from 'fastify';
 import { describe } from 'vitest';
 import { FastifyFramework } from '../../src/frameworks/fastify';
-import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
+import { type TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(
   method: 'get' | 'post' | 'delete' | 'put',

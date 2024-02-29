@@ -1,6 +1,7 @@
 import { describe, expect, it, vitest } from 'vitest';
+import type { Request, Response } from 'express';
 import {
-  FrameworkContract,
+  type FrameworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
@@ -10,7 +11,7 @@ import { FrameworkMock } from '../mocks/framework.mock';
 
 describe(HttpFirebaseHandler.name, () => {
   it('should forward correctly the request to framework', async () => {
-    const handlerFactory = new HttpFirebaseHandler();
+    const handlerFactory = new HttpFirebaseHandler<null>();
 
     const method = 'POST';
     const url = '/users/batata';
@@ -36,7 +37,7 @@ describe(HttpFirebaseHandler.name, () => {
 
     const handler = handlerFactory.getHandler(null, framework);
 
-    handler(request, response);
+    handler(request as Request, response as unknown as Response);
 
     await waitForStreamComplete(response);
 
@@ -72,7 +73,7 @@ describe(HttpFirebaseHandler.name, () => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         sendRequest: vitest.fn(
           async (
-            app: null,
+            _app: null,
             req: ServerlessRequest,
             res: ServerlessResponse,
           ) => {
@@ -94,7 +95,7 @@ describe(HttpFirebaseHandler.name, () => {
 
       const handler = handlerFactory.getHandler(null, framework);
 
-      handler(request, response);
+      handler(request as Request, response as unknown as Response);
     }
   });
 });

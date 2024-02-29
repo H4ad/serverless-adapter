@@ -1,11 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { describe, expect, it, vitest } from 'vitest';
-import { FrameworkContract } from '../../src';
+import { type FrameworkContract } from '../../src';
 import { GCPHandler } from '../../src/handlers/gcp';
 import { FrameworkMock } from '../mocks/framework.mock';
 
 class TestGCPHandler<TApp> extends GCPHandler<TApp> {
-  public onRequestCallback(
+  public override onRequestCallback(
     app: TApp,
     framework: FrameworkContract<TApp>,
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {

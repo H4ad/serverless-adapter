@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
 import {
-  SpyInstance,
+  type MockInstance,
   afterEach,
   beforeEach,
   describe,
@@ -10,14 +10,14 @@ import {
   vitest,
 } from 'vitest';
 import {
-  LogLevels,
+  type LogLevels,
   NO_OP,
   createDefaultLogger,
   isInternalLogger,
 } from '../../src';
 
 describe('createDefaultLogger', () => {
-  const mocks: SpyInstance[] = [];
+  const mocks: MockInstance[] = [];
 
   beforeEach(() => {
     const mockMethods: (keyof Console)[] = [
