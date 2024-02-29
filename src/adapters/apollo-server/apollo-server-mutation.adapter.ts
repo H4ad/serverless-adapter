@@ -41,12 +41,8 @@ export type ApolloServerMutationAdapterOptions = {
  * @breadcrumb Adapters / Apollo Server / ApolloServerMutationAdapter
  * @public
  */
-export class ApolloServerMutationAdapter<
-  TEvent,
-  TContext,
-  TResponse,
-  TBaseAdapter extends AdapterContract<TEvent, TContext, TResponse>,
-> implements AdapterContract<TEvent, TContext, TResponse>
+export class ApolloServerMutationAdapter<TEvent, TContext, TResponse>
+  implements AdapterContract<TEvent, TContext, TResponse>
 {
   //#region Constructor
 
@@ -54,7 +50,11 @@ export class ApolloServerMutationAdapter<
    * The default constructor
    */
   constructor(
-    protected readonly baseAdapter: TBaseAdapter,
+    protected readonly baseAdapter: AdapterContract<
+      TEvent,
+      TContext,
+      TResponse
+    >,
     protected readonly options: ApolloServerMutationAdapterOptions,
   ) {}
 
