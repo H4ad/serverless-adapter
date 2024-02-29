@@ -204,7 +204,7 @@ describe('ServerlessResponse', () => {
 
   it('should write headers correctly in object when call writeHead', () => {
     class MockServerlessResponse extends ServerlessResponse {
-      public callNativeWriteHead(
+      public override callNativeWriteHead(
         statusCode: number,
         statusMessage?: string | any | any[],
         obj?: any | any[],

@@ -1,9 +1,9 @@
 import { describe, expect, it, vitest } from 'vitest';
 import {
-  BinarySettings,
+  type BinarySettings,
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
-  HandlerContract,
+  type HandlerContract,
   NO_OP,
   ServerlessAdapter,
   createDefaultLogger,

@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
-  GetResponseAdapterProps,
-  ILogger,
+  type DelegatedResolver,
+  type GetResponseAdapterProps,
+  type ILogger,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,
   getPathWithQueryStringParams,
 } from '../../../src';
-import {
+import type {
   HuaweiApiGatewayEvent,
   HuaweiApiGatewayResponse,
 } from '../../../src/@types/huawei';

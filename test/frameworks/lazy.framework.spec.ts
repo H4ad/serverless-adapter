@@ -1,6 +1,6 @@
 import { describe, expect, it, vitest } from 'vitest';
 import {
-  ILogger,
+  type ILogger,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,

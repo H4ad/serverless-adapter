@@ -1,7 +1,7 @@
-import express, { Express } from 'express';
+import express, { type Express } from 'express';
 import { describe } from 'vitest';
 import { ExpressFramework } from '../../src/frameworks/express';
-import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
+import { type TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(
   method: 'get' | 'post' | 'delete' | 'put',

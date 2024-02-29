@@ -1,5 +1,5 @@
-import { BothValueHeaders } from '../../../../src';
-import {
+import type { BothValueHeaders } from '../../../../src';
+import type {
   HuaweiApiGatewayEvent,
   HuaweiRequestQueryStringParameters,
 } from '../../../../src/@types/huawei';

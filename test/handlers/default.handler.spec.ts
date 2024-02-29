@@ -1,5 +1,10 @@
 import { describe, expect, it, vitest } from 'vitest';
-import { ILogger, NO_OP, getCurrentInvoke } from '../../src';
+import {
+  type AdapterContract,
+  type ILogger,
+  NO_OP,
+  getCurrentInvoke,
+} from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { DefaultHandler } from '../../src/handlers/default';
 import { PromiseResolver } from '../../src/resolvers/promise';
@@ -12,11 +17,11 @@ describe('DefaultHandler', () => {
   const app = null;
   const response = { batata: true };
   const apiGatewayAdapter = new ApiGatewayV2Adapter();
-  const adapters = [apiGatewayAdapter];
+  const adapters = [apiGatewayAdapter] as AdapterContract<any, any, any>[];
   const resolver = new PromiseResolver();
   const binarySettings = { contentEncodings: [], contentTypes: [] };
   const respondWithErrors = true;
-  const executeLog = (m, fn) => typeof fn === 'function' && fn();
+  const executeLog = (_, fn) => typeof fn === 'function' && fn();
   const logger: ILogger = {
     debug: vitest.fn(executeLog),
     error: vitest.fn(executeLog),

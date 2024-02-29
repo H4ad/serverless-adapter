@@ -1,9 +1,9 @@
 import { describe, expect, it, vitest } from 'vitest';
 import {
-  AdapterContract,
-  AdapterRequest,
+  type AdapterContract,
+  type AdapterRequest,
   BaseHandler,
-  ILogger,
+  type ILogger,
   ServerlessRequest,
   ServerlessResponse,
   createDefaultLogger,
@@ -11,32 +11,32 @@ import {
 import { AlbAdapter, SQSAdapter } from '../../src/adapters/aws';
 import { createSQSEvent } from '../adapters/aws/utils/sqs';
 
-class TestHandler<
+class TestHandler<TApp, TContext, TCallback, TReturn> extends BaseHandler<
   TApp,
-  TEvent,
+  unknown,
   TContext,
   TCallback,
-  TResponse,
-  TReturn,
-> extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
+  unknown,
+  TReturn
+> {
   getHandler = vitest.fn();
 
   /**
    * {@inheritDoc}
    */
-  public getAdapterByEventAndContext(
+  public override getAdapterByEventAndContext(
     event: any,
     context: any,
-    adapters: AdapterContract<TEvent, TContext, TResponse>[],
+    adapters: AdapterContract<unknown, TContext, unknown>[],
     log: ILogger,
-  ): AdapterContract<TEvent, TContext, TResponse> {
+  ): AdapterContract<unknown, TContext, unknown> {
     return super.getAdapterByEventAndContext(event, context, adapters, log);
   }
 
   /**
    * {@inheritDoc}
    */
-  public getServerlessRequestResponseFromAdapterRequest(
+  public override getServerlessRequestResponseFromAdapterRequest(
     requestValues: AdapterRequest,
   ): [request: ServerlessRequest, response: ServerlessResponse] {
     return super.getServerlessRequestResponseFromAdapterRequest(requestValues);
@@ -48,7 +48,11 @@ describe(BaseHandler.name, () => {
     const handler = new TestHandler();
     const testEvent = createSQSEvent();
     const eventAdapter = new SQSAdapter();
-    const adapters = [eventAdapter, new AlbAdapter()];
+    const adapters = [eventAdapter, new AlbAdapter()] as AdapterContract<
+      any,
+      any,
+      any
+    >[];
     const context = {};
     const logger = createDefaultLogger();
 
@@ -89,7 +93,11 @@ describe(BaseHandler.name, () => {
   it('should throw error when resolve more than one adapter', () => {
     const handler = new TestHandler();
     const testEvent = createSQSEvent();
-    const adapters = [new SQSAdapter(), new SQSAdapter()];
+    const adapters = [new SQSAdapter(), new SQSAdapter()] as AdapterContract<
+      any,
+      any,
+      any
+    >[];
     const adapterNames = adapters
       .map(adapter => adapter.getAdapterName())
       .join(', ');

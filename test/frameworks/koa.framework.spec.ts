@@ -1,11 +1,11 @@
-import Application, { Context } from 'koa';
+import Application, { type Context } from 'koa';
 import { describe } from 'vitest';
 import { NO_OP } from '../../src';
 import { KoaFramework } from '../../src/frameworks/koa';
-import { TestRouteBuilderHandler, createTestSuiteFor } from './utils';
+import { type TestRouteBuilderHandler, createTestSuiteFor } from './utils';
 
 function createHandler(): TestRouteBuilderHandler<Application> {
-  return (app, path, handler) => {
+  return (app, _, handler) => {
     app.use((ctx: Context) => {
       const [statusCode, resultBody, headers] = handler(ctx.headers, NO_OP);
 

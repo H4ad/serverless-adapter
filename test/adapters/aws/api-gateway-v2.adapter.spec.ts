@@ -2,9 +2,9 @@ import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda/trigger/api-gateway-proxy';
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
-  GetResponseAdapterProps,
-  ILogger,
+  type DelegatedResolver,
+  type GetResponseAdapterProps,
+  type ILogger,
   ServerlessResponse,
   getEventBodyAsBuffer,
   getFlattenedHeadersMap,

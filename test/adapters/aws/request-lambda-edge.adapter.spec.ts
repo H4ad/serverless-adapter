@@ -5,11 +5,11 @@ import type {
 } from 'aws-lambda/trigger/cloudfront-request';
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  BothValueHeaders,
-  DelegatedResolver,
-  ILogger,
-  MultiValueHeaders,
-  SingleValueHeaders,
+  type BothValueHeaders,
+  type DelegatedResolver,
+  type ILogger,
+  type MultiValueHeaders,
+  type SingleValueHeaders,
 } from '../../../src';
 import {
   DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS,

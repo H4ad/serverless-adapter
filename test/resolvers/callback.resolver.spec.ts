@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import {
+import type {
   AdapterContract,
   ILogger,
   OnErrorProps,
@@ -7,7 +7,7 @@ import {
 } from '../../src';
 import {
   CallbackResolver,
-  ServerlessCallback,
+  type ServerlessCallback,
 } from '../../src/resolvers/callback';
 
 describe(CallbackResolver.name, () => {

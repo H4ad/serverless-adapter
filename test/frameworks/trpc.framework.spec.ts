@@ -1,5 +1,5 @@
 import * as trpc from '@trpc/server';
-import { AnyRouter } from '@trpc/server';
+import { type AnyRouter } from '@trpc/server';
 import { describe, expect, it } from 'vitest';
 import {
   NO_OP,
@@ -10,10 +10,10 @@ import {
 } from '../../src';
 import {
   BufferToJSObjectTransformer,
-  TrpcAdapterContext,
+  type TrpcAdapterContext,
   TrpcFramework,
 } from '../../src/frameworks/trpc';
-import { TestRouteBuilderHandler, frameworkTestOptions } from './utils';
+import { type TestRouteBuilderHandler, frameworkTestOptions } from './utils';
 
 type TrpcContext = TrpcAdapterContext<unknown>;
 

@@ -1,7 +1,7 @@
 import { type Server, createServer } from 'node:http';
 import supertest from 'supertest';
 import { describe, expect, it, vitest } from 'vitest';
-import { ILogger } from '../../src';
+import { type ILogger } from '../../src';
 import { DummyAdapter } from '../../src/adapters/dummy';
 import {
   DEFAULT_HUAWEI_LISTEN_PORT,

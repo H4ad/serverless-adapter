@@ -1,14 +1,20 @@
 import { describe, expect, it, vitest } from 'vitest';
-import { ILogger } from '../../src';
+import { type ILogger } from '../../src';
 import { HttpFunctionAdapter } from '../../src/adapters/digital-ocean';
 import { DefaultHandler } from '../../src/handlers/default';
 import { DigitalOceanHandler } from '../../src/handlers/digital-ocean';
 import { PromiseResolver } from '../../src/resolvers/promise';
-import { createHttpTriggerEvent } from '../adapters/azure/utils/http-trigger';
 import { FrameworkMock } from '../mocks/framework.mock';
+import { createHttpFunctionEvent } from '../adapters/digital-ocean/utils/http-function';
+import type { DigitalOceanHttpEvent } from '../../src/@types/digital-ocean';
 
 describe(DigitalOceanHandler.name, () => {
-  const azureHandlerFactory = new DigitalOceanHandler();
+  const azureHandlerFactory = new DigitalOceanHandler<
+    null,
+    DigitalOceanHttpEvent,
+    any,
+    any
+  >();
 
   const app = null;
   const response = { batata: true };
@@ -44,7 +50,7 @@ describe(DigitalOceanHandler.name, () => {
 
     const azureHandler = azureHandlerFactory.getHandler(...getHandlerArguments);
 
-    const event = createHttpTriggerEvent('GET', '/');
+    const event = createHttpFunctionEvent('GET', '/');
 
     expect(azureHandler(event)).resolves.toBe(response);
 

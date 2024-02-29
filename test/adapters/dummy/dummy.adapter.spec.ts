@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
+  type DelegatedResolver,
   EmptyResponse,
   createDefaultLogger,
 } from '../../../src';

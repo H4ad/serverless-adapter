@@ -1,8 +1,8 @@
 import { describe, expect, it, vitest } from 'vitest';
 import {
-  DelegatedResolver,
+  type DelegatedResolver,
   EmptyResponse,
-  ILogger,
+  type ILogger,
   createDefaultLogger,
   getEventBodyAsBuffer,
 } from '../../../src';

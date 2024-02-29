@@ -2,7 +2,7 @@
 
 import type { IncomingMessage, ServerResponse } from 'http';
 import { ObjectReadableMock } from 'stream-mock';
-import { FrameworkContract } from '../../src';
+import { type FrameworkContract } from '../../src';
 
 //#endregion
 
@@ -29,7 +29,7 @@ export class FrameworkMock implements FrameworkContract<null> {
    */
   public sendRequest(
     _: null,
-    request: IncomingMessage,
+    _request: IncomingMessage,
     response: ServerResponse,
   ): void {
     const writableOutput = new ObjectReadableMock(

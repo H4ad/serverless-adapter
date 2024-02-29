@@ -1,7 +1,7 @@
 import { URL } from 'url';
 import type { Context, Form, HttpRequest } from '@azure/functions';
 import { vitest } from 'vitest';
-import { BothValueHeaders } from '../../../../src';
+import { type BothValueHeaders } from '../../../../src';
 
 export function createHttpTriggerEvent(
   method: HttpRequest['method'],
