@@ -113,9 +113,12 @@ export class ServerlessStreamResponse extends ServerResponse {
             endHeaderIndex,
           );
           const headers = parseHeaders(headerData);
-          log.debug('SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS', {
-            headers,
-          });
+          log.debug(
+            'SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS',
+            () => ({
+              headers,
+            }),
+          );
 
           writesToIgnore = 1;
           internalWritable = onReceiveHeaders(status, headers);
