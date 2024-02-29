@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.2.1](https://github.com/H4ad/serverless-adapter/compare/v4.2.0...v4.2.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* **response-stream:** fix response with no content doesn't correctly end the writable stream ([bded8cf](https://github.com/H4ad/serverless-adapter/commit/bded8cfe32a853529fea7334658709b12b2971e1))
+
+
+### Code Refactoring
+
+* **apollo-server-mutation:** better types for adapter ([79f3383](https://github.com/H4ad/serverless-adapter/commit/79f33833c4368282d421495b6f7a70a700bd06bb))
+* **response-stream:** avoid creating object on log while parsing headers ([1effcae](https://github.com/H4ad/serverless-adapter/commit/1effcaebf23e83188d4836693428f1953d0403be))
+
+
+### Tests
+
+* **all:** cleaning tests and fixing ts issues ([c3dcfff](https://github.com/H4ad/serverless-adapter/commit/c3dcfff58ac3bc29294337abd074c567724a8198))
+* **aws-stream:** add tests to cover [#206](https://github.com/H4ad/serverless-adapter/issues/206) ([c853149](https://github.com/H4ad/serverless-adapter/commit/c853149a6295f015b467825f20a60790cb346f65))
+
 ## [4.2.0](https://github.com/H4ad/serverless-adapter/compare/v4.1.0...v4.2.0) (2024-01-08)
 
 
