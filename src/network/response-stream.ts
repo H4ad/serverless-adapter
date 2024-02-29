@@ -106,10 +106,11 @@ export class ServerlessStreamResponse extends ServerResponse {
           const stringData = getString(data);
           const endStatusIndex = stringData.indexOf(endStatusSeparator);
           const status = +stringData.slice(0, endStatusIndex).split(' ')[1];
+          const endHeaderIndex = stringData.indexOf(headerEnd);
 
           const headerData = stringData.slice(
             endStatusIndex + 2,
-            stringData.indexOf(headerEnd),
+            endHeaderIndex,
           );
           const headers = parseHeaders(headerData);
           log.debug('SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS', {
@@ -118,6 +119,10 @@ export class ServerlessStreamResponse extends ServerResponse {
 
           writesToIgnore = 1;
           internalWritable = onReceiveHeaders(status, headers);
+
+          // If we get an endChunked right after header which means the response body is empty, we need to immediately end the writable
+          if (stringData.substring(endHeaderIndex + 4) === endChunked)
+            internalWritable.end();
         }
 
         return true;
