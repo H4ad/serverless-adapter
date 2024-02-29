@@ -3,7 +3,7 @@ import { join } from 'path';
 import express from 'express';
 import { WritableMock } from 'stream-mock/lib/writable';
 import { afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
-import { ILogger, getCurrentInvoke } from '../../src';
+import { type ILogger, getCurrentInvoke } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { ExpressFramework } from '../../src/frameworks/express';
 import { AwsStreamHandler } from '../../src/handlers/aws';
@@ -48,7 +48,7 @@ describe('AwsStreamHandler', () => {
     const app = express();
     const file = readFileSync(join(__dirname, 'bitcoin.pdf'));
 
-    app.get('/', (req, res) => {
+    app.get('/', (_, res) => {
       const readable = createReadStream(join(__dirname, 'bitcoin.pdf'));
 
       res.statusCode = 200;
@@ -86,7 +86,7 @@ describe('AwsStreamHandler', () => {
   it('should return the correct bytes of json', async () => {
     const app = express();
 
-    app.get('/', (req, res) => {
+    app.get('/', (_, res) => {
       return res.json({ test: 'true' });
     });
 
@@ -117,10 +117,10 @@ describe('AwsStreamHandler', () => {
     expect(finalBuffer.toString()).toBe(JSON.stringify({ test: 'true' }));
   });
 
-  it('should handle redirects', async () => {
+  it('should handle redirect with status 304', async () => {
     const app = express();
 
-    app.get('/', (req, res) => {
+    app.get('/', (_, res) => {
       return res.redirect(304, '/test');
     });
 
@@ -154,47 +154,129 @@ describe('AwsStreamHandler', () => {
     expect(finalBuffer.toString()).toBe('');
   });
 
-  it('should handle no content', async () => {
-    const app = express();
+  for (const statusCode of [300, 301, 302, 303, 305, 306, 307, 308]) {
+    it(`should handle redirect with status ${statusCode}`, async () => {
+      const app = express();
 
-    app.get('/', (req, res) => {
-      return res.status(204).end();
+      app.get('/', (_, res) => {
+        return res.redirect(statusCode, '/test');
+      });
+
+      const expressFramework = new ExpressFramework();
+
+      const handler = awsStreamHandler.getHandler(
+        app,
+        expressFramework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/', undefined);
+      const context = { test: Symbol('unique') };
+
+      const writable = new WritableMock();
+      const write = vitest.spyOn(writable, 'write');
+
+      await handler(event, writable, context);
+
+      expect(getCurrentInvoke()).toHaveProperty('event', event);
+      expect(getCurrentInvoke()).toHaveProperty('context', context);
+
+      expect(write).toHaveBeenCalled();
+
+      const finalBuffer = Buffer.concat(writable.data);
+
+      expect(finalBuffer.toString()).toContain(
+        'Redirecting to <a href="/test">/test</a>',
+      );
     });
+  }
 
-    const expressFramework = new ExpressFramework();
+  for (const statusCode of [200, 201, 202, 203, 204, 400, 401, 403, 404]) {
+    it(`should handle no content with status ${statusCode}`, async () => {
+      const app = express();
 
-    const handler = awsStreamHandler.getHandler(
-      app,
-      expressFramework,
-      adapters,
-      resolver,
-      binarySettings,
-      respondWithErrors,
-      logger,
-    );
+      app.get('/', (_, res) => {
+        return res.status(statusCode).end();
+      });
 
-    const event = createApiGatewayV2('GET', '/', undefined);
-    const context = { test: Symbol('unique') };
+      const expressFramework = new ExpressFramework();
 
-    const writable = new WritableMock();
-    const write = vitest.spyOn(writable, 'write');
+      const handler = awsStreamHandler.getHandler(
+        app,
+        expressFramework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
 
-    await handler(event, writable, context);
+      const event = createApiGatewayV2('GET', '/', undefined);
+      const context = { test: Symbol('unique') };
 
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
+      const writable = new WritableMock();
+      const write = vitest.spyOn(writable, 'write');
 
-    expect(write).toHaveBeenCalledWith('');
+      await handler(event, writable, context);
 
-    const finalBuffer = Buffer.concat(writable.data);
+      expect(getCurrentInvoke()).toHaveProperty('event', event);
+      expect(getCurrentInvoke()).toHaveProperty('context', context);
 
-    expect(finalBuffer.toString()).toBe('');
-  });
+      expect(write).toHaveBeenCalledWith('');
+
+      const finalBuffer = Buffer.concat(writable.data);
+
+      expect(finalBuffer.toString()).toBe('');
+    });
+  }
+
+  for (const statusCode of [200, 201, 202, 203, 204, 400, 401, 403, 404]) {
+    it(`should handle writeHead with no content and status ${statusCode}`, async () => {
+      const app = express();
+
+      app.get('/', (_, res) => {
+        return res.writeHead(statusCode).end();
+      });
+
+      const expressFramework = new ExpressFramework();
+
+      const handler = awsStreamHandler.getHandler(
+        app,
+        expressFramework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/', undefined);
+      const context = { test: Symbol('unique') };
+
+      const writable = new WritableMock();
+      const write = vitest.spyOn(writable, 'write');
+
+      await handler(event, writable, context);
+
+      expect(getCurrentInvoke()).toHaveProperty('event', event);
+      expect(getCurrentInvoke()).toHaveProperty('context', context);
+
+      expect(write).toHaveBeenCalledWith('');
+
+      const finalBuffer = Buffer.concat(writable.data);
+
+      expect(finalBuffer.toString()).toBe('');
+    });
+  }
 
   it('should handle HEAD requests', async () => {
     const app = express();
 
-    app.head('/', (req, res) => {
+    app.head('/', (_, res) => {
       return res.set(200).end();
     });
 
@@ -231,7 +313,7 @@ describe('AwsStreamHandler', () => {
   it('should handle correctly the cookies', async () => {
     const app = express();
 
-    app.get('/', (req, res) => {
+    app.get('/', (_, res) => {
       res.setHeader('set-cookie', 'test=1');
       res.json({ ok: true });
     });
@@ -274,7 +356,7 @@ describe('AwsStreamHandler', () => {
   it('should handle correctly the cookies array', async () => {
     const app = express();
 
-    app.get('/', (req, res) => {
+    app.get('/', (_, res) => {
       res.setHeader('set-cookie', ['test=1', 'test2=3']);
       res.json({ ok: true });
     });
