@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.2](https://github.com/H4ad/serverless-adapter/compare/v4.2.1...v4.2.2) (2024-03-25)
+
+
+### Documentation
+
+* fix Apollo Server package name in npm command ([4d4cece](https://github.com/H4ad/serverless-adapter/commit/4d4ceced9d2f882f7431830134d293c187aff4f3))
+* **getting-started:** update npm install command ([ee4661f](https://github.com/H4ad/serverless-adapter/commit/ee4661fc3a7a3d518d4ff3f4ff033ce5a01066ba))
+
 ## [4.2.1](https://github.com/H4ad/serverless-adapter/compare/v4.2.0...v4.2.1) (2024-02-29)
 
 
