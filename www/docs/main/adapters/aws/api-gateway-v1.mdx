@@ -119,6 +119,15 @@ When you configure your API with some `basePath` like `/prod`, you should either
 
 :::
 
+You can also ensure request headers are lowercase like the default behavior of Node.js `http` module by setting the `lowercaseRequestHeaders` option to `true`.
+
+:::caution
+
+ApiGateway may already be ensuring your headers are lowercase but it may be worth confirming in your own system as many libraries in the Node.js ecosystem will assume this lowercasing.
+
+:::
+
+
 ## Usage
 
 To add support to AWS API Gateway V1 you do the following:

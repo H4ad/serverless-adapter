@@ -75,6 +75,22 @@ describe(ApiGatewayV1Adapter.name, () => {
       expect(result).toHaveProperty('path', resultPath);
     });
 
+    it('should return lowercase request headers if option `lowercaseRequestHeaders` is `true`', () => {
+      const method = 'GET';
+      const path = '/events';
+
+      adapter = new ApiGatewayV1Adapter({ lowercaseRequestHeaders: true });
+      const event = createApiGatewayV1(method, path);
+      event.headers['Cookie'] = 'test=test;';
+
+      const { headers } = adapter.getRequest(event);
+
+      expect(headers).not.toHaveProperty('Cookie');
+      expect(headers).toHaveProperty('cookie');
+      expect(headers).not.toHaveProperty('Accept');
+      expect(headers).toHaveProperty('accept');
+    });
+
     it('should return the correct mapping for the request when it has no body', () => {
       const method = 'GET';
       const path = '/users';
