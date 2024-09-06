@@ -8,6 +8,7 @@ import type {
   GetResponseAdapterProps,
   OnErrorProps,
 } from '../../contracts';
+import { keysToLowercase } from '../../core';
 import {
   type StripBasePathFn,
   buildStripBasePath,
@@ -42,6 +43,13 @@ export interface ApiGatewayV1Options {
    * @defaultValue true
    */
   throwOnChunkedTransferEncoding?: boolean;
+
+  /**
+   * Emulates the behavior of Node.js `http` module by ensuring all request headers are lowercase.
+   *
+   * @defaultValue false
+   */
+  lowercaseRequestHeaders?: boolean;
 }
 
 /**
@@ -122,7 +130,9 @@ export class ApiGatewayV1Adapter
    */
   public getRequest(event: APIGatewayProxyEvent): AdapterRequest {
     const method = event.httpMethod;
-    const headers = { ...event.headers };
+    const headers = this.options?.lowercaseRequestHeaders
+      ? keysToLowercase(event.headers)
+      : { ...event.headers };
 
     for (const multiValueHeaderKey of Object.keys(
       event.multiValueHeaders || {},

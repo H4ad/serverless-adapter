@@ -151,3 +151,12 @@ export function parseHeaders(
 
   return result;
 }
+
+export function keysToLowercase<T extends Record<string, unknown>>(
+  obj: T,
+): { [K in keyof T as Lowercase<string & K>]: T[K] } {
+  const result: any = {};
+  for (const [k, v] of Object.entries(obj)) result[k.toLowerCase()] = v;
+
+  return result as { [K in keyof T as Lowercase<string & K>]: T[K] };
+}
