@@ -113,12 +113,18 @@ export class ServerlessStreamResponse extends ServerResponse {
           return true;
         }
 
+        // node sends the last chunk crlf as a string:
+        // https://github.com/nodejs/node/blob/v22.8.0/lib/_http_outgoing.js#L1131
         if (data === endChunked) {
           internalWritable.end(cb);
           return true;
         }
 
-        // if header or data crlf
+        // check for header or data crlf
+        // node sends the header and data crlf as a buffer
+        // below code is aligned to following node implementation of the HTTP/1.1 chunked transfer coding:
+        // https://github.com/nodejs/node/blob/v22.8.0/lib/_http_outgoing.js#L1012-L1015
+        // for reference: https://datatracker.ietf.org/doc/html/rfc9112#section-7
         if (Buffer.isBuffer(data) && crlfBuffer.equals(data)) {
           const isHeaderCrlf = !firstCrlfBufferEncountered;
           if (isHeaderCrlf) {
