@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.2.3](https://github.com/H4ad/serverless-adapter/compare/v4.2.2...v4.2.3) (2024-09-09)
+
+
+### Bug Fixes
+
+* **response-stream:** improve chunk identification (fixes [#260](https://github.com/H4ad/serverless-adapter/issues/260)) ([2aa474e](https://github.com/H4ad/serverless-adapter/commit/2aa474e02c533d31b5086866a78afdedd3058f04))
+
+
+### Documentation
+
+* **response-stream:** add comments and references explaining implementation ([d39db53](https://github.com/H4ad/serverless-adapter/commit/d39db532a2ca9ebd7754dd364f88cf8bf0ed0a18))
+
+
+### Tests
+
+* **response-stream:** test eagerly flushed headers ([0f33c29](https://github.com/H4ad/serverless-adapter/commit/0f33c29e2bfc99194c61887bb908763625e357b7))
+
 ## [4.2.2](https://github.com/H4ad/serverless-adapter/compare/v4.2.1...v4.2.2) (2024-09-06)
 
 
