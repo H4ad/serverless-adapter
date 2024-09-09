@@ -83,6 +83,46 @@ describe('AwsStreamHandler', () => {
     expect(Buffer.byteLength(finalBuffer)).toBe(Buffer.byteLength(file));
   });
 
+  it('should return the correct bytes of chunked stream with eagerly flushed headers', async () => {
+    const app = express();
+    const file = readFileSync(join(__dirname, 'bitcoin.pdf'));
+
+    app.get('/', (_, res) => {
+      const readable = createReadStream(join(__dirname, 'bitcoin.pdf'));
+
+      res.statusCode = 200;
+      res.setHeader('content-type', 'application/pdf');
+      res.flushHeaders();
+      readable.pipe(res);
+    });
+
+    const expressFramework = new ExpressFramework();
+
+    const handler = awsStreamHandler.getHandler(
+      app,
+      expressFramework,
+      adapters,
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      logger,
+    );
+
+    const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
+    const context = { test: Symbol('unique') };
+
+    const writable = new WritableMock();
+
+    await handler(event, writable, context);
+
+    expect(getCurrentInvoke()).toHaveProperty('event', event);
+    expect(getCurrentInvoke()).toHaveProperty('context', context);
+
+    const finalBuffer = Buffer.concat(writable.data);
+
+    expect(Buffer.byteLength(finalBuffer)).toBe(Buffer.byteLength(file));
+  });
+
   it('should return the correct bytes of json', async () => {
     const app = express();
 
