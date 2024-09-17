@@ -83,6 +83,31 @@ export const handler = ServerlessAdapter.new(app)
 
 As you see, we only have to change the `setHandler`, `setResolver` and `setAdapter` methods, that's all!
 
+### My execution is taking too long
+
+Well, maybe is caused because your event loop is not empty when the request finishes, in this case, you can set `callbackWaitsForEmptyEventLoop=false` on [AwsStreamHandler](../../api/handlers/AwsStreamHandler).
+
+
+```ts title="index.ts"
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { AwsStreamHandler } from '@h4ad/serverless-adapter/handlers/aws';
+import { DummyResolver } from '@h4ad/serverless-adapter/resolvers/dummy';
+import { ApiGatewayV2Adapter } from '@h4ad/serverless-adapter/adapters/aws';
+import app from './app';
+
+export const handler = ServerlessAdapter.new(app)
+  .setHandler(new AwsStreamHandler({ callbackWaitsForEmptyEventLoop: false }))
+  .setResolver(new DummyResolver())
+  .setAdapter(new ApiGatewayV2Adapter())
+  // continue to set the other options here.
+  //.addAdapter(new AlbAdapter())
+  //.addAdapter(new SQSAdapter())
+  //.addAdapter(new SNSAdapter())
+  //.setFramework(new ExpressFramework())
+  // after put all methods necessary, just call the build method.
+  .build();
+```
+
 ### Can I use SQS and other services?
 
 Well, I don't know, but you can try. At least with `SQS` I was able to get the messages, but I couldn't use the `partial batch response` feature.

@@ -435,4 +435,80 @@ describe('AwsStreamHandler', () => {
       }),
     );
   });
+
+  it('callbackWaitsForEmptyEventLoop should not be modified', async () => {
+    const app = express();
+
+    app.get('/', (_, res) => {
+      res.json({ ok: true });
+    });
+
+    const expressFramework = new ExpressFramework();
+
+    const handler = awsStreamHandler.getHandler(
+      app,
+      expressFramework,
+      adapters,
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      logger,
+    );
+
+    const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
+    const defaultValueForCallback = Symbol('1');
+    const context = {
+      test: Symbol('unique'),
+      callbackWaitsForEmptyEventLoop: defaultValueForCallback,
+    };
+
+    const writable = new WritableMock();
+
+    await handler(event, writable, context);
+
+    expect(context).toHaveProperty(
+      'callbackWaitsForEmptyEventLoop',
+      defaultValueForCallback,
+    );
+  });
+
+  describe('callbackWaitsForEmptyEventLoop should be changed', () => {
+    for (const value of [true, false]) {
+      it(`to ${value}`, async () => {
+        const app = express();
+
+        app.get('/', (_, res) => {
+          res.json({ ok: true });
+        });
+
+        const expressFramework = new ExpressFramework();
+        const customAwsHandler = new AwsStreamHandler({
+          callbackWaitsForEmptyEventLoop: value,
+        });
+
+        const handler = customAwsHandler.getHandler(
+          app,
+          expressFramework,
+          adapters,
+          resolver,
+          binarySettings,
+          respondWithErrors,
+          logger,
+        );
+
+        const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
+        const defaultValueForCallback = Symbol('test');
+        const context = {
+          test: Symbol('unique'),
+          callbackWaitsForEmptyEventLoop: defaultValueForCallback,
+        };
+
+        const writable = new WritableMock();
+
+        await handler(event, writable, context);
+
+        expect(context).toHaveProperty('callbackWaitsForEmptyEventLoop', value);
+      });
+    }
+  });
 });
