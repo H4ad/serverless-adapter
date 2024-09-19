@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/H4ad/serverless-adapter/compare/v4.2.3...v4.3.0) (2024-09-18)
+
+
+### Features
+
+* **aws-stream-handler:** add flag to customize callbackWaitsForEmptyEventLoop ([#264](https://github.com/H4ad/serverless-adapter/issues/264)) ([30a59f9](https://github.com/H4ad/serverless-adapter/commit/30a59f99e83cd16f5a7c37bc4296f7501f59fd36))
+
 ## [4.2.3](https://github.com/H4ad/serverless-adapter/compare/v4.2.2...v4.2.3) (2024-09-09)
 
 
