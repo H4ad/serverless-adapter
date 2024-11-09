@@ -38,11 +38,13 @@ jobs:
         run: npm run build
         if: ${{ steps.release.outputs.release_created }}
 
+      - name: Test
+        run: npm run test
+        if: ${{ steps.release.outputs.release_created }}
+
       - name: Get Coverage Info
         if: ${{ steps.release.outputs.release_created }}
         uses: codecov/codecov-action@v4
-        with:
-          fail_ci_if_error: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
