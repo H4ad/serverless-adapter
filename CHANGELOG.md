@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.3.1](https://github.com/H4ad/serverless-adapter/compare/v4.3.0...v4.3.1) (2024-11-09)
+
+
+### Miscellaneous Chores
+
+* bump cookie and express in /www ([22d850f](https://github.com/H4ad/serverless-adapter/commit/22d850fab96240c110ee6fbc75473c8bbefd11c2))
+* bump serve-static and express in /benchmark ([249af0c](https://github.com/H4ad/serverless-adapter/commit/249af0c9d3dfa1f5fda23f8a49f720f3c96c4f07))
+* **codecov:** fix issues with upload coverage ([4b5b39e](https://github.com/H4ad/serverless-adapter/commit/4b5b39e7c54d5b37913a9d7866a626515b8c06b6))
+* **reflect-metadata:** allow more general versions for reflect metadata ([816cc51](https://github.com/H4ad/serverless-adapter/commit/816cc51afee8024907eb399ed9fe625f828c98ad))
+
 ## [4.3.0](https://github.com/H4ad/serverless-adapter/compare/v4.2.3...v4.3.0) (2024-09-18)
 
 
