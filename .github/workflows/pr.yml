@@ -48,7 +48,11 @@ jobs:
         run: npm test
 
       - name: Get Coverage Info
-        run: npm run coverage
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     runs-on: ubuntu-latest
