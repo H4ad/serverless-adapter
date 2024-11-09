@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://github.com/H4ad/serverless-adapter/compare/v4.3.1...v4.3.2) (2024-11-09)
+
+
+### Continuous Integration
+
+* **coverage:** do not fail when fail coverage & fix issue with test ([ff9702b](https://github.com/H4ad/serverless-adapter/commit/ff9702b38da650b94935481be54618a0fd765e6b))
+
 ## [4.3.1](https://github.com/H4ad/serverless-adapter/compare/v4.3.0...v4.3.1) (2024-11-09)
 
 
