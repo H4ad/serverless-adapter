@@ -40,7 +40,11 @@ jobs:
 
       - name: Get Coverage Info
         if: ${{ steps.release.outputs.release_created }}
-        run: npm run coverage
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: NPM Publish
         run: npm publish --provenance --access public
