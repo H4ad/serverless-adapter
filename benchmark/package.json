@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@h4ad/serverless-adapter": "file:../h4ad-serverless-adapter-0.0.0-development.tgz",
-    "@swc/cli": "0.1.63",
+    "@swc/cli": "0.5.1",
     "@swc/core": "1.3.101",
     "@vendia/serverless-express": "4.12.6",
     "benchmark": "2.1.4",
