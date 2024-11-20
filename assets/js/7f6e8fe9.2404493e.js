@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[7763],{5546:e=>{e.exports=JSON.parse('{"title":"Frameworks","slug":"/category/frameworks","permalink":"/docs/category/frameworks","navigation":{"previous":{"title":"Promise","permalink":"/docs/main/resolvers/promise"},"next":{"title":"Apollo Server","permalink":"/docs/main/frameworks/apollo-server"}}}')}}]);

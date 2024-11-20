@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[5924],{3629:e=>{e.exports=JSON.parse('{"title":"Helpers","slug":"/category/helpers","permalink":"/docs/category/helpers","navigation":{"previous":{"title":"tRPC","permalink":"/docs/main/frameworks/trpc"},"next":{"title":"Body Parser","permalink":"/docs/main/frameworks/helpers/body-parser"}}}')}}]);

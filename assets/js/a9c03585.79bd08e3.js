@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[3e3],{9699:e=>{e.exports=JSON.parse('{"title":"Advanced","slug":"/category/advanced","permalink":"/docs/category/advanced","navigation":{"previous":{"title":"Lazy","permalink":"/docs/main/frameworks/helpers/lazy"},"next":{"title":"Adapters","permalink":"/docs/category/adapters-1"}}}')}}]);

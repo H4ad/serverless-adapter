@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[7040],{7600:e=>{e.exports=JSON.parse('{"title":"Adapters","slug":"/category/adapters","permalink":"/docs/category/adapters","navigation":{"previous":{"title":"Examples","permalink":"/docs/main/getting-started/examples"},"next":{"title":"AWS","permalink":"/docs/category/aws"}}}')}}]);
