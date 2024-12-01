@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
+
+
+### Features
+
+* **express-v5:** added support to express v5 and body-parser v2 ([e435b97](https://github.com/H4ad/serverless-adapter/commit/e435b97e09783de62801374a1fb365c553ed4833))
+* **fastify-v5:** ensure support to fastify v5 ([bd09e46](https://github.com/H4ad/serverless-adapter/commit/bd09e4685a78f12851ab0f99fab19dae26c52d8d))
+* **firebase:** ensure support to v5 and v6 sdk ([bc6886e](https://github.com/H4ad/serverless-adapter/commit/bc6886eadab75c7f18e3e9c2bcc886ec3b7f714c))
+
+
+### Miscellaneous Chores
+
+* bump cross-spawn and @swc/cli in /benchmark ([0e4db68](https://github.com/H4ad/serverless-adapter/commit/0e4db6820ab0836f1e2dfbe60dc692288f0c7157))
+* bump cross-spawn from 7.0.3 to 7.0.6 in /www ([ce1d0cd](https://github.com/H4ad/serverless-adapter/commit/ce1d0cdb27133402ed624fb3fba96caed95fa905))
+* bump micromatch from 4.0.5 to 4.0.8 in /benchmark ([1ddc2a9](https://github.com/H4ad/serverless-adapter/commit/1ddc2a990f868e63d6f8c29b65e4f7a0056736f4))
+* bump webpack from 5.89.0 to 5.96.1 in /www ([47392b0](https://github.com/H4ad/serverless-adapter/commit/47392b0bbd973ad06a30e364e334444144559944))
+* **http-deepkit:** ensure is working with version 1.0.1-alpha-155 ([b1ee6d4](https://github.com/H4ad/serverless-adapter/commit/b1ee6d4beb3219b7d63350502073530c637c826b))
+* **packages:** bump lib package versions ([15bc6ad](https://github.com/H4ad/serverless-adapter/commit/15bc6ad7baae905971c04c88337c563fe65e913c))
+
 ## [4.3.2](https://github.com/H4ad/serverless-adapter/compare/v4.3.1...v4.3.2) (2024-11-09)
 
 
