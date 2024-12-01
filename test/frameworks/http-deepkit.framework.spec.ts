@@ -1,9 +1,7 @@
 import { App } from '@deepkit/app';
 import {
-  type HttpBody,
   HttpKernel,
   HttpModule,
-  HttpRequest,
   HttpRouterRegistry,
   JSONResponse,
 } from '@deepkit/http';
@@ -14,26 +12,6 @@ import {
   waitForStreamComplete,
 } from '../../src';
 import { HttpDeepkitFramework } from '../../src/frameworks/deepkit';
-import { type TestRouteBuilderHandler } from './utils';
-
-export function createDeepkitHandler(
-  method: 'get' | 'post' | 'delete' | 'put',
-): TestRouteBuilderHandler<App<any>> {
-  return (app, path, handler) => {
-    const router = app.get(HttpRouterRegistry);
-
-    router[method](path, (request: HttpRequest, body: HttpBody<any>) => {
-      const [statusCode, resultBody, headers] = handler(request.headers, body);
-
-      const response = new JSONResponse(resultBody, statusCode);
-
-      for (const header of Object.keys(headers))
-        response.header(header, headers[header]);
-
-      return response;
-    });
-  };
-}
 
 it('should convert correctly when the value is not an buffer', async () => {
   const framework = new HttpDeepkitFramework();
