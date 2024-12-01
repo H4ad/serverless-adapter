@@ -1,8 +1,9 @@
 import * as trpc from '@trpc/server';
 import type { Options } from 'body-parser';
-import express from 'express';
-import express_v5, { type Express } from 'express';
-import fastify from 'fastify';
+import express, { type Express } from 'express';
+import express_v5 from 'express-v5';
+import fastify, { type FastifyInstance } from 'fastify';
+import fastify_v5 from 'fastify-v5';
 import Application from 'koa';
 import polka from 'polka';
 import { type SpyInstance, describe, expect, it, vitest } from 'vitest';
@@ -322,6 +323,37 @@ export function createBodyParserTests() {
 
         itFn(bodyParserTest.name, async () => {
           const app = fastify();
+
+          setNoOpForContentType(app, 'application/json');
+          setNoOpForContentType(app, 'text/plain');
+          setNoOpForContentType(app, 'application/octet-stream');
+          setNoOpForContentType(app, 'application/x-www-form-urlencoded');
+
+          app.post('/body', (req, res) => {
+            if (bodyParserTest.expectedBody)
+              expect(req.body).toEqual(bodyParserTest.expectedBody);
+            else expect(req.body).not.toEqual(bodyParserTest.notExpectedBody);
+
+            res.send('ok');
+          });
+
+          app.setErrorHandler((err, _req, reply) => {
+            reply.raw.emit('error', err);
+          });
+
+          await handleRestExpects(app, new FastifyFramework(), bodyParserTest);
+        });
+      }
+    });
+
+    describe('fastify-v5', () => {
+      for (const bodyParserTest of bodyParserOptions) {
+        const itFn = bodyParserTest?.skipFrameworks?.includes('fastify')
+          ? it.skip
+          : it;
+
+        itFn(bodyParserTest.name, async () => {
+          const app = fastify_v5() as unknown as FastifyInstance;
 
           setNoOpForContentType(app, 'application/json');
           setNoOpForContentType(app, 'text/plain');
