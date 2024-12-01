@@ -229,9 +229,7 @@ describe('AwsStreamHandler', () => {
 
       const finalBuffer = Buffer.concat(writable.data);
 
-      expect(finalBuffer.toString()).toContain(
-        'Redirecting to <a href="/test">/test</a>',
-      );
+      expect(finalBuffer.toString()).toContain('Redirecting to /test');
     });
   }
 

@@ -28,7 +28,7 @@ describe('ServerlessRequest', () => {
     expect(request).toHaveProperty('httpVersionMajor', 1);
     expect(request).toHaveProperty('httpVersionMinor', 1);
     expect(request.socket).toHaveProperty('encrypted', true);
-    expect(request.socket).toHaveProperty('readable', false);
+    expect(request.socket).toHaveProperty('readable', true);
     expect(request.socket).toHaveProperty('remoteAddress', remoteAddress);
     expect(request.socket).toHaveProperty('end', NO_OP);
     expect(request.socket).toHaveProperty('destroy', NO_OP);
