@@ -19,7 +19,7 @@
 [![Code Coverage][codecov-img]][codecov-url]
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 
-Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Deepkit, Express, Koa, Hapi,
+Run REST APIs and other web applications using your existing Node.js application framework (NestJS, Deepkit, Express (v4 and v5), Koa, Hapi,
 Fastify, tRPC and Apollo Server), on top of AWS Lambda, Azure, Digital Ocean and many other clouds.
 
 This library was a refactored version of [@vendia/serverless-express](https://github.com/vendia/serverless-express), I

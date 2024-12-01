@@ -55,9 +55,12 @@ export class ServerlessRequest extends IncomingMessage {
   }: ServerlessRequestProps) {
     super({
       encrypted: true,
-      readable: false,
+      readable: true, // credits to @pnkp at https://github.com/CodeGenieApp/serverless-express/pull/692
       remoteAddress,
       address: () => ({ port: HTTPS_PORT }) as AddressInfo,
+      on: NO_OP,
+      removeListener: NO_OP,
+      removeEventListener: NO_OP,
       end: NO_OP,
       destroy: NO_OP,
     } as any);
