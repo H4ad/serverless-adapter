@@ -104,7 +104,7 @@ export class ApolloServerFramework<TContext extends BaseContext>
       )({ request, response });
 
     const search = request.url?.startsWith('http')
-      ? new URL(request.url).search ?? ''
+      ? (new URL(request.url).search ?? '')
       : request.url?.split('?')[1] || '';
 
     // we don't need to handle catch because of https://www.apollographql.com/docs/apollo-server/integrations/building-integrations/#handle-errors
