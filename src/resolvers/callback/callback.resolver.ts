@@ -30,13 +30,7 @@ export type ServerlessCallback<TResponse> = (
  */
 export class CallbackResolver<TEvent, TContext, TResponse>
   implements
-    ResolverContract<
-      TEvent,
-      TContext,
-      ServerlessCallback<any>,
-      TResponse,
-      void
-    >
+    ResolverContract<TEvent, TContext, ServerlessCallback<any>, TResponse, void>
 {
   /**
    * {@inheritDoc}
