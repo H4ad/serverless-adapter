@@ -105,7 +105,7 @@
     "@types/node": "18.19.67",
     "@types/polka": "0.5.7",
     "@types/supertest": "6.0.2",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/eslint-plugin": "8.18.0",
     "@typescript-eslint/parser": "6.21.0",
     "@vitest/coverage-v8": "2.1.6",
     "body-parser": "1.20.3",
