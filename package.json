@@ -128,7 +128,7 @@
     "firebase-functions": "4.5.0",
     "firebase-functions-v5": "npm:firebase-functions@5",
     "firebase-functions-v6": "npm:firebase-functions@6",
-    "glob": "10.4.5",
+    "glob": "11.0.1",
     "husky": "8.0.3",
     "koa": "2.15.3",
     "polka": "0.5.2",
