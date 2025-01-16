@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/H4ad/serverless-adapter/compare/v4.4.0...v4.4.1) (2025-01-16)
+
+
+### Continuous Integration
+
+* **release:** use release ci without token ([d92d680](https://github.com/H4ad/serverless-adapter/commit/d92d680fda10f365f92e78567f4201ce7b3145e8))
+
 ## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
 
 
