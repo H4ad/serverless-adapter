@@ -20,8 +20,6 @@ jobs:
       - name: Release Please
         uses: google-github-actions/release-please-action@v4
         id: release
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN_GITHUB }}
 
       - name: Use Node 20.x
         uses: actions/setup-node@v4
