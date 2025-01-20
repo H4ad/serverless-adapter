@@ -110,7 +110,7 @@
     "@vitest/coverage-v8": "2.1.6",
     "body-parser": "1.20.3",
     "body-parser-v2": "npm:body-parser@2",
-    "commitizen": "4.3.0",
+    "commitizen": "4.3.1",
     "cors": "2.8.5",
     "cz-conventional-changelog": "3.3.0",
     "esbuild": "0.24.0",
