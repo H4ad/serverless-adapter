@@ -79,7 +79,7 @@
   "homepage": "https://github.com/H4ad/serverless-adapter#readme",
   "devDependencies": {
     "@apollo/server": "4.10.0",
-    "@azure/functions": "3.5.1",
+    "@azure/functions": "4.7.0",
     "@deepkit/app": "1.0.1-alpha.155",
     "@deepkit/core": "1.0.1-alpha.154",
     "@deepkit/framework": "1.0.1-alpha.155",
