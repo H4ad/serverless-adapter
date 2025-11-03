@@ -152,10 +152,10 @@ export const handler = ServerlessAdapter.new(app)
 
 API Gateway V1 currently didn't support chunked transfer, so we throw an exception when you send the `transfer-encoding=chunked`.
 
-But, you can disable the exception by setting the `throwOnChunkedTransfer` to `false` in the [ApiGatewayV1Options](/docs/api/Adapters/AWS/ApiGatewayV1Adapter/ApiGatewayV1Options).
+But, you can disable the exception by setting the `throwOnChunkedTransferEncoding` to `false` in the [ApiGatewayV1Options](/docs/api/Adapters/AWS/ApiGatewayV1Adapter/ApiGatewayV1Options).
 
 ```ts title="index.ts"
-new ApiGatewayV1Adapter({ throwOnChunkedTransfer: false })
+new ApiGatewayV1Adapter({ throwOnChunkedTransferEncoding: false })
 ```
 
 The response body will be buffered without the special characters introduced by the chunked transfer keeping the body complete.
