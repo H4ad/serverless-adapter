@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.4.1](https://github.com/H4ad/serverless-adapter/compare/v4.4.0...v4.4.1) (2025-11-05)
+
+
+### Documentation
+
+* **aws:** update throwOnChunkedTransferEncoding in docs ([b72add9](https://github.com/H4ad/serverless-adapter/commit/b72add932caf084dd41f6b5e1fcfdb79a7ff7f2d))
+
+
+### Continuous Integration
+
+* **docs:** bump ubuntu to latest ([3abab65](https://github.com/H4ad/serverless-adapter/commit/3abab65593ba5c990f03acb8ce99926fdd8db6b5))
+* **release:** use release ci without token ([d92d680](https://github.com/H4ad/serverless-adapter/commit/d92d680fda10f365f92e78567f4201ce7b3145e8))
+
 ## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
 
 
