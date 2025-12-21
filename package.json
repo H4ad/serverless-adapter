@@ -130,7 +130,7 @@
     "firebase-functions-v6": "npm:firebase-functions@6",
     "glob": "10.4.5",
     "husky": "8.0.3",
-    "koa": "2.15.3",
+    "koa": "2.16.1",
     "polka": "0.5.2",
     "prettier": "3.4.1",
     "stream-mock": "2.0.5",
