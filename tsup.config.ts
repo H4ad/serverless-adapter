@@ -89,7 +89,7 @@ export default defineConfig({
   entry: ['src/index.ts', ...libEntries],
   sourcemap: true,
   skipNodeModulesBundle: true,
-  minify: true,
+  minify: false,
   target: 'es2022',
   tsconfig: './tsconfig.build.json',
   keepNames: true,
