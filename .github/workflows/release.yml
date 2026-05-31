@@ -21,11 +21,11 @@ jobs:
         uses: google-github-actions/release-please-action@v4
         id: release
 
-      - name: Use Node 20.x
+      - name: Use Node 22.x
         uses: actions/setup-node@v4
         if: ${{ steps.release.outputs.release_created }}
         with:
-          node-version: 20
+          node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Deps
