@@ -23,7 +23,7 @@ on:
       - main
   schedule:
     # "At 10:00 UTC (03:00 PT) on Monday" https://crontab.guru/#0_10_*_*_1
-    - cron: "0 10 * * 1"
+    - cron: '0 10 * * 1'
 
 jobs:
   analyze:
@@ -37,10 +37,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript-typescript' ]
+        language: ['javascript-typescript']
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Git User
         run: |
@@ -48,14 +48,14 @@ jobs:
           git config --global user.name "H4ad CLI robot"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:${{matrix.language}}"
+          category: '/language:${{matrix.language}}'
