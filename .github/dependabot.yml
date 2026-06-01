@@ -6,7 +6,7 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     allow:
       - dependency-type: direct
     versioning-strategy: increase-if-necessary
@@ -14,4 +14,4 @@ updates:
       prefix: deps
       prefix-development: chore
     labels:
-      - "Dependencies"
+      - 'Dependencies'
