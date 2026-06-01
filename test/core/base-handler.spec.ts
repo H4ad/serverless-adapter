@@ -66,7 +66,6 @@ describe(BaseHandler.name, () => {
     ).toBe(eventAdapter);
 
     adapters.forEach(adapter => {
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(adapter.canHandle).toHaveBeenCalledWith(
         testEvent,
         context,

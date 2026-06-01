@@ -50,17 +50,13 @@ describe('ServerlessRequest', () => {
       body,
     });
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     request.push = vitest.fn(request.push);
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     request._read = vitest.fn(request._read);
 
     request._read(Math.random());
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(request.push).toHaveBeenNthCalledWith(1, body);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(request.push).toHaveBeenNthCalledWith(2, null);
   });
 });

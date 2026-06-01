@@ -13,9 +13,8 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
   'HttpFirebaseHandler',
   () => {
     it('should forward correctly the request to framework', async () => {
-      const { HttpFirebaseHandler } = await import(
-        '../../src/handlers/firebase'
-      );
+      const { HttpFirebaseHandler } =
+        await import('../../src/handlers/firebase');
       const handlerFactory = new HttpFirebaseHandler<null>();
 
       const method = 'POST';
@@ -53,9 +52,8 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
     });
 
     it('should handle weird body types', async () => {
-      const { HttpFirebaseHandler } = await import(
-        '../../src/handlers/firebase'
-      );
+      const { HttpFirebaseHandler } =
+        await import('../../src/handlers/firebase');
       const handlerFactory = new HttpFirebaseHandler();
 
       const method = 'POST';
@@ -78,7 +76,6 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
         });
 
         const framework: FrameworkContract<unknown> = {
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           sendRequest: vitest.fn(
             async (
               _app: null,

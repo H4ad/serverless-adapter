@@ -70,10 +70,11 @@ export interface ApiGatewayV1Options {
  * @breadcrumb Adapters / AWS / ApiGatewayV1Adapter
  * @public
  */
-export class ApiGatewayV1Adapter
-  implements
-    AdapterContract<APIGatewayProxyEvent, Context, APIGatewayProxyResult>
-{
+export class ApiGatewayV1Adapter implements AdapterContract<
+  APIGatewayProxyEvent,
+  Context,
+  APIGatewayProxyResult
+> {
   //#region Constructor
 
   /**
@@ -159,7 +160,6 @@ export class ApiGatewayV1Adapter
       );
 
       body = bufferBody;
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       headers['content-length'] = contentLength + '';
     }
 

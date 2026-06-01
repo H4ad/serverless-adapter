@@ -28,10 +28,17 @@ export type ServerlessCallback<TResponse> = (
  * @breadcrumb Resolvers / CallbackResolver
  * @public
  */
-export class CallbackResolver<TEvent, TContext, TResponse>
-  implements
-    ResolverContract<TEvent, TContext, ServerlessCallback<any>, TResponse, void>
-{
+export class CallbackResolver<
+  TEvent,
+  TContext,
+  TResponse,
+> implements ResolverContract<
+  TEvent,
+  TContext,
+  ServerlessCallback<any>,
+  TResponse,
+  void
+> {
   /**
    * {@inheritDoc}
    */

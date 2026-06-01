@@ -52,9 +52,14 @@ export type HttpHuaweiHandlerOptions = {
  * @breadcrumb Handlers / HttpHuaweiHandler
  * @public
  */
-export class HttpHuaweiHandler<TApp>
-  implements HandlerContract<TApp, void, void, void, void, Promise<void>>
-{
+export class HttpHuaweiHandler<TApp> implements HandlerContract<
+  TApp,
+  void,
+  void,
+  void,
+  void,
+  Promise<void>
+> {
   //#region Constructor
 
   /**

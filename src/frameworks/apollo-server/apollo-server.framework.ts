@@ -63,9 +63,9 @@ export interface ApolloServerOptions<TContext extends BaseContext> {
  * @breadcrumb Frameworks / ApolloServerFramework
  * @public
  */
-export class ApolloServerFramework<TContext extends BaseContext>
-  implements FrameworkContract<ApolloServer<TContext>>
-{
+export class ApolloServerFramework<
+  TContext extends BaseContext,
+> implements FrameworkContract<ApolloServer<TContext>> {
   //#region Constructor
 
   /**

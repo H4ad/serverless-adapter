@@ -16,7 +16,6 @@ type BreadcrumbItem = {
 };
 
 function isPlainTextNode(block: DocNode): block is DocPlainText {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   return block.kind === DocNodeKind.PlainText;
 }
 
@@ -38,7 +37,6 @@ function getBreadcrumbsWithApiItem(apiModel: ApiModel): BreadcrumbItem[] {
 
         const breadcrumbContent = breadcrumb.content
           .getChildNodes()
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           .filter(block => block.kind === DocNodeKind.Paragraph)
           // @ts-ignore
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])

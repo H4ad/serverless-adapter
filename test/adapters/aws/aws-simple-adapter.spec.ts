@@ -295,7 +295,6 @@ describe(AwsSimpleAdapter.name, () => {
         respondWithErrors: false,
       });
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(adapter.getResponse).toHaveBeenCalledTimes(0);
 
       expect(resolver.fail).toHaveBeenCalledWith(error);

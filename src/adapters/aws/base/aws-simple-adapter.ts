@@ -67,9 +67,11 @@ export type AWSSimpleAdapterResponseType =
  * @breadcrumb Adapters / AWS / AWS Simple Adapter
  * @public
  */
-export abstract class AwsSimpleAdapter<TEvent>
-  implements AdapterContract<TEvent, Context, AWSSimpleAdapterResponseType>
-{
+export abstract class AwsSimpleAdapter<TEvent> implements AdapterContract<
+  TEvent,
+  Context,
+  AWSSimpleAdapterResponseType
+> {
   //#region Constructor
 
   /**

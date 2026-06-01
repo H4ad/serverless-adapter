@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 //#region Imports
 
 import type { Context } from '@azure/functions';

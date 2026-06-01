@@ -153,8 +153,7 @@ export type TrpcFrameworkOptions<TContext> = Omit<
 export class TrpcFramework<
   TContext extends TrpcAdapterBaseContext,
   TRouter extends AnyRouter = AnyRouter,
-> implements FrameworkContract<TRouter>
-{
+> implements FrameworkContract<TRouter> {
   //#region Constructor
 
   /**

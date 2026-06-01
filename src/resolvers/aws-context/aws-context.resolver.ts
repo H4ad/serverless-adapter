@@ -20,9 +20,11 @@ import type {
  * @breadcrumb Resolvers / AwsContextResolver
  * @public
  */
-export class AwsContextResolver<TEvent, TCallback, TResponse>
-  implements ResolverContract<TEvent, Context, TCallback, TResponse, void>
-{
+export class AwsContextResolver<
+  TEvent,
+  TCallback,
+  TResponse,
+> implements ResolverContract<TEvent, Context, TCallback, TResponse, void> {
   /**
    * {@inheritDoc}
    */

@@ -50,14 +50,11 @@ export interface HuaweiApiGatewayOptions {
  *
  * {@link https://support.huaweicloud.com/intl/en-us/devg-functiongraph/functiongraph_02_0102.html#functiongraph_02_0102__li5178638110137 | Event Reference}
  */
-export class HuaweiApiGatewayAdapter
-  implements
-    AdapterContract<
-      HuaweiApiGatewayEvent,
-      HuaweiContext,
-      HuaweiApiGatewayResponse
-    >
-{
+export class HuaweiApiGatewayAdapter implements AdapterContract<
+  HuaweiApiGatewayEvent,
+  HuaweiContext,
+  HuaweiApiGatewayResponse
+> {
   //#region Constructor
 
   /**

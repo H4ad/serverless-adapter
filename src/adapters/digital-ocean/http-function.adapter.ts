@@ -48,10 +48,11 @@ export interface HttpFunctionAdapterOptions {
  * @breadcrumb Adapters / Digital Ocean / HttpFunctionAdapter
  * @public
  */
-export class HttpFunctionAdapter
-  implements
-    AdapterContract<DigitalOceanHttpEvent, void, DigitalOceanHttpResponse>
-{
+export class HttpFunctionAdapter implements AdapterContract<
+  DigitalOceanHttpEvent,
+  void,
+  DigitalOceanHttpResponse
+> {
   //#region Constructor
 
   /**

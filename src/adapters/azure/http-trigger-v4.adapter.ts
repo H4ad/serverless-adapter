@@ -52,9 +52,11 @@ export interface HttpTriggerV4AdapterOptions {
  * @breadcrumb Adapters / Azure / HttpTriggerV4Adapter
  * @public
  */
-export class HttpTriggerV4Adapter
-  implements AdapterContract<HttpRequest, Context, HttpResponseSimple>
-{
+export class HttpTriggerV4Adapter implements AdapterContract<
+  HttpRequest,
+  Context,
+  HttpResponseSimple
+> {
   //#region Constructor
 
   /**

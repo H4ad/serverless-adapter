@@ -209,10 +209,11 @@ export interface LambdaEdgeAdapterOptions {
  * @breadcrumb Adapters / AWS / LambdaEdgeAdapter
  * @public
  */
-export class LambdaEdgeAdapter
-  implements
-    AdapterContract<CloudFrontRequestEvent, Context, CloudFrontRequestResult>
-{
+export class LambdaEdgeAdapter implements AdapterContract<
+  CloudFrontRequestEvent,
+  Context,
+  CloudFrontRequestResult
+> {
   //#region Constructor
 
   /**

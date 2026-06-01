@@ -86,7 +86,6 @@ describe(PromiseResolver.name, () => {
 
     expect(resolverProps.log.error).toHaveBeenCalled();
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
   });
 });

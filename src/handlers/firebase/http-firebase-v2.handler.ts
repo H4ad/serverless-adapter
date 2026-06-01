@@ -1,7 +1,6 @@
 //#region Imports
 
 import { IncomingMessage, ServerResponse } from 'node:http';
-// eslint-disable-next-line import/no-unresolved
 import { https } from 'firebase-functions/v2';
 import type { FrameworkContract, HandlerContract } from '../../contracts';
 import { RawRequest } from '../base';

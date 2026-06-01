@@ -19,7 +19,6 @@ describe('Issue 165: cannot handle transfer-encoding: chunked', () => {
   it('express: should handle transfer-encoding: chunked', async () => {
     const app = express();
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     app.get('/chunked-response', async (_req, res) => {
       // Send headers right away
       res.setHeader('Content-Type', 'text/plain');
@@ -49,7 +48,6 @@ describe('Issue 165: cannot handle transfer-encoding: chunked', () => {
   it('fastify: should handle transfer-encoding: chunked', async () => {
     const app = fastify();
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     app.get('/chunked-response', async (_req, res) => {
       // Send headers right away
       res.type('text/plain');
@@ -85,7 +83,6 @@ describe('Issue 165: cannot handle transfer-encoding: chunked', () => {
   it('polka: should handle transfer-encoding: chunked', async () => {
     const app = polka();
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     app.get('/chunked-response', async (_req, res) => {
       // Send headers right away
       res.setHeader('Content-Type', 'text/plain');

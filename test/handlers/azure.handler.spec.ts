@@ -65,7 +65,6 @@ describe(AzureHandler.name, () => {
       context,
       undefined,
     );
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(context.done).toBeUndefined();
     expect(context.res).toBeUndefined();
   });
@@ -97,7 +96,6 @@ describe(AzureHandler.name, () => {
 
     expect(defaultGetHandler).toHaveBeenCalledWith(
       ...getHandlerArguments,
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect.objectContaining({ error: context.log.error }),
     );
     expect(defaultServerlessHandler).toHaveBeenCalledWith(
