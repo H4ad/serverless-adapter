@@ -102,7 +102,6 @@ describe(CallbackResolver.name, () => {
       onCallbackResolve(() => {
         expect(resolverProps.log.error).toHaveBeenCalled();
 
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
         expect(resolverProps.callback).toHaveBeenCalledWith(error, null);
 

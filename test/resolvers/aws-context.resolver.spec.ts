@@ -96,7 +96,6 @@ describe(AwsContextResolver.name, () => {
       onContextResolve(() => {
         expect(resolverProps.log.error).toHaveBeenCalled();
 
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(resolverProps.adapter.onErrorWhileForwarding).toHaveBeenCalled();
         expect(resolverProps.context.fail).toHaveBeenCalledWith(error);
 

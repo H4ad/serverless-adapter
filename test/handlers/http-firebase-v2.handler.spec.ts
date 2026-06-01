@@ -13,9 +13,8 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
   'HttpFirebaseV2Handler',
   () => {
     it('should forward correctly the request to framework', async () => {
-      const { HttpFirebaseV2Handler } = await import(
-        '../../src/handlers/firebase'
-      );
+      const { HttpFirebaseV2Handler } =
+        await import('../../src/handlers/firebase');
       const handlerFactory = new HttpFirebaseV2Handler();
 
       const method = 'POST';
@@ -53,9 +52,8 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
     });
 
     it('should handle weird body types', async () => {
-      const { HttpFirebaseV2Handler } = await import(
-        '../../src/handlers/firebase'
-      );
+      const { HttpFirebaseV2Handler } =
+        await import('../../src/handlers/firebase');
       const handlerFactory = new HttpFirebaseV2Handler();
 
       const method = 'POST';
@@ -78,7 +76,6 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
         });
 
         const framework: FrameworkContract<unknown> = {
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           sendRequest: vitest.fn(
             async (
               _app: null,
@@ -108,9 +105,8 @@ describe.skipIf(semver.gte(process.versions.node, '25.0.0'))(
     });
 
     it('should forward the properties to https.onRequest', async () => {
-      const { HttpFirebaseV2Handler } = await import(
-        '../../src/handlers/firebase'
-      );
+      const { HttpFirebaseV2Handler } =
+        await import('../../src/handlers/firebase');
       const options: HttpsOptions = {
         concurrency: 400,
       };

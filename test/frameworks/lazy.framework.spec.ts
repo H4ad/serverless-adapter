@@ -16,7 +16,6 @@ describe(LazyFramework.name, () => {
       data: true,
     });
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     mockFramework.sendRequest = vitest.fn(mockFramework.sendRequest);
 
     const factory = vitest.fn(
@@ -39,7 +38,6 @@ describe(LazyFramework.name, () => {
     await waitForStreamComplete(firstResponse);
 
     expect(framework['factory']).toHaveBeenCalledTimes(1);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockFramework.sendRequest).toHaveBeenLastCalledWith(
       appInstance,
       firstRequest,
@@ -60,9 +58,7 @@ describe(LazyFramework.name, () => {
     await waitForStreamComplete(secondResponse);
 
     expect(factory).toHaveBeenCalledTimes(1);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockFramework.sendRequest).toHaveBeenCalledTimes(2);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockFramework.sendRequest).toHaveBeenLastCalledWith(
       appInstance,
       secondRequest,

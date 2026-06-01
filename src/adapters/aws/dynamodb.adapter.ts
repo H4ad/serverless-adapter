@@ -12,8 +12,10 @@ import { type AWSSimpleAdapterOptions, AwsSimpleAdapter } from './base/index';
  * @breadcrumb Adapters / AWS / DynamoDBAdapter
  * @public
  */
-export interface DynamoDBAdapterOptions
-  extends Pick<AWSSimpleAdapterOptions, 'batch'> {
+export interface DynamoDBAdapterOptions extends Pick<
+  AWSSimpleAdapterOptions,
+  'batch'
+> {
   /**
    * The path that will be used to create a request to be forwarded to the framework.
    *

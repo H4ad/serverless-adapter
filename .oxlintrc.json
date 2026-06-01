@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["src/types/global.d.ts", "benchmark/**"],
+  "plugins": ["typescript", "oxc", "import"],
+  "rules": {
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "typescript/no-use-before-define": "off",
+    "curly": ["error", "multi-or-nest"],
+    "no-case-declarations": "warn",
+    "no-control-regex": "off",
+    "typescript/no-namespace": "off",
+    "typescript/no-unsafe-argument": "off",
+    "typescript/no-unsafe-assignment": "off",
+    "typescript/no-unsafe-member-access": "off",
+    "typescript/no-unsafe-call": "off",
+    "typescript/no-unsafe-return": "off",
+    "typescript/no-var-requires": "off",
+    "typescript/ban-ts-comment": "off",
+    "typescript/no-explicit-any": "off",
+    "typescript/no-non-null-assertion": "off",
+    "typescript/restrict-template-expressions": "off",
+    "typescript/no-floating-promises": "off",
+    "typescript/explicit-module-boundary-types": "off",
+    "typescript/no-inferrable-types": "off",
+    "typescript/no-unnecessary-type-assertion": "off",
+    "typescript/no-redundant-type-constituents": "off",
+    "typescript/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ]
+  }
+}

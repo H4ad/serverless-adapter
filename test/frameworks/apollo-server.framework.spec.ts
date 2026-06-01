@@ -127,7 +127,6 @@ describe(ApolloServerFramework.name, () => {
 
       const asyncContent = ['hello', 'world', '!'];
 
-      // eslint-disable-next-line @typescript-eslint/require-await
       async function* iterator(values) {
         for (let i = 0; i < values.length; i++) yield values[i];
       }

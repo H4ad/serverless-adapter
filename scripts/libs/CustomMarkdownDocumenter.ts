@@ -1118,7 +1118,6 @@ export class CustomMarkdownDocumenter {
     let firstNode: boolean = true;
     for (const node of docSection.nodes) {
       if (firstNode) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (node.kind === DocNodeKind.Paragraph) {
           output.appendNodesInParagraph(node.getChildNodes());
           firstNode = false;
@@ -1150,7 +1149,6 @@ export class CustomMarkdownDocumenter {
       if (breadcrumb) {
         const breadcrumbContent = breadcrumb.content
           .getChildNodes()
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           .filter(block => block.kind === DocNodeKind.Paragraph)
           // @ts-ignore
           .reduce((acc, block) => [...acc, ...block.getChildNodes()], [])

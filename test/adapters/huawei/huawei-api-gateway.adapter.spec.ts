@@ -246,7 +246,6 @@ describe(HuaweiApiGatewayAdapter.name, () => {
         error,
       });
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(adapter.getResponse).toHaveBeenCalledTimes(1);
 
       expect(resolver.fail).toHaveBeenCalledTimes(0);
@@ -299,7 +298,6 @@ describe(HuaweiApiGatewayAdapter.name, () => {
         error,
       });
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(adapter.getResponse).toHaveBeenCalledTimes(1);
 
       expect(resolver.fail).toHaveBeenCalledTimes(0);

@@ -27,9 +27,14 @@ export abstract class BaseHandler<
   TCallback,
   TResponse,
   TReturn,
-> implements
-    HandlerContract<TApp, TEvent, TContext, TCallback, TResponse, TReturn>
-{
+> implements HandlerContract<
+  TApp,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn
+> {
   //#region Public Methods
 
   /**

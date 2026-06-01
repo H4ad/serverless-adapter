@@ -228,15 +228,10 @@ describe('ServerlessResponse', () => {
       response.writeHead(200, 'test', { test4: 'true' }),
     ).not.toThrowError();
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(response.setHeader).toHaveBeenCalledTimes(4);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'test1', 'true');
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(response.setHeader).toHaveBeenNthCalledWith(2, 'test2', 'true');
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(response.setHeader).toHaveBeenNthCalledWith(3, 'test3', 'true');
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(response.setHeader).toHaveBeenNthCalledWith(4, 'test4', 'true');
   });
 

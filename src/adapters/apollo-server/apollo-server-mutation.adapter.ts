@@ -41,9 +41,11 @@ export type ApolloServerMutationAdapterOptions = {
  * @breadcrumb Adapters / Apollo Server / ApolloServerMutationAdapter
  * @public
  */
-export class ApolloServerMutationAdapter<TEvent, TContext, TResponse>
-  implements AdapterContract<TEvent, TContext, TResponse>
-{
+export class ApolloServerMutationAdapter<
+  TEvent,
+  TContext,
+  TResponse,
+> implements AdapterContract<TEvent, TContext, TResponse> {
   //#region Constructor
 
   /**

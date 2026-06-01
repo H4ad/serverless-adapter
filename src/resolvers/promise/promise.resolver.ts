@@ -15,10 +15,19 @@ import type {
  * @breadcrumb Resolvers / PromiseResolver
  * @public
  */
-export class PromiseResolver<TEvent, TContext, TCallback, TResponse, TReturn>
-  implements
-    ResolverContract<TEvent, TContext, TCallback, TResponse, Promise<any>>
-{
+export class PromiseResolver<
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
+> implements ResolverContract<
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  Promise<any>
+> {
   /**
    * {@inheritDoc}
    */

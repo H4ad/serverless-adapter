@@ -165,7 +165,6 @@ describe('HttpHuaweiHandler', () => {
 
     await expect(async () => await dispose()).rejects.toThrow(error);
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockServer.close).toHaveBeenCalledWith(expect.any(Function));
   });
 });

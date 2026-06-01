@@ -33,7 +33,6 @@ export const DEFAULT_BINARY_CONTENT_TYPES: string[] = [
  * @breadcrumb Core / Constants
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type IEmptyResponse = {};
 
 /**

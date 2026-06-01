@@ -77,7 +77,6 @@ describe('ServerlessAdapter', () => {
       .build();
 
     expect(handler).toBe(NO_OP);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockedHandler.getHandler).toHaveBeenCalledWith(
       app,
       framework,

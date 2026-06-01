@@ -47,9 +47,11 @@ export interface AlbAdapterOptions {
  * @breadcrumb Adapters / AWS / AlbAdapter
  * @public
  */
-export class AlbAdapter
-  implements AdapterContract<ALBEvent, Context, ALBResult>
-{
+export class AlbAdapter implements AdapterContract<
+  ALBEvent,
+  Context,
+  ALBResult
+> {
   //#region Constructor
 
   /**
