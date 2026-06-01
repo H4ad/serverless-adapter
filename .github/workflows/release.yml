@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Release Please
-        uses: google-github-actions/release-please-action@v4
+        uses: googleapis/release-please-action@v4
         id: release
 
       - name: Use Node 22.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         if: ${{ steps.release.outputs.release_created }}
         with:
           node-version: 22
@@ -42,7 +42,7 @@ jobs:
 
       - name: Get Coverage Info
         if: ${{ steps.release.outputs.release_created }}
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # https://github.com/codecov/codecov-action/commit/e79a6962e0d4c0c17b229090214935d2e33f8354
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
