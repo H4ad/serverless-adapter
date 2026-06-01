@@ -14,7 +14,7 @@ Don't know what a handler is? See the [Architecture](../architecture#handler) se
 First, install the types for this adapter:
 
 ```bash
-npm i --save firebase-functions firebase-admin
+npm i --save firebase-functions
 ```
 
 ## V1 and V2
@@ -35,9 +35,11 @@ import { DummyResolver } from '@h4ad/serverless-adapter/resolvers/dummy';
 import app from './app';
 
 export const helloWorld = ServerlessAdapter.new(app)
-  .setHandler(new HttpFirebaseV2Handler({
-    // you can pass custom properties here, like: concurrency.
-  }))
+  .setHandler(
+    new HttpFirebaseV2Handler({
+      // you can pass custom properties here, like: concurrency.
+    }),
+  )
   .setResolver(new DummyResolver())
   // choose the framework of your app
   // .setFramework(new ExpressFramework())
@@ -71,4 +73,3 @@ If you have some idea about a design for those APIs, [create an issue](https://g
 ## Examples
 
 You can see examples of how to use [here](https://github.com/H4ad/serverless-adapter-examples).
-

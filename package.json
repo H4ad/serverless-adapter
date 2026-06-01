@@ -78,7 +78,7 @@
   },
   "homepage": "https://github.com/H4ad/serverless-adapter#readme",
   "devDependencies": {
-    "@apollo/server": "4.10.0",
+    "@apollo/server": "4.13.0",
     "@azure/functions": "3.5.1",
     "@deepkit/app": "1.0.1-alpha.155",
     "@deepkit/core": "1.0.1-alpha.154",
@@ -116,10 +116,7 @@
     "express-v5": "npm:express@5",
     "fastify": "4.28.1",
     "fastify-v5": "npm:fastify@5",
-    "firebase-admin": "11.11.1",
-    "firebase-functions": "4.5.0",
-    "firebase-functions-v5": "npm:firebase-functions@5",
-    "firebase-functions-v6": "npm:firebase-functions@6",
+    "firebase-functions": "7.2.5",
     "glob": "10.4.5",
     "husky": "8.0.3",
     "koa": "2.15.3",
@@ -152,7 +149,6 @@
     "cors": ">= 2.8.5",
     "express": ">= 4.15.4",
     "fastify": ">= 4.0.0",
-    "firebase-admin": ">= 11.0.0",
     "firebase-functions": ">= 4.0.0",
     "http-errors": ">= 2.0.0",
     "koa": ">= 2.5.1",
@@ -199,9 +195,6 @@
       "optional": true
     },
     "fastify": {
-      "optional": true
-    },
-    "firebase-admin": {
       "optional": true
     },
     "firebase-functions": {
