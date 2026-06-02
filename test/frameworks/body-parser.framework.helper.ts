@@ -6,7 +6,7 @@ import fastify, { type FastifyInstance } from 'fastify';
 import fastify_v5 from 'fastify-v5';
 import Application from 'koa';
 import polka from 'polka';
-import { type SpyInstance, describe, expect, it, vitest } from 'vitest';
+import { type MockInstance, describe, expect, it, vitest } from 'vitest';
 import {
   type FrameworkContract,
   ServerlessRequest,
@@ -201,7 +201,7 @@ function createFramework<TApp>(
   instance: FrameworkContract<TApp>,
 ): [
   FrameworkContract<TApp>,
-  SpyInstance<Parameters<FrameworkContract<TApp>['sendRequest']>>,
+  MockInstance<FrameworkContract<TApp>['sendRequest']>,
 ] {
   const spy = vitest.spyOn(instance, 'sendRequest');
 

@@ -29,8 +29,12 @@
     "pretty": true,
     "removeComments": false,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
+    "types": [
+      "node"
+    ],
     "useDefineForClassFields": true
   },
   "reflection": true,

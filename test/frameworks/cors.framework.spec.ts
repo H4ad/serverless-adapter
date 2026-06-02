@@ -2,7 +2,7 @@ import * as trpc from '@trpc/server';
 import express from 'express';
 import fastify from 'fastify';
 import Application from 'koa';
-import { type SpyInstance, describe, expect, it, vitest } from 'vitest';
+import { type MockInstance, describe, expect, it, vitest } from 'vitest';
 import polka from 'polka';
 import {
   type BothValueHeaders,
@@ -166,7 +166,7 @@ function createFramework<TApp>(
   instance: FrameworkContract<TApp>,
 ): [
   FrameworkContract<TApp>,
-  SpyInstance<Parameters<FrameworkContract<TApp>['sendRequest']>>,
+  MockInstance<FrameworkContract<TApp>['sendRequest']>,
 ] {
   const spy = vitest.spyOn(instance, 'sendRequest');
 

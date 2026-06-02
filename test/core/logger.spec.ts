@@ -18,13 +18,7 @@ describe('createDefaultLogger', () => {
   const mocks: MockInstance[] = [];
 
   beforeEach(() => {
-    const mockMethods: (keyof Console)[] = [
-      'error',
-      'info',
-      'warn',
-      'log',
-      'debug',
-    ];
+    const mockMethods = ['error', 'info', 'warn', 'log', 'debug'] as const;
 
     for (const method of mockMethods) {
       mocks.push(
