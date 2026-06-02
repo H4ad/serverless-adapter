@@ -80,6 +80,26 @@ will be transformed into `/events`.
 
 :::
 
+You can also return binary response bodies as `Uint8Array` with the option `shouldReturnBodyAsUint8Array`. This is useful when Azure returns `ERR_CONTENT_LENGTH_MISMATCH` for binary responses.
+
+:::note
+
+This option only changes responses that were already marked as binary by [setBinarySettings](../../getting-started/customizing#setbinarysettings). The adapter only decodes base64 response bodies into `Uint8Array`; it does not convert plain text, JSON, or any other non-base64 body format.
+
+Configure `setBinarySettings` so the framework response is encoded as base64, then use `shouldReturnBodyAsUint8Array` to decide which base64 responses Azure should receive as `Uint8Array`.
+
+:::
+
+The callback receives the flattened response headers with lower-case keys. Return `true` only for responses that should be decoded from base64 and sent to Azure as a `Uint8Array`.
+
+```ts
+const adapter = new HttpTriggerV4Adapter({
+  shouldReturnBodyAsUint8Array: headers =>
+    headers['content-type']?.startsWith('image/') ||
+    headers['content-type'] === 'application/pdf',
+});
+```
+
 ## Usage
 
 To add support to Azure Http Trigger you do the following:
@@ -95,9 +115,17 @@ export const handler = ServerlessAdapter.new(app)
   .setHandler(new AzureHandlerV3())
   // .setFramework(new ExpressFramework())
   .setResolver(new PromiseResolver())
+  // Use this when returning binary responses such as images or PDFs.
+  // .setBinarySettings({
+  //   contentTypes: ['image/png', 'image/jpeg', 'application/pdf'],
+  //   contentEncodings: [],
+  // })
   .addAdapter(new HttpTriggerV4Adapter())
   // customizing:
   // .addAdapter(new HttpTriggerV4Adapter({ stripBasePath: '/api/test-serverless-adapter' }))
+  // .addAdapter(new HttpTriggerV4Adapter({
+  //   shouldReturnBodyAsUint8Array: headers => headers['content-type']?.startsWith('image/'),
+  // }))
   .build();
 ```
 
