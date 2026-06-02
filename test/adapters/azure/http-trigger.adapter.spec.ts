@@ -176,6 +176,112 @@ describe(HttpTriggerV4Adapter.name, () => {
       expect(result).toHaveProperty('cookies', []);
     });
 
+    it('should return the response body as Uint8Array when it is base64 encoded and configured', () => {
+      const method = 'GET';
+      const path = '/events';
+      const requestBody = undefined;
+
+      const binaryBody = Buffer.from([0, 1, 2, 3, 255]).toString('base64');
+      const responseHeaders = {
+        'Content-Type': 'application/octet-stream',
+      };
+
+      const shouldReturnBodyAsUint8Array = vitest.fn(
+        (headers: Record<string, string>) =>
+          headers['content-type'] === responseHeaders['Content-Type'],
+      );
+      const uint8ArrayAdapter = new HttpTriggerV4Adapter({
+        shouldReturnBodyAsUint8Array,
+      });
+
+      const event = createHttpTriggerEvent(method, path, requestBody);
+
+      const result = uint8ArrayAdapter.getResponse({
+        event,
+        headers: responseHeaders,
+        body: binaryBody,
+        log: {} as ILogger,
+        isBase64Encoded: true,
+        statusCode: 200,
+      });
+
+      expect(shouldReturnBodyAsUint8Array).toHaveBeenCalledTimes(1);
+      expect(shouldReturnBodyAsUint8Array).toHaveBeenCalledWith({
+        'content-type': responseHeaders['Content-Type'],
+      });
+
+      expect(result).toHaveProperty('body');
+      expect(result.body).toBeInstanceOf(Uint8Array);
+      expect(result.body).not.toBeInstanceOf(Buffer);
+      expect(result.body).toStrictEqual(
+        Uint8Array.from(Buffer.from(binaryBody, 'base64')),
+      );
+    });
+
+    it('should keep the response body as string when Uint8Array conversion is disabled', () => {
+      const method = 'GET';
+      const path = '/events';
+      const requestBody = undefined;
+
+      const responseBody = Buffer.from([0, 1, 2, 3, 255]).toString('base64');
+      const responseHeaders = {
+        'Content-Type': 'application/octet-stream',
+      };
+
+      const shouldReturnBodyAsUint8Array = vitest.fn(() => false);
+      const uint8ArrayAdapter = new HttpTriggerV4Adapter({
+        shouldReturnBodyAsUint8Array,
+      });
+
+      const event = createHttpTriggerEvent(method, path, requestBody);
+
+      const result = uint8ArrayAdapter.getResponse({
+        event,
+        headers: responseHeaders,
+        body: responseBody,
+        log: {} as ILogger,
+        isBase64Encoded: true,
+        statusCode: 200,
+      });
+
+      expect(shouldReturnBodyAsUint8Array).toHaveBeenCalledTimes(1);
+      expect(result.body).toBe(responseBody);
+      expect(result.body).not.toBeInstanceOf(Uint8Array);
+    });
+
+    it('should do nothing when the response body is not base64 encoded', () => {
+      const method = 'GET';
+      const path = '/events';
+      const requestBody = undefined;
+
+      const responseBody = 'not-base64-encoded';
+      const responseHeaders = {
+        'Content-Type': 'application/octet-stream',
+      };
+
+      const shouldReturnBodyAsUint8Array = vitest.fn(() => {
+        throw new Error('should not evaluate non-base64 responses');
+      });
+      const uint8ArrayAdapter = new HttpTriggerV4Adapter({
+        shouldReturnBodyAsUint8Array,
+      });
+
+      const event = createHttpTriggerEvent(method, path, requestBody);
+
+      const result = uint8ArrayAdapter.getResponse({
+        event,
+        headers: responseHeaders,
+        body: responseBody,
+        log: {} as ILogger,
+        isBase64Encoded: false,
+        statusCode: 200,
+      });
+
+      expect(shouldReturnBodyAsUint8Array).not.toHaveBeenCalled();
+      expect(result.body).toBe(responseBody);
+      expect(result.body).not.toBeInstanceOf(Uint8Array);
+    });
+
     it('should return the correct mapping for the response with multiple set-cookie', () => {
       const method = 'PUT';
       const path = '/events';

@@ -36,6 +36,15 @@ export interface HttpTriggerV4AdapterOptions {
    * @defaultValue ''
    */
   stripBasePath?: string;
+  /**
+   * If you are handling/returning binary data and getting ERR_CONTENT_LENGTH_MISMATCH, you can turn pass a function to decide if the body should be returned as Uint8Array instead, this will likely solve your issue.
+   * You need to correctly configure binary settings to be able to have the body converted to Uint8Array since we only convert base64 data, not any other format.
+   *
+   * More context at https://github.com/H4ad/serverless-adapter/issues/87
+   *
+   * @defaultValue undefined
+   */
+  shouldReturnBodyAsUint8Array?: (headers: Record<string, string>) => boolean;
 }
 
 /**
@@ -138,14 +147,30 @@ export class HttpTriggerV4Adapter implements AdapterContract<
     body,
     statusCode,
     headers: originalHeaders,
+    isBase64Encoded,
   }: GetResponseAdapterProps<HttpRequest>): HttpResponseSimple {
     const headers = getFlattenedHeadersMap(originalHeaders, ',', true);
     const cookies = this.getAzureCookiesFromHeaders(originalHeaders);
 
     if (headers['set-cookie']) delete headers['set-cookie'];
 
+    let finalBody: string | Uint8Array = body;
+
+    if (
+      isBase64Encoded &&
+      body &&
+      this.options?.shouldReturnBodyAsUint8Array?.(headers)
+    ) {
+      const decodedBody = Buffer.from(body, 'base64');
+      finalBody = new Uint8Array(
+        decodedBody.buffer,
+        decodedBody.byteOffset,
+        decodedBody.byteLength,
+      );
+    }
+
     return {
-      body,
+      body: finalBody,
       statusCode,
       headers,
       // I tried to understand this property with
