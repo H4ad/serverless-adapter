@@ -131,7 +131,7 @@
     "tsup": "8.3.5",
     "typedoc": "0.27.2",
     "typescript": "~5.4.5",
-    "vite": "6.0.1",
+    "vite": "8.0.16",
     "vitest": "2.1.6"
   },
   "peerDependencies": {
