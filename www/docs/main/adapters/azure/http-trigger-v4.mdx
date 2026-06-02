@@ -5,7 +5,7 @@ description: See more about how to integrate with Azure Http Trigger V4
 
 :::caution Attention
 
-Check the [AzureHandler](../../handlers/azure) docs to make sure you have all the necessary settings to work with this adapter.
+Check the [Azure Handler](../../handlers/azure) docs to make sure you have all the necessary settings to work with this adapter.
 
 :::
 
@@ -19,7 +19,7 @@ When an error is thrown during forwarding and the `responseWithErrors` option is
 
 ## Requirements
 
-This adapter was created to work with runtine 4.x, [see the docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions?tabs=azure-cli%2Cin-process%2Cv4&pivots=programming-language-javascript#changing-version-of-apps-in-azure)
+This adapter was created to work with runtime 4.x, [see the docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions?tabs=azure-cli%2Cin-process%2Cv4&pivots=programming-language-javascript#changing-version-of-apps-in-azure)
 to know more about how to check and change the version if you need.
 
 In theory, this adapter works with runtime 3.x but I haven't tested it.
@@ -86,13 +86,13 @@ To add support to Azure Http Trigger you do the following:
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
+import { AzureHandlerV3 } from '@h4ad/serverless-adapter/handlers/azure';
 import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
 import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/adapters/azure';
 import app from './app';
 
 export const handler = ServerlessAdapter.new(app)
-  .setHandler(new AzureHandler())
+  .setHandler(new AzureHandlerV3())
   // .setFramework(new ExpressFramework())
   .setResolver(new PromiseResolver())
   .addAdapter(new HttpTriggerV4Adapter())
@@ -103,7 +103,7 @@ export const handler = ServerlessAdapter.new(app)
 
 :::caution
 
-You MUST use the [PromiseResolver](../../resolvers/promise) combined with [AzureHandler](../../handlers/azure) to make this adapter work.
+You MUST use the [PromiseResolver](../../resolvers/promise) combined with [Azure Handler](../../handlers/azure) to make this adapter work.
 
 :::
 

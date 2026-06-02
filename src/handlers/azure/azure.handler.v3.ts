@@ -18,12 +18,12 @@ import { DefaultHandler } from '../default';
 //#endregion
 
 /**
- * The options to customize {@link AzureHandler}
+ * The options to customize {@link AzureHandlerV3}
  *
- * @breadcrumb Handlers / AzureHandler
+ * @breadcrumb Handlers / AzureHandlerV3
  * @public
  */
-export interface AzureHandlerOptions {
+export interface AzureHandlerV3Options {
   /**
    * Indicates to use the context log instead console.log when logger is internal (created by the library)
    *
@@ -33,14 +33,14 @@ export interface AzureHandlerOptions {
 }
 
 /**
- * The class that implements a serverless handler for Azure Function.
+ * The class that implements a serverless handler for Azure Function V2/V3.
  *
  * When you don't specify a custom logger, the {@link Context} logger is used instead.
  *
- * @breadcrumb Handlers / AzureHandler
+ * @breadcrumb Handlers / AzureHandlerV3
  * @public
  */
-export class AzureHandler<
+export class AzureHandlerV3<
   TApp,
   TEvent,
   TCallback,
@@ -52,7 +52,7 @@ export class AzureHandler<
   /**
    * Default Constructor
    */
-  constructor(protected readonly options?: AzureHandlerOptions) {
+  constructor(protected readonly options?: AzureHandlerV3Options) {
     super();
   }
 
