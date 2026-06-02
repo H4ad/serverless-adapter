@@ -9,6 +9,12 @@ Don't know what a handler is? See the [Architecture](../architecture#handler) se
 
 :::
 
+:::caution
+
+We only support v2/v3 of the @azure/functions, if you want support for v4, leave a comment at [this issue](https://github.com/H4ad/serverless-adapter/issues/371)
+
+:::
+
 This is a implementation that will return a function that expect to receive the following arguments: context and event, respectively.
 
 ```js
@@ -31,12 +37,12 @@ We detect when the log instance is created with [createDefaultLogger](../../api/
 replace this instance with the instance inside `Context`.
 
 If you want to log using the original instance [createDefaultLogger](../../api/Core/Logger/createDefaultLogger),
-you can set the `useContextLogWhenInternalLogger` option to `false` for [AzureHandlerOptions](../../api/Handlers/AzureHandler/AzureHandlerOptions).
+you can set the `useContextLogWhenInternalLogger` option to `false` for [AzureHandlerOptions](../../api/Handlers/AzureHandlerV3/AzureHandlerV3Options).
 
 ```typescript
-import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
+import { AzureHandlerV3 } from '@h4ad/serverless-adapter/handlers/azure';
 
-const handler = new AzureHandler({
+const handler = new AzureHandlerV3({
   useContextLogWhenInternalLogger: false,
 });
 ```
@@ -68,13 +74,13 @@ Then, you can import and call the method [setHandler](../../api/ServerlessAdapte
 
 ```ts title="index.ts"
 import { ServerlessAdapter } from '@h4ad/serverless-adapter';
-import { AzureHandler } from '@h4ad/serverless-adapter/handlers/azure';
+import { AzureHandlerV3 } from '@h4ad/serverless-adapter/handlers/azure';
 import { PromiseResolver } from '@h4ad/serverless-adapter/resolvers/promise';
 import { HttpTriggerV4Adapter } from '@h4ad/serverless-adapter/adapters/azure';
 import app from './app';
 
 export default ServerlessAdapter.new(app)
-  .setHandler(new AzureHandler())
+  .setHandler(new AzureHandlerV3())
   .setResolver(new PromiseResolver())
   // continue to set the other options here.
   // .setFramework(new ExpressFramework())
@@ -93,7 +99,7 @@ The above code will add support for Azure Http Trigger V4, to learn more about H
 
 :::caution Attention
 
-You `MUST` use [PromiseResolver](../resolvers/promise) to integrate with `AzureHandler`, other resolvers didn't work with Azure.
+You `MUST` use [PromiseResolver](../resolvers/promise) to integrate with `AzureHandlerV3`, other resolvers didn't work with Azure.
 
 :::
 

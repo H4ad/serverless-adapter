@@ -1,1 +1,1 @@
-export * from './azure.handler';
+export * from './azure.handler.v3';

@@ -135,7 +135,7 @@
   },
   "peerDependencies": {
     "@apollo/server": ">= 4.0.0",
-    "@azure/functions": ">= 2.0.0",
+    "@azure/functions": ">= 2.0.0 < 4.0.0",
     "@deepkit/http": ">= 1.0.1-alpha.94",
     "@google-cloud/functions-framework": ">= 3.0.0",
     "@hapi/hapi": ">= 21.0.0",

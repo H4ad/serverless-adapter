@@ -2,7 +2,7 @@ import { describe, expect, it, vitest } from 'vitest';
 import type { HttpRequest } from '@azure/functions';
 import { type ILogger, createDefaultLogger } from '../../src';
 import { HttpTriggerV4Adapter } from '../../src/adapters/azure';
-import { AzureHandler } from '../../src/handlers/azure';
+import { AzureHandlerV3 } from '../../src/handlers/azure';
 import { DefaultHandler } from '../../src/handlers/default';
 import { PromiseResolver } from '../../src/resolvers/promise';
 import {
@@ -11,8 +11,8 @@ import {
 } from '../adapters/azure/utils/http-trigger';
 import { FrameworkMock } from '../mocks/framework.mock';
 
-describe(AzureHandler.name, () => {
-  const azureHandlerFactory = new AzureHandler<
+describe(AzureHandlerV3.name, () => {
+  const azureHandlerFactory = new AzureHandlerV3<
     null,
     HttpRequest,
     any,
@@ -126,7 +126,7 @@ describe(AzureHandler.name, () => {
       log,
     ] as const;
 
-    const azureHandler = new AzureHandler<null, HttpRequest, any, any, any>({
+    const azureHandler = new AzureHandlerV3<null, HttpRequest, any, any, any>({
       useContextLogWhenInternalLogger: false,
     }).getHandler(...getHandlerArguments);
 
