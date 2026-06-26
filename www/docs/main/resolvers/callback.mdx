@@ -25,6 +25,12 @@ To use this resolver on AWS, you MUST leave [callbackWaitsForEmptyEventLoop](htt
 
 :::
 
+:::caution AWS Lambda Node.js 24
+
+Callback-based handlers are not supported on the AWS Lambda `nodejs24.x` runtime. Use [Promise Resolver](./promise) when deploying to Node.js 24 or later. `CallbackResolver` remains supported on Node.js 22 and earlier runtimes.
+
+:::
+
 # Usage
 
 To use, you can import and call the method [setResolver](../../api/ServerlessAdapter#method-setresolver), as per the code below:

@@ -149,4 +149,15 @@ describe('ServerlessAdapter', () => {
         .build(),
     ).toThrow('one adapter');
   });
+
+  it('should build handler with arity compatible with NODEJS_24_X', () => {
+    const handler = ServerlessAdapter.new(null)
+      .setHandler(new DefaultHandler())
+      .setResolver(new PromiseResolver())
+      .setFramework(new FrameworkMock(200, {}))
+      .addAdapter(new ApiGatewayV2Adapter())
+      .build();
+
+    expect(handler.length).toBeLessThanOrEqual(2);
+  });
 });
