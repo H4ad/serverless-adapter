@@ -1,11 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
-### Bug Fixes
-
-* **default-handler:** fix `Runtime.CallbackHandlerDeprecated` on AWS Lambda Node.js 24 by reducing handler arity while preserving positional callback compatibility for older runtimes
-
 ## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
 
 
