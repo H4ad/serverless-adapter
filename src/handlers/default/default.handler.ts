@@ -13,7 +13,7 @@ import {
   BaseHandler,
   type ILogger,
   isBinary,
-  setCurrentInvoke,
+  runWithCurrentInvoke,
   waitForStreamComplete,
 } from '../../core';
 import { ServerlessResponse } from '../../network';
@@ -74,28 +74,28 @@ export class DefaultHandler<
 
       this.onResolveAdapter(log, adapter);
 
-      setCurrentInvoke({ event, context });
-
-      const resolver = resolverFactory.createResolver({
-        event,
-        context,
-        callback,
-        log,
-        respondWithErrors,
-        adapter,
-      });
-
-      return resolver.run(() =>
-        this.forwardRequestToFramework(
-          app,
-          framework,
+      return runWithCurrentInvoke({ event, context }, () => {
+        const resolver = resolverFactory.createResolver({
           event,
           context,
-          adapter,
-          binarySettings,
+          callback,
           log,
-        ),
-      );
+          respondWithErrors,
+          adapter,
+        });
+
+        return resolver.run(() =>
+          this.forwardRequestToFramework(
+            app,
+            framework,
+            event,
+            context,
+            adapter,
+            binarySettings,
+            log,
+          ),
+        );
+      });
     };
   }
 

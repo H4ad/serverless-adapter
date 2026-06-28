@@ -1,8 +1,10 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { describe, expect, it, vitest } from 'vitest';
 import {
   type AdapterContract,
   type ILogger,
   NO_OP,
+  type OnErrorProps,
   getCurrentInvoke,
 } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
@@ -11,6 +13,28 @@ import { CallbackResolver } from '../../src/resolvers/callback';
 import { PromiseResolver } from '../../src/resolvers/promise';
 import { createApiGatewayV2 } from '../adapters/aws/utils/api-gateway-v2';
 import { FrameworkMock } from '../mocks/framework.mock';
+
+class CurrentInvokeFrameworkMock extends FrameworkMock {
+  public constructor(
+    statusCode: number,
+    mockedResponseData: object,
+    private readonly expectedEvent: object,
+    private readonly expectedContext: object,
+  ) {
+    super(statusCode, mockedResponseData);
+  }
+
+  public override sendRequest(
+    app: null,
+    request: IncomingMessage,
+    response: ServerResponse,
+  ): void {
+    expect(getCurrentInvoke()).toHaveProperty('event', this.expectedEvent);
+    expect(getCurrentInvoke()).toHaveProperty('context', this.expectedContext);
+
+    super.sendRequest(app, request, response);
+  }
+}
 
 describe('DefaultHandler', () => {
   const defaultHandler = new DefaultHandler();
@@ -35,7 +59,14 @@ describe('DefaultHandler', () => {
     const options: [statusCode: number][] = [[200], [400]];
 
     for (const [statusCode] of options) {
-      const framework = new FrameworkMock(statusCode, response);
+      const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
+      const context = { test: Symbol('unique') };
+      const framework = new CurrentInvokeFrameworkMock(
+        statusCode,
+        response,
+        event,
+        context,
+      );
 
       const handler = defaultHandler.getHandler(
         app,
@@ -47,13 +78,9 @@ describe('DefaultHandler', () => {
         logger,
       );
 
-      const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
-      const context = { test: Symbol('unique') };
-
       const result = await handler(event, context, NO_OP);
 
-      expect(getCurrentInvoke()).toHaveProperty('event', event);
-      expect(getCurrentInvoke()).toHaveProperty('context', context);
+      expect(getCurrentInvoke()).toEqual({ context: null, event: null });
 
       expect(logger.debug).toHaveBeenNthCalledWith(
         1,
@@ -158,6 +185,56 @@ describe('DefaultHandler', () => {
       'body',
       Buffer.from(JSON.stringify(response)).toString('base64'),
     );
+  });
+
+  it('should forward errors through the resolver while preserving current invoke', async () => {
+    const error = new Error('error on test');
+    const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
+    const context = { test: Symbol('unique') };
+    let currentInvokeDuringError: unknown;
+
+    const failingAdapter: AdapterContract<any, any, any> = {
+      getAdapterName: () => 'FailingAdapter',
+      canHandle: () => true,
+      getRequest: () => {
+        throw error;
+      },
+      getResponse: () => ({}),
+      onErrorWhileForwarding: vitest.fn(
+        ({ delegatedResolver, error }: OnErrorProps<any, any>) => {
+          currentInvokeDuringError = getCurrentInvoke();
+          delegatedResolver.fail(error);
+        },
+      ),
+    };
+
+    const localLogger: ILogger = {
+      debug: vitest.fn(executeLog),
+      error: vitest.fn(executeLog),
+      verbose: vitest.fn(executeLog),
+      info: vitest.fn(executeLog),
+      warn: vitest.fn(executeLog),
+    };
+
+    const handler = defaultHandler.getHandler(
+      app,
+      new FrameworkMock(200, response),
+      [failingAdapter],
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      localLogger,
+    );
+
+    await expect(handler(event, context, NO_OP)).rejects.toBe(error);
+
+    expect(failingAdapter.onErrorWhileForwarding).toHaveBeenCalledTimes(1);
+    expect(localLogger.error).toHaveBeenCalledWith(
+      'SERVERLESS_ADAPTER:RESPOND_TO_EVENT_SOURCE_WITH_ERROR',
+      error,
+    );
+    expect(currentInvokeDuringError).toEqual({ event, context });
+    expect(getCurrentInvoke()).toEqual({ context: null, event: null });
   });
 
   describe('Node.js 24 handler arity', () => {

@@ -3,7 +3,11 @@ import { join } from 'path';
 import express from 'express';
 import { WritableMock } from 'stream-mock/lib/writable';
 import { afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
-import { type ILogger, getCurrentInvoke } from '../../src';
+import {
+  type AdapterContract,
+  type ILogger,
+  getCurrentInvoke,
+} from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { ExpressFramework } from '../../src/frameworks/express';
 import { AwsStreamHandler } from '../../src/handlers/aws';
@@ -75,9 +79,6 @@ describe('AwsStreamHandler', () => {
 
     await handler(event, writable, context);
 
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
-
     const finalBuffer = Buffer.concat(writable.data);
 
     expect(Buffer.byteLength(finalBuffer)).toBe(Buffer.byteLength(file));
@@ -115,18 +116,22 @@ describe('AwsStreamHandler', () => {
 
     await handler(event, writable, context);
 
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
+    expect(getCurrentInvoke()).toEqual({ context: null, event: null });
 
     const finalBuffer = Buffer.concat(writable.data);
 
     expect(Buffer.byteLength(finalBuffer)).toBe(Buffer.byteLength(file));
   });
 
-  it('should return the correct bytes of json', async () => {
+  it('should return the correct bytes of json and expose the current invoke while handling the request', async () => {
     const app = express();
+    const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
+    const context = { test: Symbol('unique') };
 
     app.get('/', (_, res) => {
+      expect(getCurrentInvoke()).toHaveProperty('event', event);
+      expect(getCurrentInvoke()).toHaveProperty('context', context);
+
       return res.json({ test: 'true' });
     });
 
@@ -142,19 +147,51 @@ describe('AwsStreamHandler', () => {
       logger,
     );
 
-    const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
-    const context = { test: Symbol('unique') };
-
     const writable = new WritableMock();
 
     await handler(event, writable, context);
 
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
-
     const finalBuffer = Buffer.concat(writable.data);
 
     expect(finalBuffer.toString()).toBe(JSON.stringify({ test: 'true' }));
+  });
+
+  it('should propagate forwarding errors while preserving current invoke', async () => {
+    const app = express();
+    const event = createApiGatewayV2('GET', '/', {}, { test: 'true' });
+    const context = { test: Symbol('unique') };
+    const error = new Error('error on test');
+    let currentInvokeDuringError: unknown;
+
+    const failingAdapter: AdapterContract<any, any, any> = {
+      getAdapterName: () => 'FailingAdapter',
+      canHandle: () => true,
+      getRequest: () => {
+        currentInvokeDuringError = getCurrentInvoke();
+        throw error;
+      },
+      getResponse: () => ({}),
+      onErrorWhileForwarding: vitest.fn(),
+    };
+
+    const expressFramework = new ExpressFramework();
+
+    const handler = awsStreamHandler.getHandler(
+      app,
+      expressFramework,
+      [failingAdapter],
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      logger,
+    );
+
+    const writable = new WritableMock();
+
+    await expect(handler(event, writable, context)).rejects.toBe(error);
+
+    expect(currentInvokeDuringError).toEqual({ event, context });
+    expect(getCurrentInvoke()).toEqual({ context: null, event: null });
   });
 
   it('should handle redirect with status 304', async () => {
@@ -183,9 +220,6 @@ describe('AwsStreamHandler', () => {
     const write = vitest.spyOn(writable, 'write');
 
     await handler(event, writable, context);
-
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
 
     expect(write).toHaveBeenCalledWith('');
 
@@ -221,9 +255,6 @@ describe('AwsStreamHandler', () => {
       const write = vitest.spyOn(writable, 'write');
 
       await handler(event, writable, context);
-
-      expect(getCurrentInvoke()).toHaveProperty('event', event);
-      expect(getCurrentInvoke()).toHaveProperty('context', context);
 
       expect(write).toHaveBeenCalled();
 
@@ -261,9 +292,6 @@ describe('AwsStreamHandler', () => {
 
       await handler(event, writable, context);
 
-      expect(getCurrentInvoke()).toHaveProperty('event', event);
-      expect(getCurrentInvoke()).toHaveProperty('context', context);
-
       expect(write).toHaveBeenCalledWith('');
 
       const finalBuffer = Buffer.concat(writable.data);
@@ -300,9 +328,6 @@ describe('AwsStreamHandler', () => {
 
       await handler(event, writable, context);
 
-      expect(getCurrentInvoke()).toHaveProperty('event', event);
-      expect(getCurrentInvoke()).toHaveProperty('context', context);
-
       expect(write).toHaveBeenCalledWith('');
 
       const finalBuffer = Buffer.concat(writable.data);
@@ -338,9 +363,6 @@ describe('AwsStreamHandler', () => {
 
     await handler(event, writable, context);
 
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
-
     expect(write).toHaveBeenCalledWith('');
 
     const finalBuffer = Buffer.concat(writable.data);
@@ -374,9 +396,6 @@ describe('AwsStreamHandler', () => {
     const writable = new WritableMock();
 
     await handler(event, writable, context);
-
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
 
     expect(
       (global as any).awslambda.HttpResponseStream.from,
@@ -417,9 +436,6 @@ describe('AwsStreamHandler', () => {
     const writable = new WritableMock();
 
     await handler(event, writable, context);
-
-    expect(getCurrentInvoke()).toHaveProperty('event', event);
-    expect(getCurrentInvoke()).toHaveProperty('context', context);
 
     expect(
       (global as any).awslambda.HttpResponseStream.from,

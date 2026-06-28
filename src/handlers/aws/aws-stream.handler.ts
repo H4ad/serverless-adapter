@@ -16,7 +16,7 @@ import {
   BaseHandler,
   type ILogger,
   getFlattenedHeadersMap,
-  setCurrentInvoke,
+  runWithCurrentInvoke,
   waitForStreamComplete,
 } from '../../core';
 import { ServerlessRequest, ServerlessStreamResponse } from '../../network';
@@ -166,16 +166,16 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
 
       this.onResolveAdapter(log, adapter);
 
-      setCurrentInvoke({ event, context });
-
-      await this.forwardRequestToFramework(
-        app,
-        framework,
-        event,
-        streamContext,
-        adapter,
-        binarySettings,
-        log,
+      await runWithCurrentInvoke({ event, context }, () =>
+        this.forwardRequestToFramework(
+          app,
+          framework,
+          event,
+          streamContext,
+          adapter,
+          binarySettings,
+          log,
+        ),
       );
     });
   }
