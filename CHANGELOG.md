@@ -1,5 +1,50 @@
 # Changelog
 
+## [5.0.0](https://github.com/H4ad/serverless-adapter/compare/v4.4.0...v5.0.0) (2026-06-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **current-invoke:** drop setCurrentInvoke for runWithCurrentInvoke
+* **node-version:** Drop nodejs
+
+### Features
+
+* **apollo-server:** drop support to v4 ([3a451cf](https://github.com/H4ad/serverless-adapter/commit/3a451cfc627ef1d78d6b0826d864f04576c2a2c6))
+* **azure-http-trigger-v4:** add flag to handle body as uint8array ([3476bdd](https://github.com/H4ad/serverless-adapter/commit/3476bdd76f394a655c2d1412e04f559b5eb6ebca))
+* **current-invoke:** drop setCurrentInvoke for runWithCurrentInvoke ([8025152](https://github.com/H4ad/serverless-adapter/commit/80251525ccaae5d3e550385ee8b07c0d39d6608e))
+* **firebase-functions:** drop support for 4,5,6 ([e95a98e](https://github.com/H4ad/serverless-adapter/commit/e95a98ec6b9b9be70d49eb2f49b4c19d9b161dc4))
+* **node-version:** deprecate v18, v20 ([d1056a1](https://github.com/H4ad/serverless-adapter/commit/d1056a156047248f5a08fb944d56dd6476e38f86)), closes [#353](https://github.com/H4ad/serverless-adapter/issues/353)
+
+
+### Bug Fixes
+
+* **azure:** explicit support only for &gt;=2 and &lt;4 ([3b2b195](https://github.com/H4ad/serverless-adapter/commit/3b2b19502f2c623c8503288ff85a7b0079f65940))
+* **default-handler:** support AWS Lambda Node.js 24 handler arity ([#379](https://github.com/H4ad/serverless-adapter/issues/379)) ([4333882](https://github.com/H4ad/serverless-adapter/commit/4333882ed057cd67cde7250fe9cde691f51d1abd))
+* **tsup:** disable minify ([524b12e](https://github.com/H4ad/serverless-adapter/commit/524b12e79f3ac200ae44f730e149ffb2176b09f7))
+
+
+### Documentation
+
+* **aws:** update throwOnChunkedTransferEncoding in docs ([b72add9](https://github.com/H4ad/serverless-adapter/commit/b72add932caf084dd41f6b5e1fcfdb79a7ff7f2d))
+
+
+### Miscellaneous Chores
+
+* bump micromatch from 4.0.5 to 4.0.8 in /www ([fcd122f](https://github.com/H4ad/serverless-adapter/commit/fcd122f690343c175ce64f5c1cff6ade6c2568e9))
+* **dependabot:** reduce to weekly ([314f9d7](https://github.com/H4ad/serverless-adapter/commit/314f9d70ebecc78e6702c5b680803236a6cf6b2a))
+* **oxc:** migrate from eslint/prettier ([a864b42](https://github.com/H4ad/serverless-adapter/commit/a864b42417b68264492486cb1d7115c45ebb09f9))
+* **types:** fix issues with joi/hapi on typecheck ([cc06eab](https://github.com/H4ad/serverless-adapter/commit/cc06eab3d5e139b636430cd7a9b22faa29aca72e))
+
+
+### Continuous Integration
+
+* **codecov:** bump to v7 ([9a258a2](https://github.com/H4ad/serverless-adapter/commit/9a258a2e2414ead37fd1e112574511bf2adddb58))
+* **docs:** bump ubuntu to latest ([3abab65](https://github.com/H4ad/serverless-adapter/commit/3abab65593ba5c990f03acb8ce99926fdd8db6b5))
+* **release:** enable trusted publish ([1e84e31](https://github.com/H4ad/serverless-adapter/commit/1e84e31248a412fb4db2a92bb4244e7344d98398))
+* **release:** use release ci without token ([d92d680](https://github.com/H4ad/serverless-adapter/commit/d92d680fda10f365f92e78567f4201ce7b3145e8))
+* **workflows:** update versions ([6a993d3](https://github.com/H4ad/serverless-adapter/commit/6a993d3aaa0de836b95f8ff1ae0c7cdbb7cef4bd))
+
 ## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
 
 
