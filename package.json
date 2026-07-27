@@ -114,7 +114,7 @@
     "esbuild": "0.24.0",
     "express": "4.21.1",
     "express-v5": "npm:express@5",
-    "fastify": "4.28.1",
+    "fastify": "5.10.0",
     "fastify-v5": "npm:fastify@5",
     "firebase-functions": "7.2.5",
     "glob": "10.4.5",
