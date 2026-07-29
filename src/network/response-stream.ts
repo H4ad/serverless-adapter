@@ -106,9 +106,18 @@ export class ServerlessStreamResponse extends ServerResponse {
 
           internalWritable = onReceiveHeaders(status, headers);
 
+          const dataAfterHeaders = stringData.substring(endHeaderIndex + 4);
+
           // If we get an endChunked right after header which means the response body is empty, we need to immediately end the writable
-          if (stringData.substring(endHeaderIndex + 4) === endChunked)
-            internalWritable.end();
+          // The callback must be forwarded, otherwise the response never emits `finish`
+          if (dataAfterHeaders === endChunked) {
+            internalWritable.end(cb);
+            return true;
+          }
+
+          // Responses without a body (eg. 204) write only the headers and never write again,
+          // so the callback has to be called here or the response never emits `finish`
+          if (dataAfterHeaders === '' && cb) process.nextTick(cb);
 
           return true;
         }
