@@ -300,6 +300,84 @@ describe('AwsStreamHandler', () => {
     });
   }
 
+  // when the response is sent after an await, the request is already being awaited by
+  // `waitForStreamComplete`, so the response has to actually emit `finish` to complete
+  for (const statusCode of [200, 204, 403, 500]) {
+    it(`should handle no content sent asynchronously with status ${statusCode}`, async () => {
+      const app = express();
+
+      app.get('/', async (_, res) => {
+        await new Promise(resolve => setImmediate(resolve));
+
+        res.status(statusCode).end();
+      });
+
+      const expressFramework = new ExpressFramework();
+
+      const handler = awsStreamHandler.getHandler(
+        app,
+        expressFramework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/', undefined);
+      const context = { test: Symbol('unique') };
+
+      const writable = new WritableMock();
+      const write = vitest.spyOn(writable, 'write');
+
+      await handler(event, writable, context);
+
+      expect(write).toHaveBeenCalledWith('');
+
+      const finalBuffer = Buffer.concat(writable.data);
+
+      expect(finalBuffer.toString()).toBe('');
+    }, 2000);
+  }
+
+  for (const statusCode of [200, 204, 403, 500]) {
+    it(`should handle an empty body sent asynchronously with status ${statusCode}`, async () => {
+      const app = express();
+
+      app.get('/', async (_, res) => {
+        await new Promise(resolve => setImmediate(resolve));
+
+        res.status(statusCode).send();
+      });
+
+      const expressFramework = new ExpressFramework();
+
+      const handler = awsStreamHandler.getHandler(
+        app,
+        expressFramework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/', undefined);
+      const context = { test: Symbol('unique') };
+
+      const writable = new WritableMock();
+      const write = vitest.spyOn(writable, 'write');
+
+      await handler(event, writable, context);
+
+      expect(write).toHaveBeenCalledWith('');
+
+      const finalBuffer = Buffer.concat(writable.data);
+
+      expect(finalBuffer.toString()).toBe('');
+    }, 2000);
+  }
+
   for (const statusCode of [200, 201, 202, 203, 204, 400, 401, 403, 404]) {
     it(`should handle writeHead with no content and status ${statusCode}`, async () => {
       const app = express();
