@@ -37,6 +37,13 @@ export interface ServerlessRequestProps {
    * The IP Address from caller
    */
   remoteAddress?: string;
+
+  /**
+   * Whether to define the request `ip` property using the caller IP address.
+   *
+   * @defaultValue true
+   */
+  setIpProperty?: boolean;
 }
 
 /**
@@ -52,6 +59,7 @@ export class ServerlessRequest extends IncomingMessage {
     headers,
     body,
     remoteAddress,
+    setIpProperty = true,
   }: ServerlessRequestProps) {
     super({
       encrypted: true,
@@ -75,7 +83,8 @@ export class ServerlessRequest extends IncomingMessage {
     this.headers = headers;
     this.body = body;
     this.url = url;
-    this.ip = remoteAddress;
+
+    if (setIpProperty) this.ip = remoteAddress;
 
     this._read = () => {
       this.push(body);
@@ -83,6 +92,6 @@ export class ServerlessRequest extends IncomingMessage {
     };
   }
 
-  ip?: string;
-  body?: Buffer | Uint8Array;
+  declare ip?: string;
+  declare body?: Buffer | Uint8Array;
 }

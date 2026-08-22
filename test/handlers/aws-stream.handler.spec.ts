@@ -5,7 +5,9 @@ import { WritableMock } from 'stream-mock/lib/writable';
 import { afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
 import {
   type AdapterContract,
+  DEFAULT_NETWORK,
   type ILogger,
+  type NetworkContract,
   getCurrentInvoke,
 } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
@@ -154,6 +156,68 @@ describe('AwsStreamHandler', () => {
     const finalBuffer = Buffer.concat(writable.data);
 
     expect(finalBuffer.toString()).toBe(JSON.stringify({ test: 'true' }));
+  });
+
+  it('should use custom network to create the forwarded request', async () => {
+    const app = express();
+    const customNetwork: NetworkContract = {
+      createRequest: vitest.fn(props => DEFAULT_NETWORK.createRequest(props)),
+      createResponse: vitest.fn(props => DEFAULT_NETWORK.createResponse(props)),
+      getResponseBody: vitest.fn(response =>
+        DEFAULT_NETWORK.getResponseBody(response),
+      ),
+      getResponseHeaders: vitest.fn(response =>
+        DEFAULT_NETWORK.getResponseHeaders(response),
+      ),
+    };
+
+    app.post('/', (_, res) => {
+      return res.json({ ok: true });
+    });
+
+    const expressFramework = new ExpressFramework();
+
+    const handler = (awsStreamHandler.getHandler as any)(
+      app,
+      expressFramework,
+      adapters,
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      logger,
+      customNetwork,
+    );
+
+    const requestBody = { test: 'true' };
+    const event = createApiGatewayV2('POST', '/', requestBody, {
+      'content-length': Buffer.byteLength(
+        JSON.stringify(requestBody),
+      ).toString(),
+      'content-type': 'application/json',
+      test: 'true',
+    });
+    const context = { test: Symbol('unique') };
+    const writable = new WritableMock();
+
+    await handler(event, writable, context);
+
+    expect(customNetwork.createRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        body: Buffer.from(JSON.stringify(requestBody)),
+        headers: expect.objectContaining({
+          'content-length': Buffer.byteLength(
+            JSON.stringify(requestBody),
+          ).toString(),
+          'content-type': 'application/json',
+        }),
+        remoteAddress: '203.123.103.37',
+        url: '/',
+      }),
+    );
+    expect(customNetwork.createResponse).not.toHaveBeenCalled();
+    expect(customNetwork.getResponseBody).not.toHaveBeenCalled();
+    expect(customNetwork.getResponseHeaders).not.toHaveBeenCalled();
   });
 
   it('should propagate forwarding errors while preserving current invoke', async () => {

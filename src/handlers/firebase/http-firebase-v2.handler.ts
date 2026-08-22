@@ -2,7 +2,12 @@
 
 import { IncomingMessage, ServerResponse } from 'node:http';
 import { https } from 'firebase-functions/v2';
-import type { FrameworkContract, HandlerContract } from '../../contracts';
+import type {
+  FrameworkContract,
+  HandlerContract,
+  NetworkContract,
+} from '../../contracts';
+import { DEFAULT_NETWORK } from '../../network';
 import { RawRequest } from '../base';
 
 //#endregion
@@ -50,16 +55,22 @@ export class HttpFirebaseV2Handler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
+    _adapters?: unknown,
+    _resolverFactory?: unknown,
+    _binarySettings?: unknown,
+    _respondWithErrors?: unknown,
+    _log?: unknown,
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
   ): FirebaseHttpHandler {
     if (this.options) {
       return this.onRequestWithOptions(
         this.options,
-        this.onRequestCallback(app, framework),
+        this.onRequestCallback(app, framework, network),
       );
     }
 
     return https.onRequest(
-      this.onRequestCallback(app, framework),
+      this.onRequestCallback(app, framework, network),
     ) as unknown as FirebaseHttpHandler;
   }
 

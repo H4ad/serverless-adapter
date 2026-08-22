@@ -22,13 +22,15 @@ Why you would use this libray instead of [@vendia/serverless-express](https://gi
 
 ## Support
 
-By design we have these contracts that define the layers of the library: Frameworks, Adapters, Resolvers and Handlers.
+By design we have these contracts that define the layers of the library: Frameworks, Network, Adapters, Resolvers and Handlers.
 
 :::info
 
 If you don't know what each thing means, see [Architecture](./architecture).
 
 :::
+
+The default network implementation, `DEFAULT_NETWORK`, creates `ServerlessRequest` and `ServerlessResponse` objects for you. You only need to customize it with `setNetwork` when you want to tune `DefaultNetwork` or replace those Node.js request/response shims.
 
 Currently, we support these clouds (handlers):
 

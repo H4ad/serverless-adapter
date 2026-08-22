@@ -1,7 +1,9 @@
 import { describe, expect, it, vitest } from 'vitest';
 import type { Request, Response } from 'express';
 import {
+  DEFAULT_NETWORK,
   type FrameworkContract,
+  type NetworkContract,
   ServerlessRequest,
   ServerlessResponse,
   waitForStreamComplete,
@@ -97,5 +99,63 @@ describe('HttpFirebaseHandler', () => {
 
       handler(request as Request, response as unknown as Response);
     }
+  });
+
+  it('should use custom network to create the forwarded request', async () => {
+    const { HttpFirebaseHandler } = await import('../../src/handlers/firebase');
+    const handlerFactory = new HttpFirebaseHandler<null>();
+    const method = 'POST';
+    const url = '/users/batata';
+    const headers = { 'Content-Type': 'application/json' };
+    const remoteAddress = '168.16.0.1';
+    const body = { test: true };
+    const request = new ServerlessRequest({
+      method,
+      url,
+      headers,
+      remoteAddress,
+      body: body as any,
+    });
+    const response = new ServerlessResponse({ method });
+    const customNetwork: NetworkContract = {
+      createRequest: vitest.fn(props => DEFAULT_NETWORK.createRequest(props)),
+      createResponse: vitest.fn(props => DEFAULT_NETWORK.createResponse(props)),
+      getResponseBody: vitest.fn(result =>
+        DEFAULT_NETWORK.getResponseBody(result),
+      ),
+      getResponseHeaders: vitest.fn(result =>
+        DEFAULT_NETWORK.getResponseHeaders(result),
+      ),
+    };
+    const framework = new FrameworkMock(200, { ok: true });
+
+    const handler = (handlerFactory.getHandler as any)(
+      null,
+      framework,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      customNetwork,
+    );
+
+    handler(request as Request, response as unknown as Response);
+
+    await waitForStreamComplete(response);
+
+    expect(customNetwork.createRequest).toHaveBeenCalledWith({
+      method,
+      url,
+      body: Buffer.from(JSON.stringify(body)),
+      headers: {
+        'content-length': Buffer.byteLength(JSON.stringify(body)).toString(),
+        'content-type': 'application/json',
+      },
+      remoteAddress: undefined,
+    });
+    expect(customNetwork.createResponse).not.toHaveBeenCalled();
+    expect(customNetwork.getResponseBody).not.toHaveBeenCalled();
+    expect(customNetwork.getResponseHeaders).not.toHaveBeenCalled();
   });
 });

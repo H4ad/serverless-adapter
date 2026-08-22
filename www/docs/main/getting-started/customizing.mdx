@@ -52,6 +52,37 @@ To know how to implement, see the [Logger Interface](../../api/Core/Logger/ILogg
 
 :::
 
+### setNetwork
+
+Defines the network implementation used by handlers to create the `IncomingMessage` and `ServerResponse` sent to your framework, then read the response body and headers before the adapter builds the provider response.
+
+Most applications should not call this method. By default, [DEFAULT_NETWORK](../../api/Network/DEFAULT_NETWORK) is a [DefaultNetwork](../../api/Network/DefaultNetwork) instance that creates `ServerlessRequest` and `ServerlessResponse` objects and extracts their buffered body and headers.
+
+Use `setNetwork` when you need to tune `DefaultNetwork`, provide custom Node.js request/response classes, add framework-specific shims, or customize response extraction. Call it before the first `addAdapter`, because the selected network response type becomes part of the adapter type.
+
+Handlers that already receive a real HTTP request/response from the platform may use only part of the contract. For example, Firebase, GCP, and AWS response streaming use `createRequest`, while Huawei keeps the real Node.js HTTP server request and response objects untouched.
+
+```ts
+import { DefaultNetwork, ServerlessAdapter } from '@h4ad/serverless-adapter';
+
+export const handler = ServerlessAdapter.new(app)
+  .setFramework(new ExpressFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .setNetwork(new DefaultNetwork({ setRequestIp: false }))
+  .addAdapter(new ApiGatewayV2Adapter())
+  .build();
+```
+
+A custom network must implement [NetworkContract](../../api/Contracts/NetworkContract):
+
+- `createRequest` maps adapter request values to the request object forwarded to the framework.
+- `createResponse` creates the response object passed to the framework.
+- `getResponseBody` returns the collected response body as a `Buffer`.
+- `getResponseHeaders` returns the collected response headers.
+
+If your adapter needs access to a custom response class in `getResponse`, provide it as the fourth `AdapterContract` generic.
+
 ### setBinarySettings
 
 Defines the binary settings for whether the response should be treated as binary or not.
@@ -88,5 +119,3 @@ You can call this method multiple times to add support for whatever event source
 To know which adapters you can use, see the [Adapters](/docs/main/adapters/introduction)) section.
 
 :::
-
-

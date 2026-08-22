@@ -1,11 +1,14 @@
 //#region Imports
 
 import util from 'node:util';
-import type { BinarySettings, SingleValueHeaders } from '../../@types';
+import type { BinarySettings, BothValueHeaders } from '../../@types';
 import type {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
+  NetworkContract,
+  NetworkRequest,
+  NetworkResponse,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
@@ -16,7 +19,7 @@ import {
   runWithCurrentInvoke,
   waitForStreamComplete,
 } from '../../core';
-import { ServerlessResponse } from '../../network';
+import type { ServerlessRequest, ServerlessResponse } from '../../network';
 
 //#endregion
 
@@ -33,7 +36,18 @@ export class DefaultHandler<
   TCallback,
   TResponse,
   TReturn,
-> extends BaseHandler<TApp, TEvent, TContext, TCallback, TResponse, TReturn> {
+  TNetworkRequest extends NetworkRequest = ServerlessRequest,
+  TNetworkResponse extends NetworkResponse = ServerlessResponse,
+> extends BaseHandler<
+  TApp,
+  TEvent,
+  TContext,
+  TCallback,
+  TResponse,
+  TReturn,
+  TNetworkRequest,
+  TNetworkResponse
+> {
   //#region Public Methods
 
   /**
@@ -42,7 +56,7 @@ export class DefaultHandler<
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-    adapters: AdapterContract<TEvent, TContext, TResponse>[],
+    adapters: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>[],
     resolverFactory: ResolverContract<
       TEvent,
       TContext,
@@ -53,6 +67,7 @@ export class DefaultHandler<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): ServerlessHandler<TReturn> {
     return (event: TEvent, context: TContext, ...args: [TCallback?]) => {
       const [callback] = args;
@@ -93,6 +108,7 @@ export class DefaultHandler<
             adapter,
             binarySettings,
             log,
+            network,
           ),
         );
       });
@@ -135,7 +151,7 @@ export class DefaultHandler<
    */
   protected onResolveAdapter(
     log: ILogger,
-    adapter: AdapterContract<TEvent, TContext, TResponse>,
+    adapter: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>,
   ): void {
     log.debug(
       'SERVERLESS_ADAPTER:RESOLVED_ADAPTER_NAME: ',
@@ -172,7 +188,7 @@ export class DefaultHandler<
    */
   protected onResolveForwardedResponseToFramework(
     log: ILogger,
-    response: ServerlessResponse,
+    response: TNetworkResponse,
   ): void {
     log.debug(
       'SERVERLESS_ADAPTER:FORWARD_REQUEST_TO_FRAMEWORK:RESPONSE',
@@ -195,7 +211,7 @@ export class DefaultHandler<
     log: ILogger,
     statusCode: number,
     body: string,
-    headers: SingleValueHeaders,
+    headers: BothValueHeaders,
     isBase64Encoded: boolean,
   ) {
     log.debug(
@@ -244,22 +260,27 @@ export class DefaultHandler<
    * @param adapter - The adapter resolved to this event
    * @param log - The instance of logger
    * @param binarySettings - The binary settings
+   * @param network - The network implementation used to create request and response objects
    */
   protected async forwardRequestToFramework(
     app: TApp,
     framework: FrameworkContract<TApp>,
     event: TEvent,
     context: TContext,
-    adapter: AdapterContract<TEvent, TContext, TResponse>,
+    adapter: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>,
     binarySettings: BinarySettings,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): Promise<TResponse> {
     const requestValues = adapter.getRequest(event, context, log);
 
     this.onResolveRequestValues(log, requestValues);
 
     const [request, response] =
-      this.getServerlessRequestResponseFromAdapterRequest(requestValues);
+      this.getServerlessRequestResponseFromAdapterRequest(
+        requestValues,
+        network,
+      );
 
     framework.sendRequest(app, request, response);
 
@@ -267,7 +288,14 @@ export class DefaultHandler<
 
     this.onResolveForwardedResponseToFramework(log, response);
 
-    return this.forwardResponse(event, response, adapter, binarySettings, log);
+    return this.forwardResponse(
+      event,
+      response,
+      adapter,
+      binarySettings,
+      log,
+      network,
+    );
   }
 
   /**
@@ -278,19 +306,21 @@ export class DefaultHandler<
    * @param adapter - The adapter resolved to this event
    * @param binarySettings - The binary settings
    * @param log - The instance of logger
+   * @param network - The network implementation used to extract the response data
    */
   protected forwardResponse(
     event: TEvent,
-    response: ServerlessResponse,
-    adapter: AdapterContract<TEvent, TContext, TResponse>,
+    response: TNetworkResponse,
+    adapter: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>,
     binarySettings: BinarySettings,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): TResponse {
     const statusCode = response.statusCode;
-    const headers = ServerlessResponse.headers(response);
+    const headers = network.getResponseHeaders(response);
     const isBase64Encoded = isBinary(headers, binarySettings);
     const encoding = isBase64Encoded ? 'base64' : 'utf8';
-    const body = ServerlessResponse.body(response).toString(encoding);
+    const body = network.getResponseBody(response).toString(encoding);
     const logBody = isBase64Encoded ? '[BASE64_ENCODED]' : body;
 
     this.onForwardResponse(log, statusCode, logBody, headers, isBase64Encoded);

@@ -3,6 +3,7 @@ import {
   type AdapterContract,
   type AdapterRequest,
   BaseHandler,
+  DEFAULT_NETWORK,
   type ILogger,
   ServerlessRequest,
   ServerlessResponse,
@@ -17,7 +18,9 @@ class TestHandler<TApp, TContext, TCallback, TReturn> extends BaseHandler<
   TContext,
   TCallback,
   unknown,
-  TReturn
+  TReturn,
+  ServerlessRequest,
+  ServerlessResponse
 > {
   getHandler = vitest.fn();
 
@@ -27,19 +30,19 @@ class TestHandler<TApp, TContext, TCallback, TReturn> extends BaseHandler<
   public override getAdapterByEventAndContext(
     event: any,
     context: any,
-    adapters: AdapterContract<unknown, TContext, unknown>[],
+    adapters: AdapterContract<unknown, TContext, unknown, ServerlessResponse>[],
     log: ILogger,
-  ): AdapterContract<unknown, TContext, unknown> {
+  ): AdapterContract<unknown, TContext, unknown, ServerlessResponse> {
     return super.getAdapterByEventAndContext(event, context, adapters, log);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public override getServerlessRequestResponseFromAdapterRequest(
+  public createServerlessRequestResponse(
     requestValues: AdapterRequest,
   ): [request: ServerlessRequest, response: ServerlessResponse] {
-    return super.getServerlessRequestResponseFromAdapterRequest(requestValues);
+    return super.getServerlessRequestResponseFromAdapterRequest(
+      requestValues,
+      DEFAULT_NETWORK,
+    );
   }
 }
 
@@ -123,7 +126,7 @@ describe(BaseHandler.name, () => {
     const adapterRequest = adapter.getRequest(testEvent);
 
     const [request, response] =
-      handler.getServerlessRequestResponseFromAdapterRequest(adapterRequest);
+      handler.createServerlessRequestResponse(adapterRequest);
 
     expect(request).toBeInstanceOf(ServerlessRequest);
     expect(request).toHaveProperty('method', adapterRequest.method);
