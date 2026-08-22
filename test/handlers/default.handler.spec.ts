@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { describe, expect, it, vitest } from 'vitest';
 import {
   type AdapterContract,
+  DEFAULT_NETWORK,
   type ILogger,
   NO_OP,
   type OnErrorProps,
@@ -76,6 +77,7 @@ describe('DefaultHandler', () => {
         binarySettings,
         respondWithErrors,
         logger,
+        DEFAULT_NETWORK,
       );
 
       const result = await handler(event, context, NO_OP);
@@ -138,6 +140,7 @@ describe('DefaultHandler', () => {
       { isBinary: () => true },
       respondWithErrors,
       logger,
+      DEFAULT_NETWORK,
     );
 
     const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
@@ -167,6 +170,7 @@ describe('DefaultHandler', () => {
       { isBinary: () => true },
       respondWithErrors,
       logger,
+      DEFAULT_NETWORK,
     );
 
     const event = createApiGatewayV2('GET', '/users', undefined, {
@@ -224,6 +228,7 @@ describe('DefaultHandler', () => {
       binarySettings,
       respondWithErrors,
       localLogger,
+      DEFAULT_NETWORK,
     );
 
     await expect(handler(event, context, NO_OP)).rejects.toBe(error);
@@ -247,6 +252,7 @@ describe('DefaultHandler', () => {
         binarySettings,
         respondWithErrors,
         logger,
+        DEFAULT_NETWORK,
       );
 
       expect(handler.length).toBeLessThanOrEqual(2);
@@ -263,6 +269,7 @@ describe('DefaultHandler', () => {
         binarySettings,
         respondWithErrors,
         logger,
+        DEFAULT_NETWORK,
       );
 
       const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
@@ -289,6 +296,7 @@ describe('DefaultHandler', () => {
         binarySettings,
         respondWithErrors,
         logger,
+        DEFAULT_NETWORK,
       );
 
       const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });

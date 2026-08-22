@@ -2,7 +2,7 @@
 
 import type { BothValueHeaders, SingleValueHeaders } from '../@types';
 import type { ILogger } from '../core';
-import { ServerlessResponse } from '../network';
+import type { NetworkResponse } from './network.contract';
 import type { DelegatedResolver } from './resolver.contract';
 
 //#endregion
@@ -60,18 +60,21 @@ export interface AdapterRequest {
  * @breadcrumb Contracts / AdapterContract
  * @public
  */
-export interface GetResponseAdapterProps<TEvent> {
+export interface GetResponseAdapterProps<
+  TEvent,
+  TNetworkResponse extends NetworkResponse = NetworkResponse,
+> {
   /**
    * The event sent by the serverless
    */
   event: TEvent;
 
   /**
-   * The framework {@link ServerlessResponse | response}.
+   * The framework {@link NetworkResponse | response}.
    *
    * @remarks It can be optional, as this method can be used when an error occurs during the handling of the request by the framework.
    */
-  response?: ServerlessResponse;
+  response?: TNetworkResponse;
 
   /**
    * The framework response status code
@@ -138,7 +141,12 @@ export interface OnErrorProps<TEvent, TResponse> {
  * @breadcrumb Contracts / AdapterContract
  * @public
  */
-export interface AdapterContract<TEvent, TContext, TResponse> {
+export interface AdapterContract<
+  TEvent,
+  TContext,
+  TResponse,
+  TNetworkResponse extends NetworkResponse = NetworkResponse,
+> {
   /**
    * Get the adapter name
    */
@@ -167,7 +175,9 @@ export interface AdapterContract<TEvent, TContext, TResponse> {
    *
    * @param props - The props sent by serverless
    */
-  getResponse(props: GetResponseAdapterProps<TEvent>): TResponse;
+  getResponse(
+    props: GetResponseAdapterProps<TEvent, TNetworkResponse>,
+  ): TResponse;
 
   /**
    * When an error occurs while forwarding the request to the framework

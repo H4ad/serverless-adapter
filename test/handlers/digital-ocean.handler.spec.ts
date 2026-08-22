@@ -1,5 +1,5 @@
 import { describe, expect, it, vitest } from 'vitest';
-import { type ILogger } from '../../src';
+import { DEFAULT_NETWORK, type ILogger } from '../../src';
 import { HttpFunctionAdapter } from '../../src/adapters/digital-ocean';
 import { DefaultHandler } from '../../src/handlers/default';
 import { DigitalOceanHandler } from '../../src/handlers/digital-ocean';
@@ -46,6 +46,7 @@ describe(DigitalOceanHandler.name, () => {
       binarySettings,
       respondWithErrors,
       logger,
+      DEFAULT_NETWORK,
     ] as const;
 
     const azureHandler = azureHandlerFactory.getHandler(...getHandlerArguments);

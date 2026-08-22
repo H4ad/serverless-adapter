@@ -4,6 +4,11 @@ import type { BinarySettings } from '../@types';
 import type { ILogger } from '../core';
 import type { AdapterContract } from './adapter.contract';
 import type { FrameworkContract } from './framework.contract';
+import type {
+  NetworkContract,
+  NetworkRequest,
+  NetworkResponse,
+} from './network.contract';
 import type { ResolverContract } from './resolver.contract';
 
 //#endregion
@@ -29,6 +34,8 @@ export interface HandlerContract<
   TCallback,
   TResponse,
   TReturn,
+  TNetworkRequest extends NetworkRequest = any,
+  TNetworkResponse extends NetworkResponse = any,
 > {
   /**
    * Get the handler that will handle serverless requests
@@ -36,7 +43,7 @@ export interface HandlerContract<
   getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-    adapters: AdapterContract<TEvent, TContext, TResponse>[],
+    adapters: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>[],
     resolverFactory: ResolverContract<
       TEvent,
       TContext,
@@ -47,5 +54,6 @@ export interface HandlerContract<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): ServerlessHandler<TReturn>;
 }

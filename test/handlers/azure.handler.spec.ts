@@ -1,6 +1,6 @@
 import { describe, expect, it, vitest } from 'vitest';
 import type { HttpRequest } from '@azure/functions';
-import { type ILogger, createDefaultLogger } from '../../src';
+import { DEFAULT_NETWORK, type ILogger, createDefaultLogger } from '../../src';
 import { HttpTriggerV4Adapter } from '../../src/adapters/azure';
 import { AzureHandlerV3 } from '../../src/handlers/azure';
 import { DefaultHandler } from '../../src/handlers/default';
@@ -50,6 +50,7 @@ describe(AzureHandlerV3.name, () => {
       binarySettings,
       respondWithErrors,
       logger,
+      DEFAULT_NETWORK,
     ] as const;
 
     const azureHandler = azureHandlerFactory.getHandler(...getHandlerArguments);
@@ -90,6 +91,7 @@ describe(AzureHandlerV3.name, () => {
     const azureHandler = azureHandlerFactory.getHandler(
       ...getHandlerArguments,
       createDefaultLogger(),
+      DEFAULT_NETWORK,
     );
 
     expect(azureHandler(context, event)).resolves.toBe(response);
@@ -97,6 +99,7 @@ describe(AzureHandlerV3.name, () => {
     expect(defaultGetHandler).toHaveBeenCalledWith(
       ...getHandlerArguments,
       expect.objectContaining({ error: context.log.error }),
+      DEFAULT_NETWORK,
     );
     expect(defaultServerlessHandler).toHaveBeenCalledWith(
       event,
@@ -124,6 +127,7 @@ describe(AzureHandlerV3.name, () => {
       binarySettings,
       respondWithErrors,
       log,
+      DEFAULT_NETWORK,
     ] as const;
 
     const azureHandler = new AzureHandlerV3<null, HttpRequest, any, any, any>({

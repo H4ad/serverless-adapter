@@ -5,6 +5,9 @@ import type { BinarySettings } from '../../@types';
 import type {
   AdapterContract,
   FrameworkContract,
+  NetworkContract,
+  NetworkRequest,
+  NetworkResponse,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
@@ -13,6 +16,7 @@ import {
   getDefaultIfUndefined,
   isInternalLogger,
 } from '../../core';
+import type { ServerlessRequest, ServerlessResponse } from '../../network';
 import { DefaultHandler } from '../default';
 
 //#endregion
@@ -46,7 +50,18 @@ export class AzureHandlerV3<
   TCallback,
   TResponse,
   TReturn,
-> extends DefaultHandler<TApp, TEvent, Context, TCallback, TResponse, TReturn> {
+  TNetworkRequest extends NetworkRequest = ServerlessRequest,
+  TNetworkResponse extends NetworkResponse = ServerlessResponse,
+> extends DefaultHandler<
+  TApp,
+  TEvent,
+  Context,
+  TCallback,
+  TResponse,
+  TReturn,
+  TNetworkRequest,
+  TNetworkResponse
+> {
   //#region Constructor
 
   /**
@@ -66,7 +81,7 @@ export class AzureHandlerV3<
   public override getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-    adapters: AdapterContract<TEvent, Context, TResponse>[],
+    adapters: AdapterContract<TEvent, Context, TResponse, TNetworkResponse>[],
     resolverFactory: ResolverContract<
       TEvent,
       Context,
@@ -77,6 +92,7 @@ export class AzureHandlerV3<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): ServerlessHandler<TReturn> {
     return (context: Context, event: TEvent) => {
       const useContextLogWhenInternalLogger = getDefaultIfUndefined(
@@ -95,6 +111,7 @@ export class AzureHandlerV3<
         binarySettings,
         respondWithErrors,
         log,
+        network,
       );
 
       // remove this from context

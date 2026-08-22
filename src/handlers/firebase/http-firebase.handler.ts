@@ -1,7 +1,12 @@
 //#region Imports
 
 import { type HttpsFunction, https } from 'firebase-functions/v1';
-import type { FrameworkContract, HandlerContract } from '../../contracts';
+import type {
+  FrameworkContract,
+  HandlerContract,
+  NetworkContract,
+} from '../../contracts';
+import { DEFAULT_NETWORK } from '../../network';
 import { RawRequest } from '../base';
 
 //#endregion
@@ -26,8 +31,14 @@ export class HttpFirebaseHandler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
+    _adapters?: unknown,
+    _resolverFactory?: unknown,
+    _binarySettings?: unknown,
+    _respondWithErrors?: unknown,
+    _log?: unknown,
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
   ): HttpsFunction {
-    return https.onRequest(this.onRequestCallback(app, framework));
+    return https.onRequest(this.onRequestCallback(app, framework, network));
   }
 
   //#endregion

@@ -1,9 +1,13 @@
 //#region Imports
 
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { FrameworkContract } from '../../contracts';
-import { ServerlessRequest } from '../../network';
+import type {
+  FrameworkContract,
+  NetworkContract,
+  NetworkRequest,
+} from '../../contracts';
 import { getEventBodyAsBuffer, getFlattenedHeadersMap } from '../../core';
+import { DEFAULT_NETWORK } from '../../network';
 
 //#endregion
 
@@ -25,9 +29,10 @@ export abstract class RawRequest<TApp> {
   protected onRequestCallback(
     app: TApp,
     framework: FrameworkContract<TApp>,
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
     return (request: IncomingMessage, response: ServerResponse) => {
-      const customRequest = this.getRequestFromExpressRequest(request);
+      const customRequest = this.getRequestFromExpressRequest(request, network);
 
       return framework.sendRequest(app, customRequest, response);
     };
@@ -45,7 +50,8 @@ export abstract class RawRequest<TApp> {
    */
   protected getRequestFromExpressRequest(
     request: IncomingMessage,
-  ): ServerlessRequest {
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
+  ): NetworkRequest {
     const expressRequestParsed = request as unknown as {
       body: object | Buffer;
     };
@@ -70,7 +76,7 @@ export abstract class RawRequest<TApp> {
       headers['content-length'] = String(contentLength);
     }
 
-    return new ServerlessRequest({
+    return network.createRequest({
       method: request.method!,
       url: request.url!,
       body,

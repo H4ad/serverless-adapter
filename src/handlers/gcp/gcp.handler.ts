@@ -2,7 +2,12 @@
 
 import type { IncomingMessage, ServerResponse } from 'http';
 import { http } from '@google-cloud/functions-framework';
-import type { FrameworkContract, HandlerContract } from '../../contracts';
+import type {
+  FrameworkContract,
+  HandlerContract,
+  NetworkContract,
+} from '../../contracts';
+import { DEFAULT_NETWORK } from '../../network';
 import { RawRequest } from '../base';
 
 //#endregion
@@ -41,8 +46,14 @@ export class GCPHandler<TApp>
   public getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
+    _adapters?: unknown,
+    _resolverFactory?: unknown,
+    _binarySettings?: unknown,
+    _respondWithErrors?: unknown,
+    _log?: unknown,
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
   ): (req: IncomingMessage, res: ServerResponse) => void | Promise<void> {
-    const callback = this.onRequestCallback(app, framework);
+    const callback = this.onRequestCallback(app, framework, network);
 
     http(this.name, callback);
 

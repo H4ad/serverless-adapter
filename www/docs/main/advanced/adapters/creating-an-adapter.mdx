@@ -105,8 +105,10 @@ import { AdapterContract } from '@h4ad/serverless-adapter/contracts';
 export class ApiGatewayV2Adapter implements AdapterContract<APIGatewayProxyEventV2, Context, APIGatewayProxyStructuredResultV2> {}
 ```
 
-The interface we need to implement is [AdapterContract](/docs/api/Contracts/AdapterContract) which takes 3 generic arguments:
-the event sent by the event source, the context of the serverless environment, and the response that the event source understands.
+The interface we need to implement is [AdapterContract](/docs/api/Contracts/AdapterContract) which takes three required generic arguments and one optional generic argument:
+the event sent by the event source, the context of the serverless environment, the response that the event source understands, and the network response type.
+
+Most adapters can omit the fourth generic because the default network uses `ServerlessResponse`. Provide it only when consumers use `setNetwork` with a custom response class and your adapter needs that custom `response` type inside `getResponse`.
 
 ## Implementing the `getAdapterName` method
 

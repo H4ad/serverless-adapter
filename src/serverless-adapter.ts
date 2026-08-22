@@ -5,6 +5,9 @@ import type {
   AdapterContract,
   FrameworkContract,
   HandlerContract,
+  NetworkContract,
+  NetworkRequest,
+  NetworkResponse,
   ResolverContract,
   ServerlessHandler,
 } from './contracts';
@@ -14,6 +17,11 @@ import {
   type ILogger,
   createDefaultLogger,
 } from './core';
+import {
+  DEFAULT_NETWORK,
+  type ServerlessRequest,
+  type ServerlessResponse,
+} from './network';
 
 //#endregion
 
@@ -44,6 +52,8 @@ export class ServerlessAdapter<
   TCallback,
   TResponse,
   TReturn,
+  TNetworkRequest extends NetworkRequest = ServerlessRequest,
+  TNetworkResponse extends NetworkResponse = ServerlessResponse,
 > {
   //#region Constructor
 
@@ -91,9 +101,23 @@ export class ServerlessAdapter<
   protected log: ILogger = createDefaultLogger();
 
   /**
+   * The network implementation used to create framework request and response objects
+   */
+  protected network: NetworkContract<TNetworkRequest, TNetworkResponse> =
+    DEFAULT_NETWORK as unknown as NetworkContract<
+      TNetworkRequest,
+      TNetworkResponse
+    >;
+
+  /**
    * The list of adapters used to handle an event's request and response
    */
-  protected adapters: AdapterContract<TEvent, TContext, TResponse>[] = [];
+  protected adapters: AdapterContract<
+    TEvent,
+    TContext,
+    TResponse,
+    TNetworkResponse
+  >[] = [];
 
   /**
    * The framework that will process requests
@@ -120,7 +144,9 @@ export class ServerlessAdapter<
     TContext,
     TCallback,
     TResponse,
-    TReturn
+    TReturn,
+    TNetworkRequest,
+    TNetworkResponse
   >;
 
   //#endregion
@@ -134,7 +160,7 @@ export class ServerlessAdapter<
    */
   public static new<
     TApp,
-    TEvent,
+    TEvent = any,
     TContext = any,
     TCallback = any,
     TResponse = any,
@@ -161,7 +187,9 @@ export class ServerlessAdapter<
       TContext,
       TCallback,
       TResponse,
-      TReturn
+      TReturn,
+      TNetworkRequest,
+      TNetworkResponse
     >,
   ): Omit<this, 'setHandler'> {
     if (this.handler)
@@ -219,6 +247,45 @@ export class ServerlessAdapter<
   }
 
   /**
+   * Defines the network implementation used to create framework request and response objects.
+   *
+   * @param network - The network implementation
+   */
+  public setNetwork<
+    TNextNetworkRequest extends NetworkRequest,
+    TNextNetworkResponse extends NetworkResponse,
+  >(
+    network: NetworkContract<TNextNetworkRequest, TNextNetworkResponse>,
+  ): Omit<
+    ServerlessAdapter<
+      TApp,
+      TEvent,
+      TContext,
+      TCallback,
+      TResponse,
+      TReturn,
+      TNextNetworkRequest,
+      TNextNetworkResponse
+    >,
+    'setNetwork'
+  > {
+    const nextBuilder = this as unknown as ServerlessAdapter<
+      TApp,
+      TEvent,
+      TContext,
+      TCallback,
+      TResponse,
+      TReturn,
+      TNextNetworkRequest,
+      TNextNetworkResponse
+    >;
+
+    nextBuilder.network = network;
+
+    return nextBuilder;
+  }
+
+  /**
    * Defines the binary settings for whether the response should be treated as binary or not
    *
    * @param binarySettings - The binary settings
@@ -253,7 +320,7 @@ export class ServerlessAdapter<
    * @param adapter - The implementation of the adapter contract
    */
   public addAdapter(
-    adapter: AdapterContract<TEvent, TContext, TResponse>,
+    adapter: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>,
   ): Pick<this, 'addAdapter' | 'build'> {
     this.adapters.push(adapter);
 
@@ -296,6 +363,7 @@ export class ServerlessAdapter<
       this.binarySettings,
       this.respondWithErrors,
       this.log,
+      this.network,
     );
   }
 

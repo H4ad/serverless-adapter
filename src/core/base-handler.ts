@@ -6,10 +6,12 @@ import type {
   AdapterRequest,
   FrameworkContract,
   HandlerContract,
+  NetworkContract,
+  NetworkRequest,
+  NetworkResponse,
   ResolverContract,
   ServerlessHandler,
 } from '../contracts';
-import { ServerlessRequest, ServerlessResponse } from '../network';
 import type { ILogger } from './index';
 
 //#endregion
@@ -27,13 +29,17 @@ export abstract class BaseHandler<
   TCallback,
   TResponse,
   TReturn,
+  TNetworkRequest extends NetworkRequest = NetworkRequest,
+  TNetworkResponse extends NetworkResponse = NetworkResponse,
 > implements HandlerContract<
   TApp,
   TEvent,
   TContext,
   TCallback,
   TResponse,
-  TReturn
+  TReturn,
+  TNetworkRequest,
+  TNetworkResponse
 > {
   //#region Public Methods
 
@@ -43,7 +49,7 @@ export abstract class BaseHandler<
   public abstract getHandler(
     app: TApp,
     framework: FrameworkContract<TApp>,
-    adapters: AdapterContract<TEvent, TContext, TResponse>[],
+    adapters: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>[],
     resolverFactory: ResolverContract<
       TEvent,
       TContext,
@@ -54,6 +60,7 @@ export abstract class BaseHandler<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
   ): ServerlessHandler<TReturn>;
 
   //#endregion
@@ -71,9 +78,9 @@ export abstract class BaseHandler<
   protected getAdapterByEventAndContext(
     event: TEvent,
     context: TContext,
-    adapters: AdapterContract<TEvent, TContext, TResponse>[],
+    adapters: AdapterContract<TEvent, TContext, TResponse, TNetworkResponse>[],
     log: ILogger,
-  ): AdapterContract<TEvent, TContext, TResponse> {
+  ): AdapterContract<TEvent, TContext, TResponse, TNetworkResponse> {
     const resolvedAdapters = adapters.filter(adapter =>
       adapter.canHandle(event, context, log),
     );
@@ -96,14 +103,16 @@ export abstract class BaseHandler<
   }
 
   /**
-   * Get serverless request and response frmo the adapter request
+   * Get serverless request and response from the adapter request
    *
    * @param requestValues - The request values from adapter
+   * @param network - The network config
    */
   protected getServerlessRequestResponseFromAdapterRequest(
     requestValues: AdapterRequest,
-  ): [request: ServerlessRequest, response: ServerlessResponse] {
-    const request = new ServerlessRequest({
+    network: NetworkContract<TNetworkRequest, TNetworkResponse>,
+  ): [request: TNetworkRequest, response: TNetworkResponse] {
+    const request = network.createRequest({
       method: requestValues.method,
       headers: requestValues.headers,
       body: requestValues.body,
@@ -111,7 +120,7 @@ export abstract class BaseHandler<
       url: requestValues.path,
     });
 
-    const response = new ServerlessResponse({
+    const response = network.createResponse({
       method: requestValues.method,
     });
 

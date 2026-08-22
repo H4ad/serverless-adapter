@@ -8,8 +8,8 @@ The main purpose of this library is to allow the developer to add support for an
 wants, without having to create an issue to request the feature or copy the library code because the library doesn't
 expose good APIs for you to extend its functionality
 
-So I refactored [@vendia/serverless-express](https://github.com/vendia/serverless-express) with 4 layers of abstraction:
-Framework, Handler, Resolver and Adapter.
+So I refactored [@vendia/serverless-express](https://github.com/vendia/serverless-express) with five extension layers:
+Framework, Network, Handler, Resolver and Adapter.
 
 ## Framework
 
@@ -22,10 +22,18 @@ call [end](https://nodejs.org/api/http.html#class-httpserverresponse)
 in [ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse), so the library knows when to continue
 and return the response.
 
+## Network
+
+The [NetworkContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/network.contract.ts) is responsible for creating the
+[IncomingMessage](https://nodejs.org/api/http.html#class-httpincomingmessage) and
+[ServerResponse](https://nodejs.org/api/http.html#class-httpserverresponse) objects sent to your framework, then extracting the collected body and headers after the framework finishes.
+
+The default implementation is `DEFAULT_NETWORK`, a `DefaultNetwork` instance that uses `ServerlessRequest` and `ServerlessResponse`. Most users should keep it. Use `setNetwork` only when you need to tune `DefaultNetwork`, use custom Node.js request/response classes, or customize response body/header extraction. Handlers that receive platform-owned HTTP objects can use only the request part of the contract; Huawei keeps the real Node.js HTTP server request and response objects.
+
 ## Handler
 
 The [HandlerContract](https://github.com/H4ad/serverless-adapter/tree/main/src/contracts/handler.contract.ts) is responsible to get the input from the serverless and then
-manage to call each layer of abstraction to return a response.
+manage to call each layer of abstraction to return a response. Built-in adapter-driven handlers resolve an adapter, ask the network layer to create the framework request/response objects, forward them to the framework, and pass the extracted response data back to the adapter.
 
 With this abstraction, you can implement different ways
 to receive input from your serverless environment.
@@ -53,5 +61,5 @@ Finally, the masterpiece of this library, the [AdapterContract](https://github.c
 handling the received event, transforming the request in a way that your application can understand and then
 transforming the response in a way your cloud can understand.
 
-Well, with these four contracts, you'll be able to add support to any cloud that exists (no more excuses not to use
+Well, with these five contracts, you'll be able to add support to any cloud that exists (no more excuses not to use
 cloud X with NodeJS).

@@ -12,16 +12,17 @@ npm i --save express
 npm i --save-dev @types/express
 ```
 
-Then, you need you just need to use the [ExpressFramework](../../api/Frameworks/ExpressFramework) when you create your adapter, like:
+Then, use the [ExpressFramework](../../api/Frameworks/ExpressFramework) when you create your adapter, like:
 
 ```ts title="index.ts"
-import { ServerlessAdapter } from '@h4ad/serverless-adapter';
+import { DefaultNetwork, ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { ExpressFramework } from '@h4ad/serverless-adapter/frameworks/express';
 
 const express = require('express');
 
 const app = express();
 export const handler = ServerlessAdapter.new(app)
+  .setNetwork(new DefaultNetwork({ setRequestIp: false }))
   .setFramework(new ExpressFramework())
   // continue to set the other options here.
   //.setHandler(new DefaultHandler())
@@ -32,6 +33,8 @@ export const handler = ServerlessAdapter.new(app)
   // after put all methods necessary, just call the build method.
   .build();
 ```
+
+[DefaultNetwork](../../api/Network/DefaultNetwork) defines `request.ip` by default from the event source remote address. Express also exposes `req.ip`, so pass `setRequestIp: false` when you want Express to resolve the IP through its own request prototype and trust proxy settings. See [setNetwork](../getting-started/customizing#setnetwork) for the full network customization contract.
 
 :::tip
 

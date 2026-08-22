@@ -9,6 +9,7 @@ import type {
   AdapterContract,
   AdapterRequest,
   FrameworkContract,
+  NetworkContract,
   ResolverContract,
   ServerlessHandler,
 } from '../../contracts';
@@ -19,7 +20,7 @@ import {
   runWithCurrentInvoke,
   waitForStreamComplete,
 } from '../../core';
-import { ServerlessRequest, ServerlessStreamResponse } from '../../network';
+import { DEFAULT_NETWORK, ServerlessStreamResponse } from '../../network';
 
 //#endregion
 
@@ -139,6 +140,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
     binarySettings: BinarySettings,
     respondWithErrors: boolean,
     log: ILogger,
+    network: Pick<NetworkContract, 'createRequest'> = DEFAULT_NETWORK,
   ): ServerlessHandler<Promise<void>> {
     return awslambda.streamifyResponse(async (event, response, context) => {
       if (this.options?.callbackWaitsForEmptyEventLoop !== undefined) {
@@ -175,6 +177,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
           adapter,
           binarySettings,
           log,
+          network,
         ),
       );
     });
@@ -278,6 +281,7 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
    * @param adapter - The adapter resolved to this event
    * @param _binarySettings - The binary settings
    * @param log - The instance of logger
+   * @param network - The network implementation used to create request objects
    */
   protected async forwardRequestToFramework(
     app: TApp,
@@ -291,12 +295,13 @@ export class AwsStreamHandler<TApp> extends BaseHandler<
     >,
     _binarySettings: BinarySettings,
     log: ILogger,
+    network: Pick<NetworkContract, 'createRequest'>,
   ): Promise<void> {
     const requestValues = adapter.getRequest(event, context, log);
 
     this.onResolveRequestValues(log, requestValues);
 
-    const request = new ServerlessRequest({
+    const request = network.createRequest({
       method: requestValues.method,
       headers: requestValues.headers,
       body: requestValues.body,

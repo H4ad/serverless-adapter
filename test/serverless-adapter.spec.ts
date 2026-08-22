@@ -3,8 +3,11 @@ import {
   type BinarySettings,
   DEFAULT_BINARY_CONTENT_TYPES,
   DEFAULT_BINARY_ENCODINGS,
+  DEFAULT_NETWORK,
   type HandlerContract,
+  type ILogger,
   NO_OP,
+  type NetworkContract,
   ServerlessAdapter,
   createDefaultLogger,
 } from '../src';
@@ -12,6 +15,7 @@ import { ApiGatewayV2Adapter } from '../src/adapters/aws';
 import * as logger from '../src/core/logger';
 import { DefaultHandler } from '../src/handlers/default';
 import { PromiseResolver } from '../src/resolvers/promise';
+import { createApiGatewayV2 } from './adapters/aws/utils/api-gateway-v2';
 import { FrameworkMock } from './mocks/framework.mock';
 
 describe('ServerlessAdapter', () => {
@@ -37,6 +41,7 @@ describe('ServerlessAdapter', () => {
     );
     expect(adapter['respondWithErrors']).toEqual(false);
     expect(adapter['log']).toEqual(defaultLoggerSymbol);
+    expect(adapter['network']).toEqual(DEFAULT_NETWORK);
     expect(adapter['adapters']).toHaveLength(0);
     expect(adapter['framework']).toBeUndefined();
     expect(adapter['resolver']).toBeUndefined();
@@ -85,7 +90,60 @@ describe('ServerlessAdapter', () => {
       expect.objectContaining(binarySettings),
       respondWithErrors,
       logger,
+      DEFAULT_NETWORK,
     );
+  });
+
+  it('should use custom network implementation while building a handler', async () => {
+    const response = { body: true };
+    const customNetwork: NetworkContract = {
+      createRequest: vitest.fn(props => DEFAULT_NETWORK.createRequest(props)),
+      createResponse: vitest.fn(props => DEFAULT_NETWORK.createResponse(props)),
+      getResponseBody: vitest.fn(response =>
+        DEFAULT_NETWORK.getResponseBody(response),
+      ),
+      getResponseHeaders: vitest.fn(response =>
+        DEFAULT_NETWORK.getResponseHeaders(response),
+      ),
+    };
+    const executeLog = (_: unknown, fn?: () => unknown) =>
+      typeof fn === 'function' ? fn() : undefined;
+    const testLogger: ILogger = {
+      debug: vitest.fn(executeLog),
+      error: vitest.fn(executeLog),
+      verbose: vitest.fn(executeLog),
+      info: vitest.fn(executeLog),
+      warn: vitest.fn(executeLog),
+    };
+
+    const handler = ServerlessAdapter.new(null)
+      .setHandler(new DefaultHandler())
+      .setNetwork(customNetwork)
+      .setLogger(testLogger)
+      .setResolver(new PromiseResolver())
+      .setFramework(new FrameworkMock(200, response))
+      .addAdapter(new ApiGatewayV2Adapter())
+      .build();
+
+    const result = await handler(
+      createApiGatewayV2('GET', '/users', undefined, { test: 'true' }),
+      {},
+    );
+
+    expect(result).toHaveProperty('statusCode', 200);
+    expect(result).toHaveProperty('body', JSON.stringify(response));
+    expect(customNetwork.createRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'GET',
+        url: '/users',
+        remoteAddress: '203.123.103.37',
+      }),
+    );
+    expect(customNetwork.createResponse).toHaveBeenCalledWith({
+      method: 'GET',
+    });
+    expect(customNetwork.getResponseHeaders).toHaveBeenCalledTimes(1);
+    expect(customNetwork.getResponseBody).toHaveBeenCalledTimes(1);
   });
 
   it('should CANNOT set handler twice', () => {
