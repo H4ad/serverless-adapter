@@ -111,7 +111,7 @@
     "commitizen": "4.3.0",
     "cors": "2.8.5",
     "cz-conventional-changelog": "3.3.0",
-    "esbuild": "0.24.0",
+    "esbuild": "0.28.1",
     "express": "4.21.1",
     "express-v5": "npm:express@5",
     "fastify": "4.28.1",
