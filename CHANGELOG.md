@@ -1,5 +1,62 @@
 # Changelog
 
+## [5.0.0](https://github.com/H4ad/serverless-adapter/compare/v4.4.0...v5.0.0) (2026-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **network:** add contract for network
+* **current-invoke:** drop setCurrentInvoke for runWithCurrentInvoke
+* **node-version:** Drop nodejs
+
+### Features
+
+* **apollo-server:** drop support to v4 ([3a451cf](https://github.com/H4ad/serverless-adapter/commit/3a451cfc627ef1d78d6b0826d864f04576c2a2c6))
+* **azure-http-trigger-v4:** add flag to handle body as uint8array ([3476bdd](https://github.com/H4ad/serverless-adapter/commit/3476bdd76f394a655c2d1412e04f559b5eb6ebca))
+* **current-invoke:** drop setCurrentInvoke for runWithCurrentInvoke ([8025152](https://github.com/H4ad/serverless-adapter/commit/80251525ccaae5d3e550385ee8b07c0d39d6608e))
+* **firebase-functions:** drop support for 4,5,6 ([e95a98e](https://github.com/H4ad/serverless-adapter/commit/e95a98ec6b9b9be70d49eb2f49b4c19d9b161dc4))
+* **network:** add contract for network ([2670ac2](https://github.com/H4ad/serverless-adapter/commit/2670ac20d0cc2d49e23002a517fc8580577d0426))
+* **node-version:** deprecate v18, v20 ([d1056a1](https://github.com/H4ad/serverless-adapter/commit/d1056a156047248f5a08fb944d56dd6476e38f86)), closes [#353](https://github.com/H4ad/serverless-adapter/issues/353)
+
+
+### Bug Fixes
+
+* **azure:** explicit support only for &gt;=2 and &lt;4 ([3b2b195](https://github.com/H4ad/serverless-adapter/commit/3b2b19502f2c623c8503288ff85a7b0079f65940))
+* **default-handler:** support AWS Lambda Node.js 24 handler arity ([#379](https://github.com/H4ad/serverless-adapter/issues/379)) ([4333882](https://github.com/H4ad/serverless-adapter/commit/4333882ed057cd67cde7250fe9cde691f51d1abd))
+* **response-stream:** forward the write callback on empty body responses ([cf47426](https://github.com/H4ad/serverless-adapter/commit/cf4742654d9f9d0a794ed5782de40341246c1a6f))
+* **tsup:** disable minify ([524b12e](https://github.com/H4ad/serverless-adapter/commit/524b12e79f3ac200ae44f730e149ffb2176b09f7))
+
+
+### Documentation
+
+* **aws:** update throwOnChunkedTransferEncoding in docs ([b72add9](https://github.com/H4ad/serverless-adapter/commit/b72add932caf084dd41f6b5e1fcfdb79a7ff7f2d))
+
+
+### Miscellaneous Chores
+
+* bump @xhmikosr/decompress from 10.0.1 to 10.2.1 in /benchmark ([615dc53](https://github.com/H4ad/serverless-adapter/commit/615dc530e6512cfe6ddcca71db0dd28a5be4d5c8))
+* bump body-parser and express in /benchmark ([b0b4099](https://github.com/H4ad/serverless-adapter/commit/b0b4099786ae39a8fca6f28df9e180a6910b5d75))
+* bump brace-expansion from 1.1.11 to 1.1.18 in /www ([b49fd7d](https://github.com/H4ad/serverless-adapter/commit/b49fd7da53617ee462f76681bff2c8664bc8373d))
+* bump brace-expansion from 2.0.1 to 2.1.4 in /benchmark ([0e1f8ee](https://github.com/H4ad/serverless-adapter/commit/0e1f8ee00cfa11433a400e76128787786f5a1933))
+* bump browserslist from 4.24.2 to 4.28.8 in /www ([f602f4d](https://github.com/H4ad/serverless-adapter/commit/f602f4d6fcb7481de833f12ac3e6011d0ee7f1b0))
+* bump file-type and @swc/cli in /benchmark ([a44e107](https://github.com/H4ad/serverless-adapter/commit/a44e1077574eb5454256fccc9e783841f7afeb76))
+* bump micromatch from 4.0.5 to 4.0.8 in /www ([fcd122f](https://github.com/H4ad/serverless-adapter/commit/fcd122f690343c175ce64f5c1cff6ade6c2568e9))
+* bump postcss from 8.4.32 to 8.5.26 in /www ([a63d27e](https://github.com/H4ad/serverless-adapter/commit/a63d27ef15919912e9efe6cc38dc672637fdc3b0))
+* bump qs, body-parser and express in /benchmark ([d0d9cb4](https://github.com/H4ad/serverless-adapter/commit/d0d9cb4c0e6055f743af22298c53e71a0202086d))
+* **dependabot:** reduce to weekly ([314f9d7](https://github.com/H4ad/serverless-adapter/commit/314f9d70ebecc78e6702c5b680803236a6cf6b2a))
+* **oxc:** migrate from eslint/prettier ([a864b42](https://github.com/H4ad/serverless-adapter/commit/a864b42417b68264492486cb1d7115c45ebb09f9))
+* **types:** fix issues with joi/hapi on typecheck ([cc06eab](https://github.com/H4ad/serverless-adapter/commit/cc06eab3d5e139b636430cd7a9b22faa29aca72e))
+* **www:** bump to v22 ([ecf53f4](https://github.com/H4ad/serverless-adapter/commit/ecf53f45c74d7bf5bfe5fb6307e0d6a4dcc19cbb))
+
+
+### Continuous Integration
+
+* **codecov:** bump to v7 ([9a258a2](https://github.com/H4ad/serverless-adapter/commit/9a258a2e2414ead37fd1e112574511bf2adddb58))
+* **docs:** bump ubuntu to latest ([3abab65](https://github.com/H4ad/serverless-adapter/commit/3abab65593ba5c990f03acb8ce99926fdd8db6b5))
+* **release:** enable trusted publish ([1e84e31](https://github.com/H4ad/serverless-adapter/commit/1e84e31248a412fb4db2a92bb4244e7344d98398))
+* **release:** use release ci without token ([d92d680](https://github.com/H4ad/serverless-adapter/commit/d92d680fda10f365f92e78567f4201ce7b3145e8))
+* **workflows:** update versions ([6a993d3](https://github.com/H4ad/serverless-adapter/commit/6a993d3aaa0de836b95f8ff1ae0c7cdbb7cef4bd))
+
 ## [4.4.0](https://github.com/H4ad/serverless-adapter/compare/v4.3.2...v4.4.0) (2024-12-01)
 
 
