@@ -15,7 +15,7 @@ on:
         type: boolean
         default: false
       latest:
-        description: "Point the latest dist-tag at it. Off publishes under release-<major>.<minor> instead"
+        description: "Point the latest dist-tag at it. Off, a stable patch publishes under release-<major>.<minor> and a hotfix under hotfix"
         type: boolean
         default: false
       dry_run:
@@ -123,6 +123,19 @@ jobs:
             exit 1
           fi
 
+      # The branch is cut from a release tag, so package.json already carries the version that
+      # line shipped. Publishing a version from another line would label this source as
+      # something it is not, and 5.x from a 4.4 branch used to pass every other guard.
+      - name: Check version matches the branch line
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          line=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')")
+          if [[ "$VERSION" != "${line}."* ]]; then
+            echo "::error::${VERSION} is not a patch of ${line}, which package.json says this branch is. Cut the branch from the tag of the line you are patching."
+            exit 1
+          fi
+
       # Where the version lands. A patch of an old line must not take over `latest` from a newer
       # release, so it gets a dist-tag named after its own line: release-4.4 for 4.4.2.
       - name: Resolve npm dist-tag
@@ -142,23 +155,43 @@ jobs:
           echo "publishing ${VERSION} under the ${tag} dist-tag"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
+      # Compared against the ref name, not with grep: a version's dots are regex wildcards, so
+      # `grep "refs/tags/v4.4.1$"` also matches an unrelated tag like v4x4x1. The listing is
+      # captured first so a failure to reach the remote fails the step instead of skipping it.
       - name: Check tag does not exist
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          if git ls-remote --tags origin | grep -q "refs/tags/v${VERSION}$"; then
+          if ! tags=$(git ls-remote --tags origin); then
+            echo "::error::Could not list the remote tags, refusing to publish without the tag check"
+            exit 1
+          fi
+          if printf '%s\n' "$tags" | awk -v want="refs/tags/v${VERSION}" '$2 == want { found = 1 } END { exit !found }'; then
             echo "::error::Tag v${VERSION} already exists"
             exit 1
           fi
 
-      - name: Check npm version does not exist
+      # Publishing and creating the release are separate steps, so a failure between them leaves
+      # the version on npm with no tag. Re-running has to be able to finish the job: when the
+      # target dist-tag already points at this exact version, the publish is done and only the
+      # tag and release are missing. Any other already-published version is still an error.
+      - name: Check npm version and decide whether to publish
+        id: npm_version
         env:
           VERSION: ${{ inputs.version }}
+          TAG: ${{ steps.dist_tag.outputs.tag }}
         run: |
+          published=$(npm view "${PACKAGE}@${TAG}" version 2>/dev/null || true)
+          if [ "$published" = "$VERSION" ]; then
+            echo "::notice::${VERSION} is already published under ${TAG}, skipping the publish and continuing to the tag and release"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if npm view "${PACKAGE}@${VERSION}" version >/dev/null 2>&1; then
             echo "::error::${PACKAGE}@${VERSION} is already published"
             exit 1
           fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Install Deps
         run: npm ci
@@ -172,9 +205,16 @@ jobs:
           VERSION: ${{ inputs.version }}
           TAG: ${{ steps.dist_tag.outputs.tag }}
         run: |
-          current=$(npm view "${PACKAGE}" "dist-tags.${TAG}" 2>/dev/null || true)
+          # The tag goes in as a package spec, not as a "dist-tags.<tag>" field path: npm splits
+          # a field path on dots, so "dist-tags.release-4.4" resolves to nothing and the guard
+          # silently skips every release-X.Y line.
+          current=$(npm view "${PACKAGE}@${TAG}" version 2>/dev/null || true)
           if [ -z "$current" ]; then
             echo "::notice::No ${TAG} dist-tag on npm yet, nothing to compare against"
+            exit 0
+          fi
+          if [ "$current" = "$VERSION" ]; then
+            echo "::notice::${TAG} already points at ${VERSION}, nothing to compare against"
             exit 0
           fi
           echo "current ${TAG}: ${current}"
@@ -196,7 +236,7 @@ jobs:
         run: npm run test
 
       - name: NPM Publish
-        if: ${{ !inputs.dry_run }}
+        if: ${{ !inputs.dry_run && steps.npm_version.outputs.skip != 'true' }}
         env:
           TAG: ${{ steps.dist_tag.outputs.tag }}
         run: npm publish --provenance --access public --tag "${TAG}"
@@ -205,6 +245,7 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
           VERSION: ${{ inputs.version }}
           BRANCH: ${{ github.ref_name }}
           STABLE: ${{ inputs.stable }}
@@ -218,8 +259,17 @@ jobs:
             prerelease="--prerelease"
           fi
 
+          # Without the flag, GitHub picks its own Latest release by date and version, and an
+          # old-line patch published today can take it over from a newer release. Only the run
+          # that moved the npm latest tag should move the GitHub one.
+          if [ "$TAG" = "latest" ]; then
+            latest_flag=""
+          else
+            latest_flag="--latest=false"
+          fi
+
           gh release create "v${VERSION}" \
-            --target "${{ github.sha }}" \
+            --target "$SHA" \
             --title "v${VERSION}" \
             --notes "${kind} published from \`${BRANCH}\`, npm dist-tag \`${TAG}\`." \
-            ${prerelease}
+            ${prerelease} ${latest_flag}

@@ -29,7 +29,9 @@ work you are not ready to ship. Three modes, set by two inputs:
 `stable` means "publish a plain version instead of a prerelease". `latest` means "point the
 `latest` dist-tag at it", and it is separate on purpose: a patch of an old line usually should
 not take over `latest` from a newer release. Without `latest`, the version gets a dist-tag named
-after its own line (`release-4.4` for `4.4.2`), so that line stays installable on its own.
+after its own line (`release-4.4` for `4.4.2`), so that line stays installable on its own. A run
+that does not target `latest` also creates its GitHub release with `--latest=false`, so the
+repository's Latest badge stays on the newest release instead of moving back to an old line.
 
 ### When to use it
 
@@ -71,6 +73,14 @@ after its own line (`release-4.4` for `4.4.2`), so that line stays installable o
 4. The branch is throwaway. The fix lives in the tag, so delete the branch once the release
    is out.
 
+### If a run fails after publishing
+
+Publishing and the GitHub release are separate steps. When the release step fails after npm has
+the version, re-run the workflow from the same branch with the same inputs. A run whose target
+dist-tag already points at the version skips the publish and continues to the tag and the
+release. Any other already-published version still fails, so a mistyped version cannot ride on
+an unrelated release.
+
 ### Choosing a mode
 
 A hotfix goes out under the `hotfix` dist-tag, so `npm i @h4ad/serverless-adapter` keeps
@@ -97,6 +107,8 @@ greater than what `latest` currently points at.
   prerelease everyone's default install
 - A tag `v<version>` that does not exist yet
 - An `<version>` that is not already on npm
+- A `<version>` whose `major.minor` matches `package.json` on the branch, so a patch of the 4.4
+  line cannot be published as `5.0.0`
 - With `stable` enabled only: the version must be greater than whatever the target dist-tag
   already points at, so publishing cannot move a tag backwards
 - Build and the full test suite before anything is published
@@ -105,8 +117,17 @@ greater than what `latest` currently points at.
 
 `.release-please-manifest.json` is not touched in any mode, and neither is `main`. Release
 Please keeps computing the next release from `main`'s own history, so a `4.4.1` published here
-simply does not appear in the generated changelog. That is harmless: version ordering puts the
-eventual `5.0.0` above it.
+simply does not appear in the generated changelog.
+
+That is harmless when `main` already holds a feature or a breaking change, because the next
+normal release is then a higher version and ordering puts it above the patch.
+
+It is not harmless when the line you patched is still `main`'s line. With the manifest at
+`4.4.0` and only `fix` commits waiting, Release Please computes `4.4.1` for its next release,
+npm already has it, and the publish step fails with `cannot publish over the previously
+published versions`. Set `version` in `.release-please-manifest.json` to the version you just
+published and commit it to `main` before the next release PR is merged, so Release Please
+computes the one after it.
 
 ### After the release
 
