@@ -16,14 +16,21 @@
     "build:docs": "tsc -p tsconfig.doc.json",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
-    "lint": "oxlint --fix ./src/ ./test/ && oxfmt --write ./src/ ./test/",
+    "lint": "oxlint --fix ./src/ ./test/ ./e2e/ && oxfmt --write ./src/ ./test/ ./e2e/",
     "docs:generate": "pnpm docs:generate:parsing && pnpm docs:generate:markdown && pnpm docs:generate:api-pages",
     "docs:generate:parsing": "pnpm build:docs && tsx scripts/parse-docs.ts",
     "docs:generate:markdown": "tsx ./scripts/generate-markdown.ts",
     "docs:generate:api-pages": "tsx ./scripts/generate-api-pages.ts",
     "test:watch": "vitest --watch",
     "test": "vitest --run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "e2e:local": "tsx e2e/cli.ts local",
+    "e2e:up": "tsx e2e/cli.ts up",
+    "e2e:test": "tsx e2e/cli.ts test",
+    "e2e:down": "tsx e2e/cli.ts down",
+    "e2e:leftovers": "tsx e2e/cli.ts leftovers",
+    "e2e:run": "tsx e2e/cli.ts run",
+    "e2e:reap": "tsx e2e/cli.ts reap"
   },
   "repository": {
     "type": "git",
@@ -81,6 +88,7 @@
   "devDependencies": {
     "@apollo/server": "5.5.1",
     "@azure/functions": "3.5.1",
+    "@azure/functions-v4": "npm:@azure/functions@^4.17.0",
     "@deepkit/app": "1.0.1-alpha.155",
     "@deepkit/core": "1.0.1-alpha.154",
     "@deepkit/framework": "1.0.1-alpha.155",

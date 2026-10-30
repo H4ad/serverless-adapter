@@ -41,7 +41,8 @@
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "e2e/**/*.ts"
   ],
   "exclude": [
     "src/index.doc.ts",

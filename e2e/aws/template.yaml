@@ -1,0 +1,335 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Ephemeral e2e stack for @h4ad/serverless-adapter. Deleted by the e2e runner.
+
+Parameters:
+  RunId:
+    Type: String
+    Description: Identifier written into every resource name.
+  ExpireAt:
+    Type: String
+    Description: ISO timestamp after which the reaper may delete this stack.
+  BucketName:
+    Type: String
+    Description: Lowercase, globally unique name for the S3 event bucket.
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 30
+    MemorySize: 512
+    Tags:
+      project: serverless-adapter-e2e
+      run-id: !Ref RunId
+      expire-at: !Ref ExpireAt
+
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambda.zip
+      Handler: lambda.handler
+      Environment:
+        Variables:
+          E2E_RUN_ID: !Ref RunId
+      Events:
+        HttpApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /
+            Method: ANY
+        HttpApiProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+        RestApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestApi
+            Path: /
+            Method: ANY
+        RestApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestApi
+            Path: /{proxy+}
+            Method: ANY
+        QueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt Queue.Arn
+            BatchSize: 1
+        TopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref Topic
+        TableEvent:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt Table.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Tags:
+        project: serverless-adapter-e2e
+        run-id: !Ref RunId
+
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Tags:
+        project: serverless-adapter-e2e
+        run-id: !Ref RunId
+
+  FunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt ApiFunction.Arn
+      AuthType: NONE
+      InvokeMode: BUFFERED
+
+  FunctionUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunctionUrl
+      FunctionName: !Ref ApiFunction
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+  EventBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+        - Key: expire-at
+          Value: !Ref ExpireAt
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: !GetAtt ApiFunction.Arn
+
+  EventBucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ApiFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !GetAtt EventBucket.Arn
+      SourceAccount: !Ref AWS::AccountId
+
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 300
+      VisibilityTimeout: 60
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+          - serverless-adapter.e2e
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+      Targets:
+        - Arn: !GetAtt ApiFunction.Arn
+          Id: api
+
+  EventRulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ApiFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRule.Arn
+
+  # The ALB adapter needs a real ALB event, which needs a VPC with two public
+  # subnets. Everything here is destroyed with the stack.
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.42.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.42.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetARoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetA
+      RouteTableId: !Ref RouteTable
+
+  SubnetBRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetB
+      RouteTableId: !Ref RouteTable
+
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Serverless adapter e2e ALB
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  Alb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - !Ref SubnetA
+        - !Ref SubnetB
+      SecurityGroups:
+        - !Ref AlbSecurityGroup
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  AlbPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ApiFunction
+      Principal: elasticloadbalancing.amazonaws.com
+      SourceArn: !Ref TargetGroup
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: lambda
+      HealthCheckEnabled: false
+      Targets:
+        - Id: !GetAtt ApiFunction.Arn
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref Alb
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+  HttpApiBaseUrl:
+    Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  RestApiBaseUrl:
+    Value: !Sub 'https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+  AlbBaseUrl:
+    Value: !Sub 'http://${Alb.DNSName}'
+  FunctionUrl:
+    Value: !GetAtt FunctionUrl.FunctionUrl
+  FunctionName:
+    Value: !Ref ApiFunction
+  QueueUrl:
+    Value: !Ref Queue
+  TopicArn:
+    Value: !Ref Topic
+  BucketName:
+    Value: !Ref EventBucket
+  TableName:
+    Value: !Ref Table

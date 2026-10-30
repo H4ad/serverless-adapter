@@ -120,6 +120,14 @@ dist
 # Compiled code
 lib/
 
+# e2e runner state and build output
+e2e/.state/
+e2e/**/.terraform/
+e2e/**/terraform.tfstate*
+e2e/aws/dist/
+e2e/azure/dist/
+e2e/do/build/
+
 # IDEs
 .idea
 
