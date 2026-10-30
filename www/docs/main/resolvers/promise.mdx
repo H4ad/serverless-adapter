@@ -23,6 +23,12 @@ Only Huawei doesn't support Promise, or it was buggy in my time, so I suggest yo
 
 :::
 
+:::caution AWS Lambda Node.js 24
+
+`PromiseResolver` is **required** when deploying to AWS Lambda `nodejs24.x`. The Node.js 24 runtime no longer supports callback-based function handlers.
+
+:::
+
 # Usage
 
 To use, you can import and call the method [setResolver](../../api/ServerlessAdapter#method-setresolver), as per the code below:

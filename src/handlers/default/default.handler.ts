@@ -54,7 +54,9 @@ export class DefaultHandler<
     respondWithErrors: boolean,
     log: ILogger,
   ): ServerlessHandler<TReturn> {
-    return (event: TEvent, context: TContext, callback?: TCallback) => {
+    return (event: TEvent, context: TContext, ...args: [TCallback?]) => {
+      const [callback] = args;
+
       this.onReceiveRequest(
         log,
         event,

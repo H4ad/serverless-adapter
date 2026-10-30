@@ -7,6 +7,7 @@ import {
 } from '../../src';
 import { ApiGatewayV2Adapter } from '../../src/adapters/aws';
 import { DefaultHandler } from '../../src/handlers/default';
+import { CallbackResolver } from '../../src/resolvers/callback';
 import { PromiseResolver } from '../../src/resolvers/promise';
 import { createApiGatewayV2 } from '../adapters/aws/utils/api-gateway-v2';
 import { FrameworkMock } from '../mocks/framework.mock';
@@ -157,5 +158,80 @@ describe('DefaultHandler', () => {
       'body',
       Buffer.from(JSON.stringify(response)).toString('base64'),
     );
+  });
+
+  describe('Node.js 24 handler arity', () => {
+    it('should expose handler arity compatible with NODEJS_24_X', () => {
+      const handler = defaultHandler.getHandler(
+        app,
+        new FrameworkMock(200, response),
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      expect(handler.length).toBeLessThanOrEqual(2);
+    });
+
+    it('should resolve promise when called with two arguments only', async () => {
+      const framework = new FrameworkMock(200, response);
+
+      const handler = defaultHandler.getHandler(
+        app,
+        framework,
+        adapters,
+        resolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
+      const context = { test: Symbol('unique') };
+
+      const result = await handler(event, context);
+
+      expect(result).toHaveProperty('statusCode', 200);
+      expect(result).toHaveProperty('body', JSON.stringify(response));
+    });
+  });
+
+  describe('CallbackResolver positional callback', () => {
+    it('should forward callback from third positional argument', async () => {
+      const callbackResolver = new CallbackResolver();
+      const framework = new FrameworkMock(200, response);
+      const mockCallback = vitest.fn();
+
+      const handler = defaultHandler.getHandler(
+        app,
+        framework,
+        adapters,
+        callbackResolver,
+        binarySettings,
+        respondWithErrors,
+        logger,
+      );
+
+      const event = createApiGatewayV2('GET', '/users', {}, { test: 'true' });
+      const context = { test: Symbol('unique') };
+
+      handler(event, context, mockCallback);
+
+      await new Promise<void>(resolve => {
+        setTimeout(() => {
+          expect(mockCallback).toHaveBeenCalledWith(
+            null,
+            expect.objectContaining({
+              statusCode: 200,
+              body: JSON.stringify(response),
+            }),
+          );
+
+          resolve();
+        }, 200);
+      });
+    });
   });
 });
