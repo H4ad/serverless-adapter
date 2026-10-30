@@ -1,3 +1,4 @@
+import { getDefaultHighWaterMark } from 'node:stream';
 import { ObjectReadableMock } from 'stream-mock';
 import { describe, expect, it, vitest } from 'vitest';
 import {
@@ -250,5 +251,121 @@ describe('ServerlessResponse', () => {
 
     expect(response.getHeaders()).not.toHaveProperty('test2', 'value');
     expect(response.headers).toHaveProperty('test2', 'value');
+  });
+
+  describe('backpressure', () => {
+    it('should return a boolean from write', () => {
+      const response = new ServerlessResponse({
+        method: 'GET',
+      });
+
+      expect(response.write('hello')).toBe(true);
+    });
+
+    it('should not need drain after a small write', () => {
+      const response = new ServerlessResponse({
+        method: 'GET',
+      });
+
+      response.write('hello');
+
+      expect(response.writableNeedDrain).toBe(false);
+    });
+
+    it('should expose the writable metadata Node reads from the socket', () => {
+      const response = new ServerlessResponse({
+        method: 'GET',
+      });
+
+      expect(response.writableLength).toBe(0);
+      expect(response.writableHighWaterMark).toBe(
+        getDefaultHighWaterMark(false),
+      );
+    });
+
+    it('should accept a write above 16 KiB without backpressure', () => {
+      const response = new ServerlessResponse({
+        method: 'GET',
+      });
+
+      expect(response.write(Buffer.alloc(20 * 1024, 'a'))).toBe(true);
+    });
+  });
+
+  describe('chunked transfer encoding', () => {
+    function createChunkedResponse() {
+      const response = new ServerlessResponse({
+        method: 'GET',
+      });
+
+      response.statusCode = 200;
+      response.setHeader('Transfer-Encoding', 'chunked');
+
+      return response;
+    }
+
+    // Node 24.22+ and 26.9+ cork the message itself and flush one frame per
+    // tick, so the number of socket writes no longer matches the number of
+    // res.write calls. The shim must decode the framing by length instead of
+    // counting socket writes.
+    it('should keep every chunk written in the same tick', async () => {
+      const response = createChunkedResponse();
+
+      response.write('a');
+      response.write('b');
+      response.write('c');
+      response.end();
+
+      await waitForStreamComplete(response);
+
+      expect(ServerlessResponse.body(response).toString()).toBe('abc');
+    });
+
+    it('should keep chunks written across ticks', async () => {
+      const response = createChunkedResponse();
+
+      response.write('a');
+      response.write('b');
+      await new Promise(resolve => setImmediate(resolve));
+      response.write('c');
+      await new Promise(resolve => setImmediate(resolve));
+      response.end('d');
+
+      await waitForStreamComplete(response);
+
+      expect(ServerlessResponse.body(response)).toEqual(Buffer.from('abcd'));
+    });
+
+    it('should not add framing bytes to the body', async () => {
+      const response = createChunkedResponse();
+
+      response.write('a');
+      response.write('b');
+      response.end();
+
+      await waitForStreamComplete(response);
+
+      expect(ServerlessResponse.body(response).toString()).not.toContain('\r');
+    });
+
+    it('should call the write callback', async () => {
+      const response = createChunkedResponse();
+
+      await new Promise<void>((resolve, reject) => {
+        const timer = setTimeout(
+          () => reject(new Error('write callback was not called')),
+          1000,
+        );
+
+        response.write('a', () => {
+          clearTimeout(timer);
+          resolve();
+        });
+      });
+
+      response.end();
+
+      await waitForStreamComplete(response);
+    });
   });
 });

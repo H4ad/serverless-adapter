@@ -1,23 +1,17 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
 import { IncomingMessage, ServerResponse } from 'node:http';
 import type { Socket } from 'node:net';
-import { NO_OP } from '../core';
+import { ChunkedBodyDecoder, toBodyBuffer } from './body';
+import { createSocketShim } from './socket';
 import { getString } from './utils';
 
 const headerEnd = '\r\n\r\n';
-const endChunked = '0\r\n\r\n';
 
 const BODY = Symbol('Response body');
 const HEADERS = Symbol('Response headers');
 
-function addData(stream: ServerlessResponse, data: Uint8Array | string) {
-  if (
-    Buffer.isBuffer(data) ||
-    typeof data === 'string' ||
-    data instanceof Uint8Array
-  )
-    stream[BODY].push(Buffer.from(data));
-  else throw new Error(`response.write() of unexpected type: ${typeof data}`);
+function addData(stream: ServerlessResponse, data: unknown) {
+  stream[BODY].push(toBodyBuffer(data));
 }
 
 /**
@@ -51,56 +45,44 @@ export class ServerlessResponse extends ServerResponse {
     this.chunkedEncoding = false;
     this._header = '';
 
-    // this ignore is used because I need to ignore these write calls:
-    // https://github.com/nodejs/node/blob/main/lib/_http_outgoing.js#L934-L935
-    // https://github.com/nodejs/node/blob/main/lib/_http_outgoing.js#L937
-    let writesToIgnore = 1;
+    // Node frames a chunked body as hex length, CRLF, data, CRLF, ending with
+    // 0\r\n\r\n. Since Node 24.22 and 26.9 it corks the message and flushes
+    // every chunk of a tick as one frame (nodejs/node#64987), so the number of
+    // socket writes no longer matches the number of res.write calls. Decode the
+    // framing by length instead of counting writes.
+    const decoder = new ChunkedBodyDecoder();
 
-    const socket: Partial<Socket> & { _writableState: any } = {
-      _writableState: {},
-      writable: true,
-      writableLength: 0,
-      writableHighWaterMark: 16384,
-      on: NO_OP,
-      removeListener: NO_OP,
-      destroy: NO_OP,
-      cork: NO_OP,
-      uncork: NO_OP,
-      write: (
-        data: Uint8Array | string,
-        encoding?: string | null | (() => void),
-        cb?: () => void,
-      ): any => {
-        if (typeof encoding === 'function') {
-          cb = encoding;
-          encoding = null;
-        }
+    const writeBody = (data: unknown) => {
+      if (!this.chunkedEncoding) {
+        addData(this, data);
+        return;
+      }
 
-        if (this._header === '' || this._wroteHeader) {
-          if (!this.chunkedEncoding) addData(this, data);
-          else {
-            if (writesToIgnore > 0) writesToIgnore--;
-            else if (data !== endChunked) {
-              addData(this, data);
-              writesToIgnore = 3;
-            }
-          }
-        } else {
-          const string = getString(data);
-          const index = string.indexOf(headerEnd);
-
-          if (index !== -1) {
-            const remainder = string.slice(index + headerEnd.length);
-
-            if (remainder && !this.chunkedEncoding) addData(this, remainder);
-
-            this._wroteHeader = true;
-          }
-        }
-
-        if (typeof cb === 'function') cb();
-      },
+      for (const chunk of decoder.push(toBodyBuffer(data)))
+        addData(this, chunk);
     };
+
+    const socket = createSocketShim((data, _encoding, cb) => {
+      if (this._header === '' || this._wroteHeader) writeBody(data);
+      else {
+        // Node prefixes the headers to the first body write, which includes the
+        // first chunk size when the response is chunked.
+        const string = getString(data);
+        const index = string.indexOf(headerEnd);
+
+        if (index !== -1) {
+          const remainder = string.slice(index + headerEnd.length);
+
+          if (remainder) writeBody(remainder);
+
+          this._wroteHeader = true;
+        }
+      }
+
+      if (typeof cb === 'function') cb();
+
+      return true;
+    });
 
     this.assignSocket(socket as unknown as Socket);
   }
