@@ -1,3 +1,4 @@
+import { once } from 'events';
 import { createReadStream, readFileSync } from 'fs';
 import { join } from 'path';
 import express from 'express';
@@ -123,7 +124,45 @@ describe('AwsStreamHandler', () => {
     expect(Buffer.byteLength(finalBuffer)).toBe(Buffer.byteLength(file));
   });
 
-  it('should return the correct bytes of json', async () => {
+  it('should not report backpressure that never drains when a framework awaits drain', async () => {
+    const app = express();
+    const body = JSON.stringify({ data: { ok: true } });
+
+    // Mirrors frameworks like graphql-yoga, which wait for 'drain' whenever write() returns false
+    app.get('/', async (_, res) => {
+      res.statusCode = 200;
+      res.setHeader('content-type', 'application/json');
+
+      if (!res.write(body)) await once(res, 'drain');
+
+      res.end();
+    });
+
+    const expressFramework = new ExpressFramework();
+
+    const handler = awsStreamHandler.getHandler(
+      app,
+      expressFramework,
+      adapters,
+      resolver,
+      binarySettings,
+      respondWithErrors,
+      logger,
+    );
+
+    const event = createApiGatewayV2('GET', '/', undefined);
+    const context = { test: Symbol('unique') };
+
+    const writable = new WritableMock();
+
+    await handler(event, writable, context);
+
+    const finalBuffer = Buffer.concat(writable.data);
+
+    expect(finalBuffer.toString()).toBe(body);
+  }, 2000);
+
+  it('should return the correct bytes of json and expose the current invoke while handling the request', async () => {
     const app = express();
 
     app.get('/', (_, res) => {
