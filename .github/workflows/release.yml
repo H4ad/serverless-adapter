@@ -4,14 +4,40 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish, e.g. 4.4.1-hotfix.0, or 4.4.1 with stable enabled. Must not exist on npm."
+        required: true
+        type: string
+      stable:
+        description: "Publish a plain version instead of a prerelease, for a patch of an already released line"
+        type: boolean
+        default: false
+      latest:
+        description: "Point the latest dist-tag at it. Off publishes under release-<major>.<minor> instead"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Skip publish and tagging, just build and test"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
   pull-requests: write
   id-token: write
 
+env:
+  PACKAGE: "@h4ad/serverless-adapter"
+
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -49,3 +75,151 @@ jobs:
       - name: NPM Publish
         run: npm publish --provenance --access public
         if: ${{ steps.release.outputs.release_created }}
+
+  hotfix:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require a hotfix branch
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [[ ! "$REF" =~ ^refs/heads/hotfix/.+ ]]; then
+            echo "::error::Hotfix releases must run from a hotfix/* branch cut off a release tag, got '${REF}'. Create one with: git checkout -b hotfix/4.4.1 v4.4.0"
+            exit 1
+          fi
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Use Node 22.x
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      # A prerelease is the safe default: a plain `4.4.1` satisfies `^4.4.0`, so it lands in
+      # every consumer's next install, and dist-tags do not gate range resolution. Accepting
+      # a plain version is only allowed with `stable`, which makes that outcome deliberate.
+      - name: Validate version format
+        env:
+          VERSION: ${{ inputs.version }}
+          STABLE: ${{ inputs.stable }}
+          LATEST: ${{ inputs.latest }}
+        run: |
+          prerelease='^[0-9]+\.[0-9]+\.[0-9]+-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*$'
+          release='^[0-9]+\.[0-9]+\.[0-9]+$'
+          if [[ "$STABLE" != "true" && "$LATEST" == "true" ]]; then
+            echo "::error::The latest input needs stable: moving latest onto a prerelease would make it everyone's default install"
+            exit 1
+          fi
+          if [[ "$STABLE" == "true" ]]; then
+            if [[ ! "$VERSION" =~ $release ]]; then
+              echo "::error::Stable releases take a plain version like 4.4.1, got '${VERSION}'"
+              exit 1
+            fi
+          elif [[ ! "$VERSION" =~ $prerelease ]]; then
+            echo "::error::Version must be a prerelease semver (e.g. 4.4.1-hotfix.0). Enable the stable input to publish a plain version."
+            exit 1
+          fi
+
+      # Where the version lands. A patch of an old line must not take over `latest` from a newer
+      # release, so it gets a dist-tag named after its own line: release-4.4 for 4.4.2.
+      - name: Resolve npm dist-tag
+        id: dist_tag
+        env:
+          VERSION: ${{ inputs.version }}
+          STABLE: ${{ inputs.stable }}
+          LATEST: ${{ inputs.latest }}
+        run: |
+          if [ "$STABLE" != "true" ]; then
+            tag=hotfix
+          elif [ "$LATEST" = "true" ]; then
+            tag=latest
+          else
+            tag="release-$(echo "$VERSION" | cut -d. -f1,2)"
+          fi
+          echo "publishing ${VERSION} under the ${tag} dist-tag"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag does not exist
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if git ls-remote --tags origin | grep -q "refs/tags/v${VERSION}$"; then
+            echo "::error::Tag v${VERSION} already exists"
+            exit 1
+          fi
+
+      - name: Check npm version does not exist
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if npm view "${PACKAGE}@${VERSION}" version >/dev/null 2>&1; then
+            echo "::error::${PACKAGE}@${VERSION} is already published"
+            exit 1
+          fi
+
+      - name: Install Deps
+        run: npm ci
+
+      # A dist-tag is what a bare `npm i` resolves through, so publishing a version below the one
+      # already on it would silently downgrade everyone following that tag. Compare against the
+      # tag this run targets, not against latest, so a 4.4.2 can still ship after 5.0.0 is out.
+      - name: Check version is newer than its dist-tag
+        if: ${{ inputs.stable }}
+        env:
+          VERSION: ${{ inputs.version }}
+          TAG: ${{ steps.dist_tag.outputs.tag }}
+        run: |
+          current=$(npm view "${PACKAGE}" "dist-tags.${TAG}" 2>/dev/null || true)
+          if [ -z "$current" ]; then
+            echo "::notice::No ${TAG} dist-tag on npm yet, nothing to compare against"
+            exit 0
+          fi
+          echo "current ${TAG}: ${current}"
+          if ! CURRENT="$current" node -e "process.exit(require('semver').gt(process.env.VERSION, process.env.CURRENT) ? 0 : 1)"; then
+            echo "::error::${VERSION} is not greater than ${current}, which ${TAG} already points at. Publishing it there would downgrade everyone following that tag."
+            exit 1
+          fi
+
+      # Also rewrites package-lock.json, so the lock stays in sync with the version.
+      - name: Set package version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: npm version "${VERSION}" --no-git-tag-version
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test
+
+      - name: NPM Publish
+        if: ${{ !inputs.dry_run }}
+        env:
+          TAG: ${{ steps.dist_tag.outputs.tag }}
+        run: npm publish --provenance --access public --tag "${TAG}"
+
+      - name: Create tag and GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          BRANCH: ${{ github.ref_name }}
+          STABLE: ${{ inputs.stable }}
+          TAG: ${{ steps.dist_tag.outputs.tag }}
+        run: |
+          if [ "$STABLE" = "true" ]; then
+            kind="Patch release"
+            prerelease=""
+          else
+            kind="Hotfix"
+            prerelease="--prerelease"
+          fi
+
+          gh release create "v${VERSION}" \
+            --target "${{ github.sha }}" \
+            --title "v${VERSION}" \
+            --notes "${kind} published from \`${BRANCH}\`, npm dist-tag \`${TAG}\`." \
+            ${prerelease}
