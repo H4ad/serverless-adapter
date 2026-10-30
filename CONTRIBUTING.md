@@ -12,6 +12,10 @@ Please note we have a code of conduct, please follow it in all your interactions
 3. Be sure to update the documentation if you add a new feature, the docs are inside `www/docs/main`, to see your changes, run `npm run start`.
 4. Once we've reviewed and ensured that all of these things are correct, we'll merge your Pull-Request.
 
+## Releases
+
+Publishing, including the manual hotfix pipeline, is documented in [RELEASE.md](./RELEASE.md).
+
 ## Code of Conduct
 
 ### Our Pledge
