@@ -59,6 +59,8 @@ export class ServerlessResponse extends ServerResponse {
     const socket: Partial<Socket> & { _writableState: any } = {
       _writableState: {},
       writable: true,
+      writableLength: 0,
+      writableHighWaterMark: 16384,
       on: NO_OP,
       removeListener: NO_OP,
       destroy: NO_OP,
