@@ -129,6 +129,7 @@ describe('AwsStreamHandler', () => {
     const body = JSON.stringify({ data: { ok: true } });
 
     // Mirrors frameworks like graphql-yoga, which wait for 'drain' whenever write() returns false
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     app.get('/', async (_, res) => {
       res.statusCode = 200;
       res.setHeader('content-type', 'application/json');
@@ -317,6 +318,7 @@ describe('AwsStreamHandler', () => {
     it(`should handle no content sent asynchronously with status ${statusCode}`, async () => {
       const app = express();
 
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       app.get('/', async (_, res) => {
         await new Promise(resolve => setImmediate(resolve));
 
@@ -355,6 +357,7 @@ describe('AwsStreamHandler', () => {
     it(`should handle an empty body sent asynchronously with status ${statusCode}`, async () => {
       const app = express();
 
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       app.get('/', async (_, res) => {
         await new Promise(resolve => setImmediate(resolve));
 
