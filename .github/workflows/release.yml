@@ -172,26 +172,64 @@ jobs:
           fi
 
       # Publishing and creating the release are separate steps, so a failure between them leaves
-      # the version on npm with no tag. Re-running has to be able to finish the job: when the
-      # target dist-tag already points at this exact version, the publish is done and only the
-      # tag and release are missing. Any other already-published version is still an error.
+      # the version on npm with no tag. Re-running has to be able to finish the job, but only for
+      # the commit that was published: npm records it as gitHead, and tagging any other commit
+      # would put the v-tag on source that differs from the tarball and its provenance. Any other
+      # already-published version is still an error.
+      #
+      # npm view exits 1 both for a version or dist-tag that does not exist and for a registry it
+      # could not reach. Only E404 means absent. Reading a network or auth error as "not
+      # published" would let this check and the downgrade guard pass, so anything else fails.
+      #
+      # The dist-tag goes in as a package spec, not as a "dist-tags.<tag>" field path: npm splits
+      # a field path on dots, so "dist-tags.release-4.4" resolves to nothing and the downgrade
+      # guard would silently skip every release-X.Y line.
       - name: Check npm version and decide whether to publish
         id: npm_version
         env:
           VERSION: ${{ inputs.version }}
           TAG: ${{ steps.dist_tag.outputs.tag }}
+          SHA: ${{ github.sha }}
         run: |
-          published=$(npm view "${PACKAGE}@${TAG}" version 2>/dev/null || true)
-          if [ "$published" = "$VERSION" ]; then
-            echo "::notice::${VERSION} is already published under ${TAG}, skipping the publish and continuing to the tag and release"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+          # Sets the variable named $1 to the field, or to empty when npm answers E404.
+          npm_view() {
+            local err="$RUNNER_TEMP/npm-view.err" out
+            if out=$(npm view "$2" "$3" 2>"$err"); then
+              printf -v "$1" '%s' "$out"
+              return 0
+            fi
+            if grep -qE '^npm (error|ERR!) code E404$' "$err"; then
+              printf -v "$1" '%s' ''
+              return 0
+            fi
+            cat "$err"
+            echo "::error::npm view $2 $3 failed for a reason other than not found, refusing to treat it as unpublished"
+            exit 1
+          }
+
+          npm_view tag_version "${PACKAGE}@${TAG}" version
+          npm_view published "${PACKAGE}@${VERSION}" version
+          npm_view published_head "${PACKAGE}@${VERSION}" gitHead
+          echo "tag_version=${tag_version}" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$published" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            # The publish below points the dist-tag at this version.
+            echo "on_dist_tag=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if npm view "${PACKAGE}@${VERSION}" version >/dev/null 2>&1; then
-            echo "::error::${PACKAGE}@${VERSION} is already published"
+          if [ "$published_head" != "$SHA" ]; then
+            echo "::error::${PACKAGE}@${VERSION} is already published from ${published_head:-a commit npm did not record}, and this run is at ${SHA}. Only a re-run of the commit that was published can finish its release."
             exit 1
           fi
-          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::${VERSION} is already published from ${SHA}, skipping the publish and continuing to the tag and release"
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          # Another release may have moved the dist-tag since, and then this one must not claim it.
+          if [ "$tag_version" = "$VERSION" ]; then
+            echo "on_dist_tag=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "on_dist_tag=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install Deps
         run: npm ci
@@ -199,27 +237,22 @@ jobs:
       # A dist-tag is what a bare `npm i` resolves through, so publishing a version below the one
       # already on it would silently downgrade everyone following that tag. Compare against the
       # tag this run targets, not against latest, so a 4.4.2 can still ship after 5.0.0 is out.
+      # A retry publishes nothing, so it cannot move the tag and skips the check: the tag may
+      # have moved past this version since it was published.
       - name: Check version is newer than its dist-tag
-        if: ${{ inputs.stable }}
+        if: ${{ inputs.stable && steps.npm_version.outputs.skip != 'true' }}
         env:
           VERSION: ${{ inputs.version }}
           TAG: ${{ steps.dist_tag.outputs.tag }}
+          CURRENT: ${{ steps.npm_version.outputs.tag_version }}
         run: |
-          # The tag goes in as a package spec, not as a "dist-tags.<tag>" field path: npm splits
-          # a field path on dots, so "dist-tags.release-4.4" resolves to nothing and the guard
-          # silently skips every release-X.Y line.
-          current=$(npm view "${PACKAGE}@${TAG}" version 2>/dev/null || true)
-          if [ -z "$current" ]; then
+          if [ -z "$CURRENT" ]; then
             echo "::notice::No ${TAG} dist-tag on npm yet, nothing to compare against"
             exit 0
           fi
-          if [ "$current" = "$VERSION" ]; then
-            echo "::notice::${TAG} already points at ${VERSION}, nothing to compare against"
-            exit 0
-          fi
-          echo "current ${TAG}: ${current}"
-          if ! CURRENT="$current" node -e "process.exit(require('semver').gt(process.env.VERSION, process.env.CURRENT) ? 0 : 1)"; then
-            echo "::error::${VERSION} is not greater than ${current}, which ${TAG} already points at. Publishing it there would downgrade everyone following that tag."
+          echo "current ${TAG}: ${CURRENT}"
+          if ! node -e "process.exit(require('semver').gt(process.env.VERSION, process.env.CURRENT) ? 0 : 1)"; then
+            echo "::error::${VERSION} is not greater than ${CURRENT}, which ${TAG} already points at. Publishing it there would downgrade everyone following that tag."
             exit 1
           fi
 
@@ -250,6 +283,7 @@ jobs:
           BRANCH: ${{ github.ref_name }}
           STABLE: ${{ inputs.stable }}
           TAG: ${{ steps.dist_tag.outputs.tag }}
+          ON_DIST_TAG: ${{ steps.npm_version.outputs.on_dist_tag }}
         run: |
           if [ "$STABLE" = "true" ]; then
             kind="Patch release"
@@ -259,11 +293,12 @@ jobs:
             prerelease="--prerelease"
           fi
 
-          # Without the flag, GitHub picks its own Latest release by date and version, and an
-          # old-line patch published today can take it over from a newer release. Only the run
-          # that moved the npm latest tag should move the GitHub one.
-          if [ "$TAG" = "latest" ]; then
-            latest_flag=""
+          # The flag is always explicit. Without it, GitHub picks its own Latest release by date
+          # and version, which can disagree with npm in both directions: an old-line patch
+          # published today can take it over from a newer release, and a new latest may not get
+          # it. GitHub's Latest follows npm's: it moves only when npm latest points at this version.
+          if [ "$TAG" = "latest" ] && [ "$ON_DIST_TAG" = "true" ]; then
+            latest_flag="--latest"
           else
             latest_flag="--latest=false"
           fi

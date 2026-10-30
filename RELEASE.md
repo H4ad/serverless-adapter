@@ -29,9 +29,10 @@ work you are not ready to ship. Three modes, set by two inputs:
 `stable` means "publish a plain version instead of a prerelease". `latest` means "point the
 `latest` dist-tag at it", and it is separate on purpose: a patch of an old line usually should
 not take over `latest` from a newer release. Without `latest`, the version gets a dist-tag named
-after its own line (`release-4.4` for `4.4.2`), so that line stays installable on its own. A run
-that does not target `latest` also creates its GitHub release with `--latest=false`, so the
-repository's Latest badge stays on the newest release instead of moving back to an old line.
+after its own line (`release-4.4` for `4.4.2`), so that line stays installable on its own. The
+GitHub release follows npm: a run that points npm `latest` at its version passes `--latest`, and
+every other run passes `--latest=false`, so the repository's Latest badge stays on the newest
+release instead of moving back to an old line.
 
 ### When to use it
 
@@ -76,10 +77,26 @@ repository's Latest badge stays on the newest release instead of moving back to 
 ### If a run fails after publishing
 
 Publishing and the GitHub release are separate steps. When the release step fails after npm has
-the version, re-run the workflow from the same branch with the same inputs. A run whose target
-dist-tag already points at the version skips the publish and continues to the tag and the
-release. Any other already-published version still fails, so a mistyped version cannot ride on
-an unrelated release.
+the version, open the failed run and use **Re-run failed jobs**. A re-run keeps the original
+commit and inputs, where a new dispatch takes whatever the branch points at now.
+
+The workflow skips the publish and continues to the tag and the release only when npm already
+has the version and its `gitHead` is the commit the run is on. The tag then lands on the source
+that was published, even if the dist-tag has moved to a newer version since. In that case the
+retry passes `--latest=false`, so the GitHub release does not claim a tag it no longer holds.
+Any other already-published version still fails, so a mistyped version cannot ride on an
+unrelated release, and a branch that moved cannot put the tag on code that was never published.
+
+If the run cannot be re-run, create the tag and release by hand on the published commit:
+
+```sh
+sha=$(npm view @h4ad/serverless-adapter@4.4.1 gitHead)
+gh release create v4.4.1 --target "$sha" --title v4.4.1 --latest=false \
+  --notes "Patch release published from \`hotfix/4.4.1\`, npm dist-tag \`release-4.4\`."
+```
+
+Add `--prerelease` for a hotfix, and use `--latest` instead of `--latest=false` only while npm
+`latest` points at that version.
 
 ### Choosing a mode
 
@@ -106,11 +123,14 @@ greater than what `latest` currently points at.
 - `latest` cannot be set without `stable`, since moving it onto a prerelease would make a
   prerelease everyone's default install
 - A tag `v<version>` that does not exist yet
-- An `<version>` that is not already on npm
+- An `<version>` that is not already on npm, unless npm's `gitHead` for it is the commit the run
+  is on, which is a retry of a failed release
 - A `<version>` whose `major.minor` matches `package.json` on the branch, so a patch of the 4.4
   line cannot be published as `5.0.0`
 - With `stable` enabled only: the version must be greater than whatever the target dist-tag
   already points at, so publishing cannot move a tag backwards
+- An npm lookup that fails for any reason other than a 404 fails the run. A registry or auth
+  error never counts as "not published", since that would let the checks above pass
 - Build and the full test suite before anything is published
 
 ### What does not change
