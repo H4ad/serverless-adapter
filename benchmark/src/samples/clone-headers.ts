@@ -1,38 +1,32 @@
-import benchmark from 'benchmark';
+import { Suite } from 'bench-node';
 import { createApiGatewayV1 } from '../events';
 
-const eventV1ApiGateway = createApiGatewayV1('GET', '/test');
-
-const randomTest = [
-  createApiGatewayV1('GET', '/pat2'),
-  createApiGatewayV1('GET', '/pat3'),
-];
 const headers = createApiGatewayV1('GET', '/pat2').headers;
-const suite = new benchmark.Suite();
+const suite = new Suite();
+
+let result: unknown;
 
 suite.add('{...}', () => {
-  const result = { ...headers };
+  result = { ...headers };
 });
-suite.add('structuredClone', () =>
-  structuredClone(headers),
-);
-suite.add('JSON.parse + JSON.stringify', () =>
-  JSON.parse(JSON.stringify(headers)),
-);
+suite.add('structuredClone', () => {
+  result = structuredClone(headers);
+});
+suite.add('JSON.parse + JSON.stringify', () => {
+  result = JSON.parse(JSON.stringify(headers));
+});
 suite.add('for loop + object.keys', () => {
-  const headers = {};
+  const copy: Record<string, unknown> = {};
 
-  for (const key of Object.keys([Math.floor(Math.random() * 2)]))
-    headers[key] = headers[key];
+  for (const key of Object.keys(headers)) copy[key] = headers[key];
+
+  result = copy;
 });
 
 suite
-  .on('cycle', function (event) {
-    console.log(String(event.target));
-  })
-  .on('complete', function () {
-    console.log('Fastest is ' + this.filter('fastest').map('name'));
-  })
-  .run({
-    async: false,
+  .run()
+  .then(() => console.log(`last result had ${Object.keys(result as object).length} keys`))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
   });

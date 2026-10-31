@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "swc src --out-dir dist --strip-leading-paths",
-    "bench": "npm run build && node dist/samples/compare-libraries.js"
+    "bench": "npm run build && node --allow-natives-syntax dist/samples/compare-libraries.js",
+    "bench:clone-headers": "npm run build && node --allow-natives-syntax dist/samples/clone-headers.js",
+    "bench:format-headers": "npm run build && node --allow-natives-syntax dist/samples/format-headers.js"
   },
   "repository": {
     "type": "git",
@@ -22,13 +24,12 @@
     "@swc/cli": "0.8.2",
     "@swc/core": "1.16.21",
     "@vendia/serverless-express": "4.12.6",
-    "benchmark": "2.1.4",
+    "bench-node": "0.15.0",
     "express": "5.3.0",
     "serverless-http": "4.0.0",
     "stream-mock": "2.0.5"
   },
   "devDependencies": {
-    "@types/benchmark": "2.1.5",
     "aws-lambda": "1.0.7",
     "chokidar": "5.0.0",
     "ts-node": "10.9.2",
