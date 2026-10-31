@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkdocs||=[]).push([[8947],{6600(e){e.exports=JSON.parse('{"authors":[{"name":"Vin\xedcius Louren\xe7o","title":"Maintainer of Serverless Adapter","url":"https://github.com/h4ad","imageURL":"https://github.com/h4ad.png","key":"h4ad","page":null,"count":4}]}')}}]);

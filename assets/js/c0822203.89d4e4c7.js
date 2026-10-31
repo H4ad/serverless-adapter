@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[9847],{4874:s=>{s.exports=JSON.parse('{"label":"firebase","permalink":"/blog/tags/firebase","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

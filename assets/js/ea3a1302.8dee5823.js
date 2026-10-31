@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkdocs||=[]).push([[4231],{5391(e){e.exports=JSON.parse('{"categoryGeneratedIndex":{"title":"Adapters","slug":"/category/adapters","permalink":"/docs/category/adapters","sidebar":"main","navigation":{"previous":{"title":"Examples","permalink":"/docs/main/getting-started/examples"},"next":{"title":"AWS","permalink":"/docs/category/aws"}}}}')}}]);
