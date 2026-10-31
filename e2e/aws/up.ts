@@ -108,7 +108,7 @@ export async function up(): Promise<RunState> {
   return state;
 }
 
-function ensureArtifactBucket(region: string): string {
+export function ensureArtifactBucket(region: string): string {
   const account = run('aws', [
     'sts',
     'get-caller-identity',
@@ -208,8 +208,7 @@ function buildBundle(): void {
       '--platform=node',
       '--target=node22',
       '--format=cjs',
-      '--outfile',
-      BUNDLE_PATH,
+      `--outfile=${BUNDLE_PATH}`,
       '--external:@aws-sdk/*',
     ],
     { inherit: true },

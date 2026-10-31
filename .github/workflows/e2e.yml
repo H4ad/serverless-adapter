@@ -5,7 +5,7 @@ on:
     inputs:
       clouds:
         description: Comma-separated clouds to run
-        default: aws,azure,do
+        default: aws,azure,do,gcp,firebase
       keep:
         description: Leave resources up for debugging
         type: boolean
@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cloud: [aws, azure, do]
+        cloud: [aws, azure, do, gcp, firebase]
 
     steps:
       - name: Checkout
@@ -75,6 +75,22 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+      - name: Authenticate to Google Cloud
+        if: matrix.cloud == 'gcp' || matrix.cloud == 'firebase'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT }}
+
+      - name: Install gcloud
+        if: matrix.cloud == 'gcp' || matrix.cloud == 'firebase'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install the Firebase CLI
+        if: matrix.cloud == 'firebase'
+        run: npm install --global firebase-tools
+
       - name: Run e2e
         run: npm run e2e:run -- --cloud ${{ matrix.cloud }}${{ inputs.keep && ' --keep' || '' }}
         env:
@@ -83,3 +99,6 @@ jobs:
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION || 'brazilsouth' }}
           DO_NAMESPACE: ${{ vars.DO_NAMESPACE }}
           DO_REGION: ${{ vars.DO_REGION || 'nyc1' }}
+          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+          GCP_REGION: ${{ vars.GCP_REGION || 'us-central1' }}
+          FIREBASE_PROJECT: ${{ vars.GCP_PROJECT }}

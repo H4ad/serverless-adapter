@@ -127,6 +127,15 @@ e2e/**/terraform.tfstate*
 e2e/aws/dist/
 e2e/azure/dist/
 e2e/do/build/
+e2e/edge/dist/
+e2e/firebase/build/
+e2e/gcp/dist/
+
+# `lib/` above is for compiled output, and it also swallows e2e/lib, which is
+# harness source. Re-include it explicitly so a new helper is not silently
+# untracked.
+!e2e/lib/
+!e2e/lib/**
 
 # IDEs
 .idea

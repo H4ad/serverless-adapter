@@ -75,8 +75,7 @@ function buildProject(functionName: string): void {
       '--platform=node',
       '--target=node20',
       '--format=cjs',
-      '--outfile',
-      join(functionDirectory, 'index.js'),
+      `--outfile=${join(functionDirectory, 'index.js')}`,
     ],
     { inherit: true },
   );

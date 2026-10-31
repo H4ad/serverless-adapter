@@ -1,4 +1,7 @@
 import { PACKAGE } from './do/names';
+import { deleteDistribution, deleteEdgeStack } from './edge/cleanup';
+import { EDGE_REGION } from './edge/names';
+import { NAME_PREFIX as CLOUD_FUNCTION_PREFIX } from './gcp/names';
 import { isExpired, runIdTime } from './lib/run';
 import { commandExists, run, runResult } from './lib/shell';
 
@@ -14,9 +17,13 @@ const STALE_MS = 6 * 60 * 60 * 1000;
  */
 export async function reap(options: ReapOptions): Promise<boolean> {
   const tasks: Array<[string, (opts: ReapOptions) => Promise<boolean>]> = [
+    ['edge', reapEdge],
     ['aws', reapAws],
     ['azure', reapAzure],
     ['do', reapDo],
+    // Firebase Functions v2 deploy as Cloud Run functions in the same project,
+    // so one sweep covers both modules.
+    ['gcp', reapCloudFunctions],
   ];
 
   let ok = true;
@@ -79,6 +86,10 @@ async function reapAws(options: ReapOptions): Promise<boolean> {
     const now = new Date();
 
     for (const stackName of stackNames) {
+      // The edge stack needs the distribution removed before CloudFormation
+      // can delete it, so reapEdge owns those names.
+      if (stackName.startsWith('sae2e-edge-')) continue;
+
       if (!shouldReap(stackName, stackExpireAt(stackName, region), now))
         continue;
 
@@ -140,6 +151,121 @@ async function reapAws(options: ReapOptions): Promise<boolean> {
   }
 
   return ok;
+}
+
+/**
+ * The edge stack is separate because CloudFormation cannot delete an enabled
+ * distribution, and a replicated Lambda@Edge version can block the delete for
+ * hours. Both failures are retried here every six hours instead of failing the
+ * run that created them.
+ */
+async function reapEdge(options: ReapOptions): Promise<boolean> {
+  if (!commandExists('aws')) {
+    console.warn('[edge] aws CLI not found, skipping');
+
+    return true;
+  }
+
+  const region = EDGE_REGION;
+  const listed = runResult(
+    'aws',
+    [
+      'cloudformation',
+      'list-stacks',
+      '--stack-status-filter',
+      'CREATE_COMPLETE',
+      'UPDATE_COMPLETE',
+      'ROLLBACK_COMPLETE',
+      'CREATE_FAILED',
+      'DELETE_FAILED',
+      'UPDATE_ROLLBACK_COMPLETE',
+      '--query',
+      "StackSummaries[?starts_with(StackName, 'sae2e-edge-')].StackName",
+      '--output',
+      'json',
+      '--region',
+      region,
+    ],
+    { allowFailure: true },
+  );
+
+  if (!listed.ok) {
+    console.warn(`[edge] could not list stacks in ${region}`);
+
+    return false;
+  }
+
+  const now = new Date();
+
+  for (const stackName of JSON.parse(listed.output) as string[]) {
+    if (!edgeShouldReap(stackName, stackExpireAt(stackName, region), now))
+      continue;
+
+    if (options.dryRun) {
+      console.log(`[edge] would delete stack ${stackName}`);
+      continue;
+    }
+
+    console.log(`[edge] deleting stack ${stackName}`);
+    deleteEdgeStack(stackName, edgeRunId(stackName), region);
+  }
+
+  // A distribution can outlive the stack when a delete only half finished.
+  const orphaned = runResult(
+    'aws',
+    [
+      'cloudfront',
+      'list-distributions',
+      '--query',
+      "DistributionList.Items[?starts_with(Comment, 'sae2e-edge-')].{id:Id,comment:Comment}",
+      '--output',
+      'json',
+      '--region',
+      region,
+    ],
+    { allowFailure: true },
+  );
+
+  if (!orphaned.ok) {
+    console.warn('[edge] could not list distributions');
+
+    return false;
+  }
+
+  for (const distribution of JSON.parse(orphaned.output) as Array<{
+    id: string;
+    comment: string;
+  }>) {
+    if (!edgeShouldReap(distribution.comment, undefined, now)) continue;
+
+    if (options.dryRun) {
+      console.log(`[edge] would delete distribution ${distribution.id}`);
+      continue;
+    }
+
+    console.log(`[edge] deleting orphan distribution ${distribution.id}`);
+    deleteDistribution(distribution.id, region);
+  }
+
+  return true;
+}
+
+function edgeShouldReap(
+  name: string,
+  expireAt: string | undefined,
+  now: Date,
+): boolean {
+  if (expireAt) return isExpired(expireAt, now);
+
+  const createdAt = runIdTime(edgeRunId(name));
+
+  if (!createdAt) return false;
+
+  return now.getTime() - createdAt.getTime() > STALE_MS;
+}
+
+function edgeRunId(name: string): string {
+  return name.replace(/^sae2e-edge-/, '').replace(/^(origin-|viewer-)/, '');
 }
 
 async function reapAzure(options: ReapOptions): Promise<boolean> {
@@ -240,6 +366,93 @@ async function reapDo(options: ReapOptions): Promise<boolean> {
   }
 
   return true;
+}
+
+/**
+ * Cloud Run functions, from either the gcp or the firebase module. The list is
+ * unfiltered because gcloud has no label filter, so the prefix and the label
+ * decide what goes.
+ */
+async function reapCloudFunctions(options: ReapOptions): Promise<boolean> {
+  if (!commandExists('gcloud')) {
+    console.warn('[gcp] gcloud not found, skipping');
+
+    return true;
+  }
+
+  const project = process.env.GCP_PROJECT;
+
+  if (!project) {
+    console.warn('[gcp] GCP_PROJECT is not set, skipping');
+
+    return true;
+  }
+
+  const listed = runResult(
+    'gcloud',
+    ['functions', 'list', `--project=${project}`, '--format=json'],
+    { allowFailure: true },
+  );
+
+  if (!listed.ok) {
+    console.warn(`[gcp] could not list functions in ${project}`);
+
+    return false;
+  }
+
+  const functions = JSON.parse(listed.output) as Array<{
+    name: string;
+    labels?: Record<string, string>;
+  }>;
+  const now = new Date();
+
+  for (const cloudFunction of functions) {
+    const name = cloudFunction.name.split('/').pop() ?? '';
+
+    if (!name.startsWith(CLOUD_FUNCTION_PREFIX)) continue;
+
+    const region = cloudFunction.name.split('/')[3] ?? '';
+    const expireAt = labelExpiry(cloudFunction.labels?.['expire-at']);
+
+    if (!shouldReap(name, expireAt, now)) continue;
+
+    if (options.dryRun) {
+      console.log(`[gcp] would delete ${name} (${region})`);
+      continue;
+    }
+
+    console.log(`[gcp] deleting ${name} (${region})`);
+    run(
+      'gcloud',
+      [
+        'functions',
+        'delete',
+        name,
+        `--region=${region}`,
+        `--project=${project}`,
+        '--quiet',
+      ],
+      { allowFailure: true, inherit: true },
+    );
+  }
+
+  return true;
+}
+
+/**
+ * Labels cannot hold a colon or a dot, so the deploy writes the expiry as
+ * 20261031t205300z. This turns it back into something comparable.
+ */
+function labelExpiry(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+
+  const match = /^(\d{4})(\d{2})(\d{2})t(\d{2})(\d{2})(\d{2})z$/.exec(value);
+
+  if (!match) return undefined;
+
+  const [, year, month, day, hour, minute, second] = match;
+
+  return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
 }
 
 /**

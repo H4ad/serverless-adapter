@@ -4,13 +4,16 @@ import { errorMessage } from './lib/smoke';
 import { clearState, loadState } from './lib/state';
 import type { CloudModule, CloudName, RunState } from './lib/types';
 
-const CLOUDS: CloudName[] = ['aws', 'azure', 'do'];
+const CLOUDS: CloudName[] = ['aws', 'azure', 'do', 'edge', 'firebase', 'gcp'];
 
 const loaders: Record<CloudName, () => Promise<{ cloudModule: CloudModule }>> =
   {
     aws: () => import('./aws'),
     azure: () => import('./azure'),
     do: () => import('./do'),
+    edge: () => import('./edge'),
+    firebase: () => import('./firebase'),
+    gcp: () => import('./gcp'),
   };
 
 async function main(): Promise<number> {

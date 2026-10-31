@@ -1,0 +1,57 @@
+name: e2e edge
+
+# Lambda@Edge is deliberately not in the weekly matrix: one deploy and one
+# delete cost 30 to 60 minutes of mostly waiting, and the teardown can leave a
+# function replica that only disappears hours later. Run this by hand after a
+# release, or when the edge adapters change.
+on:
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: Leave the distribution up for debugging
+        type: boolean
+        default: false
+
+concurrency:
+  group: e2e-edge
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  smoke:
+    if: github.repository == 'H4ad/serverless-adapter'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install SAM CLI
+        run: |
+          pipx install aws-sam-cli
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          # Lambda@Edge functions must be created here, whatever the region
+          # used by the other smoke jobs.
+          aws-region: us-east-1
+
+      - name: Run e2e
+        run: npm run e2e:run -- --cloud edge${{ inputs.keep && ' --keep' || '' }}
+        env:
+          AWS_REGION: us-east-1

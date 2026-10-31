@@ -7,14 +7,20 @@ so a cancelled job cannot leave a bill behind.
 
 ## What it covers
 
-| Cloud        | Covered                                                                                  |
-| ------------ | ---------------------------------------------------------------------------------------- |
-| AWS          | HTTP API v2, REST API v1, ALB, Function URL, SQS, SNS, S3, DynamoDB Streams, EventBridge |
-| Azure        | Functions v4 with the HTTP trigger                                                       |
-| DigitalOcean | Functions with `web: raw`                                                                |
+| Cloud         | Covered                                                                                  |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| AWS           | HTTP API v2, REST API v1, ALB, Function URL, SQS, SNS, S3, DynamoDB Streams, EventBridge |
+| AWS edge      | Lambda@Edge at origin-request, one distribution, run by hand after a release             |
+| Azure         | Functions v4 with the HTTP trigger                                                       |
+| DigitalOcean  | Functions with `web: raw`                                                                |
+| GCP           | Cloud Functions gen2 with the HTTP trigger                                               |
+| Firebase      | Functions v2 with the HTTPS trigger                                                      |
 
-Not covered: Huawei (manual zip upload and a `bootstrap` file) and Lambda@Edge
-(CloudFront propagation makes a single deploy and delete take about 15 minutes).
+Not covered: Huawei (manual zip upload, a `bootstrap` file, and a long-lived
+AK/SK with no GitHub OIDC federation) and the `LambdaEdgeAdapter` that rewrites
+a CloudFront request and forwards it. Verifying the latter needs an origin that
+echoes request headers, so only its unit tests cover it today. The documented
+`RequestLambdaEdgeAdapter` is what the edge run exercises.
 
 ## Commands
 
@@ -26,6 +32,9 @@ npm run e2e:local
 npm run e2e:run -- --cloud aws
 npm run e2e:run -- --cloud azure
 npm run e2e:run -- --cloud do
+npm run e2e:run -- --cloud gcp
+npm run e2e:run -- --cloud firebase
+npm run e2e:run -- --cloud edge
 
 # One phase at a time
 npm run e2e:up -- --cloud aws
@@ -45,19 +54,31 @@ npm run e2e:reap
 either the test or the teardown failed. `e2e:leftovers` fails when anything is
 still findable by name.
 
+The edge run is not in the weekly matrix and not in `.github/workflows/e2e.yml`.
+It has its own manual workflow, `.github/workflows/e2e-edge.yml`, because one
+deploy and one delete take 30 to 60 minutes of mostly waiting.
+
 ## How teardown works
 
 - AWS: `sam delete` after emptying the S3 event bucket. The Lambda log group is
   created by the service, not the stack, so it is deleted explicitly.
+- AWS edge: CloudFormation deletes the distribution and the function versions.
+  If it refuses, the distribution is disabled, waited on and deleted by hand,
+  and the stack delete is retried. A Lambda@Edge version stays replicated in
+  every edge location that served it, so the reaper retries every six hours
+  until the version is finally removable.
 - Azure: `az group delete`. The resource group is the whole unit, so one call
   removes the function app, the plan and the storage account.
 - DigitalOcean: `doctl serverless undeploy`, then the build directory is removed.
+- GCP and Firebase: `gcloud functions delete` and `firebase functions:delete`.
+  Both deploy a Cloud Run function, so a single reaper sweep covers both.
 - The reaper is independent of OpenTofu and Terraform state. It finds resources
-  by tag and by the run id in the name, so it also cleans up a run whose state
-  file was lost.
+  by tag, label and the run id in the name, so it also cleans up a run whose
+  state file was lost.
 
 An untagged resource is only reaped when the run id in its name is more than six
 hours old, which keeps the reaper away from a run in flight.
+
 
 ## One-time setup
 
@@ -75,6 +96,50 @@ reaper deletes by tag, and the blast radius should be a sandbox.
 5. On first run, `npm run e2e:up` creates
    `sae2e-artifacts-<account>-<region>` with a one-day object lifecycle. Override
    the name with `E2E_ARTIFACT_BUCKET`.
+6. The edge job uses the same role. It creates a CloudFront distribution and a
+   private S3 origin, which `PowerUserAccess` already covers.
+
+### GCP
+
+Cloud Functions gen2 deploys a Cloud Run service, so the project needs billing
+enabled and both APIs on.
+
+1. Create a sandbox project and enable `cloudfunctions.googleapis.com`,
+   `run.googleapis.com`, `cloudbuild.googleapis.com`,
+   `artifactregistry.googleapis.com` and `eventarc.googleapis.com`.
+2. Create a service account with `roles/cloudfunctions.developer`,
+   `roles/run.admin`, `roles/iam.serviceAccountUser`,
+   `roles/cloudbuild.builds.editor`, `roles/storage.admin`,
+   `roles/artifactregistry.writer` and `roles/logging.viewer`.
+3. Create a Workload Identity pool and provider trusted for
+   `repo:H4ad/serverless-adapter:ref:refs/heads/main`, with the
+   `google.subject` mapping `assertion.sub`.
+4. Add repository variables `GCP_PROJECT`, `GCP_REGION` (default
+   `us-central1`), `GCP_WORKLOAD_IDENTITY_PROVIDER` and `GCP_SERVICE_ACCOUNT`.
+
+The deploy passes `--update-labels`, because `gcloud functions deploy` has no
+`--labels` flag. Labels cannot contain a colon or a dot, so the expiry is
+flattened to a value such as `20261031t205300z`.
+
+### Firebase
+
+Firebase Functions v2 runs on Cloud Run as well, so it shares the GCP project
+and the same Workload Identity provider. The project has to be on the Blaze plan
+and registered with Firebase.
+
+```bash
+firebase projects:addfirebase <project-id>
+```
+
+Add `roles/firebase.admin` to the service account, and enable
+`firebase.googleapis.com` and `firebasemessaging.googleapis.com` (the second one
+is not needed for HTTPS functions, but the CLI checks it during setup). The
+workflow sets `FIREBASE_PROJECT` from `GCP_PROJECT`.
+
+The deploy writes a minimal Firebase project into `e2e/firebase/build` before
+calling `firebase deploy`, because the CLI refuses to run from the repository
+root. The build directory is removed by `down` and ignored by git.
+
 
 ### Azure
 
@@ -114,15 +179,20 @@ The namespace itself is not deleted. Only the function deployed by a run is.
   that alone.
 - The reaper runs every six hours and is also the only thing that runs when a
   job is cancelled.
-- Budget alerts are advisory in all three clouds. Tag-based deletion is the
-  actual control.
+- Budget alerts are advisory in every cloud. Tag-based and label-based deletion
+  is the actual control.
 
 ## Cost
 
 Cents per run: a few Lambdas and API Gateways for under an hour, a consumption
-plan and a small storage account in Azure, a few functions in DigitalOcean. The
-run is not the risk. A leaked ALB or resource group is, which is why the reaper
-exists.
+plan and a small storage account in Azure, a few functions in DigitalOcean, two
+scale-to-zero Cloud Run functions. The run is not the risk. A leaked ALB, a
+resource group or an edge distribution is, which is why the reaper exists.
+
+The edge run is the one exception to the "cents" rule if it leaks: a CloudFront
+distribution is not expensive by itself, but it is the resource the reaper has
+the most trouble deleting, so the release job is watched rather than left
+unattended.
 
 ## Adding a provider
 
@@ -131,4 +201,5 @@ exists.
    `down`, `leftovers`.
 3. Export `cloudModule` from `e2e/<cloud>/index.ts`.
 4. Add the loader in `e2e/cli.ts` and the reaper branch in `e2e/reap.ts`.
-5. Add a matrix entry to `.github/workflows/e2e.yml`.
+5. Add a matrix entry to `.github/workflows/e2e.yml`. A slow provider gets its
+   own dispatch-only workflow instead, like `e2e-edge.yml`.

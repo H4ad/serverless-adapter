@@ -131,8 +131,7 @@ function buildPackage(): void {
       '--platform=node',
       '--target=node22',
       '--format=cjs',
-      '--outfile',
-      `${DIST}/index.js`,
+      `--outfile=${DIST}/index.js`,
       // Provided by the Functions host at runtime.
       '--external:@azure/functions-core',
     ],

@@ -59,7 +59,18 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT }}
+
+      - name: Install gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Reap expired resources
         run: npm run e2e:reap -- ${{ inputs.dry_run && '--dry-run' || '' }}
         env:
           E2E_AWS_REGIONS: ${{ vars.AWS_REGION || 'us-east-1' }}
+          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
