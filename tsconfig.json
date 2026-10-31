@@ -42,7 +42,7 @@
     "src/**/*.ts",
     "test/**/*.ts",
     "scripts/**/*.ts",
-    "e2e/**/*.ts"
+    "packages/**/*.ts"
   ],
   "exclude": [
     "src/index.doc.ts",

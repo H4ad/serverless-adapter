@@ -1,0 +1,17 @@
+{
+  "name": "@e2e/azure",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@e2e/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@azure/functions-v4": "npm:@azure/functions@^4.17.0",
+    "esbuild": "0.24.0"
+  }
+}

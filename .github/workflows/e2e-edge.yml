@@ -28,15 +28,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22.x'
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install SAM CLI
         run: |
@@ -52,6 +56,6 @@ jobs:
           aws-region: us-east-1
 
       - name: Run e2e
-        run: npm run e2e:run -- --cloud edge${{ inputs.keep && ' --keep' || '' }}
+        run: pnpm run e2e:run -- --cloud edge${{ inputs.keep && ' --keep' || '' }}
         env:
           AWS_REGION: us-east-1
