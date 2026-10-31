@@ -7,9 +7,9 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Pull Request Process
 
-1. Install the dependencies with `npm ci` and then go into the `www` folder and install the dependencies again.
-2. After creating your resource or fixing a bug, verify that the tests are correct with `npm run test`.
-3. Be sure to update the documentation if you add a new feature, the docs are inside `www/docs/main`, to see your changes, run `npm run start`.
+1. Install the dependencies with `pnpm install`, then go into the `www` folder and run `npm ci` there: the docs site keeps its own npm install.
+2. After creating your resource or fixing a bug, verify that the tests are correct with `pnpm test`.
+3. Be sure to update the documentation if you add a new feature, the docs are inside `www/docs/main`, to see your changes, run `npm run start` inside `www`.
 4. Once we've reviewed and ensured that all of these things are correct, we'll merge your Pull-Request.
 
 ## Releases

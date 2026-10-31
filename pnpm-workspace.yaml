@@ -1,0 +1,9 @@
+# pnpm reads its settings here since v10.16. These are dependencies whose
+# install scripts have to run: esbuild installs its platform binary, protobufjs
+# (pulled in by @apollo/server) checks its codegen, and @firebase/util has an
+# install hook. pnpm blocks every other dependency's scripts.
+onlyBuiltDependencies:
+  - '@apollo/protobufjs'
+  - '@firebase/util'
+  - esbuild
+  - protobufjs

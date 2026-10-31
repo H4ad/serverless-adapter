@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - 'src/**'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - 'package.json'
       - 'tsconfig.json'
       - 'tsconfig.*.json'
@@ -14,7 +15,8 @@ on:
   pull_request:
     paths:
       - 'src/**'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - 'package.json'
       - 'tsconfig.json'
       - 'tsconfig.*.json'
