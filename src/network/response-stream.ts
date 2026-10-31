@@ -3,14 +3,13 @@ import type { Socket } from 'node:net';
 import type { Writable } from 'node:stream';
 import type { BothValueHeaders } from '../@types';
 import { type ILogger, NO_OP, parseHeaders } from '../core';
-import { getString } from './utils';
+import { ChunkedBodyDecoder, asBufferView, toBodyBuffer } from './body';
+import { createSocketShim } from './socket';
 
-// header or data crlf
-const crlfBuffer = Buffer.from('\r\n');
-
-const endChunked = '0\r\n\r\n';
 const headerEnd = '\r\n\r\n';
-const endStatusSeparator = '\r\n';
+const statusLineEnd = '\r\n';
+const headerEndBuffer = Buffer.from(headerEnd);
+const statusLineEndBuffer = Buffer.from(statusLineEnd);
 
 /**
  * The properties to create a {@link ServerlessStreamResponse}.
@@ -57,115 +56,150 @@ export class ServerlessStreamResponse extends ServerResponse {
     this.useChunkedEncodingByDefault = true;
     this.chunkedEncoding = true;
 
+    // Node frames a chunked body as hex length, CRLF, data, CRLF, ending with
+    // 0\r\n\r\n. Since Node 24.22 and 26.9 it corks the message and flushes
+    // every chunk of a tick as one frame (nodejs/node#64987), so the number of
+    // socket writes no longer matches the number of res.write calls. Decode the
+    // framing by length instead of counting writes.
+    const decoder = new ChunkedBodyDecoder();
+    // The default logger maps disabled levels to NO_OP. Checking once avoids
+    // building a closure object for every socket write of the response.
+    const debugEnabled = log.debug !== NO_OP;
+
     let internalWritable: Writable | null = null;
-    let firstCrlfBufferEncountered = false;
-    let chunkEncountered = false;
+    let lastAccepted = true;
+    let draining = false;
 
-    const socket: Partial<Socket> & { _writableState: any } = {
-      _writableState: {},
-      writable: true,
-      writableLength: 0,
-      writableHighWaterMark: 16384,
-      on: NO_OP,
-      removeListener: NO_OP,
-      destroy: NO_OP,
-      cork: NO_OP,
-      uncork: NO_OP,
-      write: (
-        data: Uint8Array | string,
-        encoding?: string | null | (() => void),
-        cb?: () => void,
-      ): any => {
-        // very unlikely, I don't even know how to reproduce this, but exist on types
-        // istanbul ignore if
-        if (typeof encoding === 'function') {
-          cb = encoding;
-          encoding = null;
-        }
+    // The internal writable is the real sink, so its backpressure has to reach
+    // the caller of res.write(). The fake socket cannot emit `drain` itself,
+    // so the event is forwarded when the internal writable drains.
+    const forwardDrain = () => {
+      if (draining || !internalWritable) return;
 
+      draining = true;
+
+      internalWritable.once('drain', () => {
+        draining = false;
+
+        if (!this.destroyed && !this.writableEnded) this.emit('drain');
+      });
+    };
+
+    const writeBody = (data: unknown, cb?: () => void): boolean => {
+      let chunks: Buffer[];
+
+      if (this.chunkedEncoding) chunks = decoder.push(asBufferView(data));
+      else {
+        // Not chunked: the bytes go to the sink as they are, so they have to be
+        // copied before the caller can reuse the buffer it passed to write().
+        const buffer = toBodyBuffer(data);
+
+        chunks = buffer.length > 0 ? [buffer] : [];
+      }
+
+      const lastIndex = chunks.length - 1;
+
+      for (let index = 0; index < lastIndex; index++)
+        lastAccepted = internalWritable!.write(chunks[index]) as boolean;
+
+      if (decoder.ended) {
+        if (lastIndex >= 0)
+          lastAccepted = internalWritable!.write(chunks[lastIndex]!) as boolean;
+
+        if (typeof cb === 'function') internalWritable!.end(cb);
+        else internalWritable!.end();
+
+        return lastAccepted;
+      }
+
+      // Hand the socket write callback to the sink instead of scheduling a
+      // nextTick per write. A response made of many small writes otherwise
+      // queues one microtask per chunk for no reason.
+      if (lastIndex >= 0) {
+        lastAccepted = internalWritable!.write(
+          chunks[lastIndex]!,
+          cb,
+        ) as boolean;
+      } else if (typeof cb === 'function') process.nextTick(cb);
+
+      if (!lastAccepted) forwardDrain();
+
+      return lastAccepted;
+    };
+
+    const socket = createSocketShim((data, encoding, cb) => {
+      if (debugEnabled) {
         log.debug('SERVERLESS_ADAPTER:RESPONSE_STREAM:DATA', () => ({
           data: Buffer.isBuffer(data) ? data.toString('utf8') : data,
           encoding,
         }));
+      }
 
-        if (!internalWritable) {
-          const stringData = getString(data);
-          const endStatusIndex = stringData.indexOf(endStatusSeparator);
-          const status = +stringData.slice(0, endStatusIndex).split(' ')[1];
-          const endHeaderIndex = stringData.indexOf(headerEnd);
+      if (!internalWritable) {
+        // Parse the header block as it arrived. Turning a buffer into a string
+        // would decode (and then re-encode) the first body chunk too, while a
+        // string can be searched directly without any conversion.
+        let endStatusIndex: number;
+        let endHeaderIndex: number;
+        let statusLine: string;
+        let headerData: string;
+        let dataAfterHeaders: string | Buffer;
 
-          const headerData = stringData.slice(
-            endStatusIndex + 2,
+        if (typeof data === 'string') {
+          endStatusIndex = data.indexOf(statusLineEnd);
+          endHeaderIndex = data.indexOf(headerEnd);
+          statusLine = data.slice(0, endStatusIndex);
+          headerData = data.slice(
+            endStatusIndex + statusLineEnd.length,
             endHeaderIndex,
           );
-          const headers = parseHeaders(headerData);
+          dataAfterHeaders = data.substring(endHeaderIndex + headerEnd.length);
+        } else {
+          const buffer = asBufferView(data);
+
+          endStatusIndex = buffer.indexOf(statusLineEndBuffer);
+          endHeaderIndex = buffer.indexOf(headerEndBuffer);
+          statusLine = buffer.toString('latin1', 0, endStatusIndex);
+          headerData = buffer.toString(
+            'utf8',
+            endStatusIndex + statusLineEndBuffer.length,
+            endHeaderIndex,
+          );
+          dataAfterHeaders = buffer.subarray(
+            endHeaderIndex + headerEndBuffer.length,
+          );
+        }
+
+        const status = +statusLine.split(' ')[1]!;
+        const headers = parseHeaders(headerData);
+
+        if (debugEnabled) {
           log.debug(
             'SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS',
             () => ({
               headers,
             }),
           );
+        }
 
-          internalWritable = onReceiveHeaders(status, headers);
+        internalWritable = onReceiveHeaders(status, headers);
 
-          const dataAfterHeaders = stringData.substring(endHeaderIndex + 4);
-
-          // If we get an endChunked right after header which means the response body is empty, we need to immediately end the writable
-          // The callback must be forwarded, otherwise the response never emits `finish`
-          if (dataAfterHeaders === endChunked) {
-            internalWritable.end(cb);
-            return true;
-          }
-
-          // Responses without a body (eg. 204) write only the headers and never write again,
-          // so the callback has to be called here or the response never emits `finish`
-          if (dataAfterHeaders === '' && cb) process.nextTick(cb);
+        // Responses without a body (eg. 204) write only the headers and never
+        // write again, so the callback has to be called here or the response
+        // never emits `finish`.
+        if (dataAfterHeaders.length === 0) {
+          if (typeof cb === 'function') process.nextTick(cb);
 
           return true;
         }
 
-        // node sends the last chunk crlf as a string:
-        // https://github.com/nodejs/node/blob/v22.8.0/lib/_http_outgoing.js#L1131
-        if (data === endChunked) {
-          internalWritable.end(cb);
-          return true;
-        }
+        // An empty chunked body arrives as 0\r\n\r\n right after the headers,
+        // and the decoder ends the writable.
+        return writeBody(dataAfterHeaders, cb);
+      }
 
-        // check for header or data crlf
-        // node sends the header and data crlf as a buffer
-        // below code is aligned to following node implementation of the HTTP/1.1 chunked transfer coding:
-        // https://github.com/nodejs/node/blob/v22.8.0/lib/_http_outgoing.js#L1012-L1015
-        // for reference: https://datatracker.ietf.org/doc/html/rfc9112#section-7
-        if (Buffer.isBuffer(data) && crlfBuffer.equals(data)) {
-          const isHeaderCrlf = !firstCrlfBufferEncountered;
-          if (isHeaderCrlf) {
-            firstCrlfBufferEncountered = true;
-            return true;
-          }
-
-          const isDataCrlf = firstCrlfBufferEncountered && chunkEncountered;
-          if (isDataCrlf) {
-            // done with chunk
-            firstCrlfBufferEncountered = false;
-            chunkEncountered = false;
-            return true;
-          }
-
-          // the crlf *is* the chunk
-        }
-
-        const isContentLength = !firstCrlfBufferEncountered;
-        if (isContentLength) {
-          // discard content length
-          return true;
-        }
-
-        // write chunk
-        chunkEncountered = true;
-        internalWritable.write(data, cb);
-        return true;
-      },
-    };
+      return writeBody(data, cb);
+    });
 
     this.assignSocket(socket as unknown as Socket);
   }

@@ -45,6 +45,35 @@ describe('Issue 165: cannot handle transfer-encoding: chunked', () => {
     expect(result.headers['content-length'], expectedResult.length.toString());
   });
 
+  // Node 24.22+ and 26.9+ flush every chunked write of a tick as one frame,
+  // so this case has to be covered without the delay the test above uses.
+  it('express: should handle chunked writes sent in the same tick', async () => {
+    const app = express();
+
+    app.get('/chunked-response', (_req, res) => {
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Transfer-Encoding', 'chunked');
+      res.status(200);
+
+      res.write('INITIAL PAYLOAD RESPONSE\n');
+      res.write('FINAL PAYLOAD RESPONSE\n');
+      res.end();
+    });
+
+    const albEvent = createAlbEvent('GET', '/chunked-response');
+
+    const handler = ServerlessAdapter.new(app)
+      .setHandler(new DefaultHandler())
+      .setFramework(new ExpressFramework())
+      .setResolver(new PromiseResolver())
+      .addAdapter(new AlbAdapter())
+      .build();
+
+    const result = await handler(albEvent, {});
+
+    expect(result.body).toEqual(expectedResult);
+  });
+
   it('fastify: should handle transfer-encoding: chunked', async () => {
     const app = fastify();
 

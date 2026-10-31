@@ -75,6 +75,16 @@ describe(ApiGatewayV1Adapter.name, () => {
       expect(result).toHaveProperty('path', resultPath);
     });
 
+    it('should return the correct mapping when the event has no multi value headers', () => {
+      const event = createApiGatewayV1('GET', '/events');
+      event.multiValueHeaders = undefined as any;
+
+      const result = adapter.getRequest(event);
+
+      expect(result.headers).toHaveProperty('Accept');
+      expect(result).toHaveProperty('path', '/events');
+    });
+
     it('should return lowercase request headers if option `lowercaseRequestHeaders` is `true`', () => {
       const method = 'GET';
       const path = '/events';

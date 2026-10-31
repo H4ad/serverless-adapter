@@ -189,6 +189,15 @@ describe(AlbAdapter.name, () => {
       );
       expect(result).toHaveProperty('path', resultPath);
     });
+
+    it('should return the path without a query string when there are no query params', () => {
+      const event = createAlbEvent('GET', '/events');
+      event.queryStringParameters = undefined;
+
+      const result = adapter.getRequest(event);
+
+      expect(result).toHaveProperty('path', '/events');
+    });
   });
 
   describe('getResponse', () => {
@@ -353,6 +362,29 @@ describe(AlbAdapter.name, () => {
       expect(resolver.succeed).toHaveBeenCalledTimes(1);
 
       expect(resolver.succeed).toHaveBeenCalledWith(getResponseResult);
+    });
+
+    it('should resolver call succeed with an empty body when the error has no stack', () => {
+      const event = createAlbEventWithMultiValueHeaders('GET', '/events');
+
+      const resolver: DelegatedResolver<ALBResult> = {
+        fail: vitest.fn(),
+        succeed: vitest.fn(),
+      };
+
+      const error = { message: 'error without stack' } as Error;
+
+      adapter.onErrorWhileForwarding({
+        event,
+        log: {} as ILogger,
+        delegatedResolver: resolver,
+        respondWithErrors: true,
+        error,
+      });
+
+      expect(resolver.succeed).toHaveBeenCalledWith(
+        expect.objectContaining({ statusCode: 500, body: '' }),
+      );
     });
 
     it('should resolver call succeed but without sending errors', () => {
