@@ -97,15 +97,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Use Node 24.x
         uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-          cache: pnpm
+
+      # This job runs on a branch cut off a release tag, and every tag published
+      # before the pnpm migration carries npm's lockfile and no `packageManager`
+      # field. pnpm/action-setup cannot run there, because it refuses to guess a
+      # version, so pnpm is pinned here. On a newer tag pnpm follows the version
+      # package.json pins, and does so by itself.
+      - name: Setup pnpm
+        run: npm install -g pnpm@12
 
       # A prerelease is the safe default: a plain `4.4.1` satisfies `^4.4.0`, so it lands in
       # every consumer's next install, and dist-tags do not gate range resolution. Accepting
@@ -240,8 +244,15 @@ jobs:
             echo "on_dist_tag=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # A tag from before the pnpm migration has no pnpm lockfile to freeze
+      # against, so that branch keeps installing the way it already did.
       - name: Install Deps
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            npm ci
+          fi
 
       # A dist-tag is what a bare `npm i` resolves through, so publishing a version below the one
       # already on it would silently downgrade everyone following that tag. Compare against the

@@ -1,9 +1,10 @@
-# pnpm reads its settings here since v10.16. These are dependencies whose
-# install scripts have to run: esbuild installs its platform binary, protobufjs
-# (pulled in by @apollo/server) checks its codegen, and @firebase/util has an
-# install hook. pnpm blocks every other dependency's scripts.
-onlyBuiltDependencies:
-  - '@apollo/protobufjs'
-  - '@firebase/util'
-  - esbuild
-  - protobufjs
+# pnpm 12 runs a dependency's install script only when it is listed here.
+# esbuild installs its platform binary, protobufjs (pulled in by @apollo/server)
+# checks its codegen, and @firebase/util has an install hook. Everything else
+# stays blocked, and strictDepBuilds fails the install if a new one appears,
+# which is the signal to review it before it runs.
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@firebase/util': true
+  esbuild: true
+  protobufjs: true
