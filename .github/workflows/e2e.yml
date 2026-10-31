@@ -10,8 +10,6 @@ on:
         description: Leave resources up for debugging
         type: boolean
         default: false
-  schedule:
-    - cron: '0 4 * * 1'
 
 concurrency:
   group: e2e
@@ -23,7 +21,7 @@ permissions:
 
 jobs:
   smoke:
-    if: github.repository == 'H4ad/serverless-adapter' && (github.event_name == 'schedule' || contains(inputs.clouds, matrix.cloud))
+    if: github.repository == 'H4ad/serverless-adapter' && contains(inputs.clouds, matrix.cloud)
     runs-on: ubuntu-latest
     timeout-minutes: 60
 

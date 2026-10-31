@@ -1,6 +1,6 @@
 name: e2e edge
 
-# Lambda@Edge is deliberately not in the weekly matrix: one deploy and one
+# Lambda@Edge is deliberately not in the main e2e workflow: one deploy and one
 # delete cost 30 to 60 minutes of mostly waiting, and the teardown can leave a
 # function replica that only disappears hours later. Run this by hand after a
 # release, or when the edge adapters change.

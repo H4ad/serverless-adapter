@@ -54,9 +54,11 @@ npm run e2e:reap
 either the test or the teardown failed. `e2e:leftovers` fails when anything is
 still findable by name.
 
-The edge run is not in the weekly matrix and not in `.github/workflows/e2e.yml`.
-It has its own manual workflow, `.github/workflows/e2e-edge.yml`, because one
-deploy and one delete take 30 to 60 minutes of mostly waiting.
+The edge run is not in `.github/workflows/e2e.yml`. It has its own workflow,
+`.github/workflows/e2e-edge.yml`, because one deploy and one delete take 30 to
+60 minutes of mostly waiting. Neither workflow runs on a schedule: both are
+`workflow_dispatch` only, so a cloud account is never touched without someone
+asking for it.
 
 ## How teardown works
 
