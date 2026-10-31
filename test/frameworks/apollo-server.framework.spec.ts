@@ -110,6 +110,53 @@ describe(ApolloServerFramework.name, () => {
     }
   });
 
+  describe('default context and absolute url', () => {
+    it('should use the default context and read the search from an absolute url when no context is given', async () => {
+      const app = new ApolloServer<DefaultServerlessApolloServerContext>({
+        typeDefs: 'type Query { message: String }',
+        resolvers: {
+          Query: {
+            message: (_, __, context: ApolloServerContextArguments) => {
+              return context.request.url;
+            },
+          },
+        },
+      });
+
+      app.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
+
+      const stringBody = JSON.stringify({ query: 'query Query { message }' });
+      const [bufferBody, bodyLength] = getEventBodyAsBuffer(stringBody, false);
+
+      const framework = new JsonBodyParserFramework(
+        new ApolloServerFramework<DefaultServerlessApolloServerContext>({}),
+      );
+
+      const url = 'http://localhost/?view=full';
+      const request = new ServerlessRequest({
+        method: 'POST',
+        url,
+        headers: {
+          'content-length': String(bodyLength),
+          'content-type': 'application/json',
+        },
+        body: bufferBody,
+      });
+
+      const response = new ServerlessResponse({
+        method: 'POST',
+      });
+
+      framework.sendRequest(app, request, response);
+
+      await waitForStreamComplete(response);
+
+      expect(ServerlessResponse.body(response).toString('utf-8')).toContain(
+        url,
+      );
+    });
+  });
+
   describe('async iterator', () => {
     it('should handle well async iterator', async () => {
       const app = new ApolloServer<BaseContext>({

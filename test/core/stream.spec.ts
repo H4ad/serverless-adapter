@@ -1,5 +1,5 @@
 import { ObjectReadableMock, ObjectWritableMock } from 'stream-mock';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vitest } from 'vitest';
 import { NO_OP, waitForStreamComplete } from '../../src';
 import ErrorReadableMock from './utils/stream';
 
@@ -50,6 +50,21 @@ describe('waitForStreamComplete', () => {
     read.on('data', NO_OP);
 
     await expect(waitForStreamComplete(read)).rejects.toThrowError(error);
+  });
+
+  it('should resolve only once when more than one completion event is received', async () => {
+    const read = new ObjectReadableMock([0, 1, 2, 3, 4]);
+
+    // keep the internal `once` wrappers registered so the second event
+    // reaches the completion handler again and exercises the guard
+    vitest.spyOn(read, 'removeListener').mockImplementation(() => read);
+
+    const promise = waitForStreamComplete(read);
+
+    read.emit('end');
+    read.emit('finish');
+
+    await expect(promise).resolves.toBe(read);
   });
 
   it('should handle correctly if events emit end and finish', async () => {

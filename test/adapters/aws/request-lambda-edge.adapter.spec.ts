@@ -233,6 +233,7 @@ describe(RequestLambdaEdgeAdapter.name, () => {
             Test: 'value',
             Single: ['2'],
             Test2: ['1', '2'],
+            Empty: '',
           },
           log: {} as ILogger,
           statusCode: 200,
@@ -247,6 +248,7 @@ describe(RequestLambdaEdgeAdapter.name, () => {
             { key: 'Test2', value: '1' },
             { key: 'Test2', value: '2' },
           ],
+          empty: [{ key: 'Empty', value: '' }],
         });
         expect(result.bodyEncoding).toEqual('base64');
         expect(result.status).toEqual('200');
