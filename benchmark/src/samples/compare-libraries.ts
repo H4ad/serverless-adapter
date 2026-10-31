@@ -1,4 +1,4 @@
-import { ServerlessAdapter } from '@h4ad/serverless-adapter/lib';
+import { ServerlessAdapter } from '@h4ad/serverless-adapter';
 import { ApiGatewayV1Adapter } from '@h4ad/serverless-adapter/lib/adapters/aws';
 import { DefaultHandler } from '@h4ad/serverless-adapter/lib/handlers/default';
 import { PromiseResolver } from '@h4ad/serverless-adapter/lib/resolvers/promise';

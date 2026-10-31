@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "swc src --out-dir dist",
+    "build": "swc src --out-dir dist --strip-leading-paths",
     "bench": "npm run build && node dist/samples/compare-libraries.js"
   },
   "repository": {
