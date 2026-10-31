@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Release Please
         uses: googleapis/release-please-action@v5
@@ -90,7 +90,7 @@ jobs:
           fi
 
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Use Node 24.x
         uses: actions/setup-node@v6
