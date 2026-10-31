@@ -2,13 +2,14 @@ import { ServerResponse } from 'node:http';
 import type { Socket } from 'node:net';
 import type { Writable } from 'node:stream';
 import type { BothValueHeaders } from '../@types';
-import { type ILogger, parseHeaders } from '../core';
-import { ChunkedBodyDecoder, toBodyBuffer } from './body';
+import { type ILogger, NO_OP, parseHeaders } from '../core';
+import { ChunkedBodyDecoder, asBufferView, toBodyBuffer } from './body';
 import { createSocketShim } from './socket';
-import { getString } from './utils';
 
 const headerEnd = '\r\n\r\n';
-const endStatusSeparator = '\r\n';
+const statusLineEnd = '\r\n';
+const headerEndBuffer = Buffer.from(headerEnd);
+const statusLineEndBuffer = Buffer.from(statusLineEnd);
 
 /**
  * The properties to create a {@link ServerlessStreamResponse}.
@@ -61,6 +62,9 @@ export class ServerlessStreamResponse extends ServerResponse {
     // socket writes no longer matches the number of res.write calls. Decode the
     // framing by length instead of counting writes.
     const decoder = new ChunkedBodyDecoder();
+    // The default logger maps disabled levels to NO_OP. Checking once avoids
+    // building a closure object for every socket write of the response.
+    const debugEnabled = log.debug !== NO_OP;
 
     let internalWritable: Writable | null = null;
     let lastAccepted = true;
@@ -81,24 +85,42 @@ export class ServerlessStreamResponse extends ServerResponse {
       });
     };
 
-    const writeBody = (data: Buffer, cb?: () => void): boolean => {
-      const chunks = this.chunkedEncoding
-        ? decoder.push(data)
-        : data.length > 0
-          ? [data]
-          : [];
+    const writeBody = (data: unknown, cb?: () => void): boolean => {
+      let chunks: Buffer[];
 
-      for (const chunk of chunks)
-        lastAccepted = internalWritable!.write(chunk) as boolean;
+      if (this.chunkedEncoding) chunks = decoder.push(asBufferView(data));
+      else {
+        // Not chunked: the bytes go to the sink as they are, so they have to be
+        // copied before the caller can reuse the buffer it passed to write().
+        const buffer = toBodyBuffer(data);
+
+        chunks = buffer.length > 0 ? [buffer] : [];
+      }
+
+      const lastIndex = chunks.length - 1;
+
+      for (let index = 0; index < lastIndex; index++)
+        lastAccepted = internalWritable!.write(chunks[index]) as boolean;
 
       if (decoder.ended) {
+        if (lastIndex >= 0)
+          lastAccepted = internalWritable!.write(chunks[lastIndex]!) as boolean;
+
         if (typeof cb === 'function') internalWritable!.end(cb);
         else internalWritable!.end();
 
         return lastAccepted;
       }
 
-      if (typeof cb === 'function') process.nextTick(cb);
+      // Hand the socket write callback to the sink instead of scheduling a
+      // nextTick per write. A response made of many small writes otherwise
+      // queues one microtask per chunk for no reason.
+      if (lastIndex >= 0) {
+        lastAccepted = internalWritable!.write(
+          chunks[lastIndex]!,
+          cb,
+        ) as boolean;
+      } else if (typeof cb === 'function') process.nextTick(cb);
 
       if (!lastAccepted) forwardDrain();
 
@@ -106,36 +128,66 @@ export class ServerlessStreamResponse extends ServerResponse {
     };
 
     const socket = createSocketShim((data, encoding, cb) => {
-      log.debug('SERVERLESS_ADAPTER:RESPONSE_STREAM:DATA', () => ({
-        data: Buffer.isBuffer(data) ? data.toString('utf8') : data,
-        encoding,
-      }));
+      if (debugEnabled) {
+        log.debug('SERVERLESS_ADAPTER:RESPONSE_STREAM:DATA', () => ({
+          data: Buffer.isBuffer(data) ? data.toString('utf8') : data,
+          encoding,
+        }));
+      }
 
       if (!internalWritable) {
-        const stringData = getString(data);
-        const endStatusIndex = stringData.indexOf(endStatusSeparator);
-        const status = +stringData.slice(0, endStatusIndex).split(' ')[1];
-        const endHeaderIndex = stringData.indexOf(headerEnd);
+        // Parse the header block as it arrived. Turning a buffer into a string
+        // would decode (and then re-encode) the first body chunk too, while a
+        // string can be searched directly without any conversion.
+        let endStatusIndex: number;
+        let endHeaderIndex: number;
+        let statusLine: string;
+        let headerData: string;
+        let dataAfterHeaders: string | Buffer;
 
-        const headerData = stringData.slice(endStatusIndex + 2, endHeaderIndex);
+        if (typeof data === 'string') {
+          endStatusIndex = data.indexOf(statusLineEnd);
+          endHeaderIndex = data.indexOf(headerEnd);
+          statusLine = data.slice(0, endStatusIndex);
+          headerData = data.slice(
+            endStatusIndex + statusLineEnd.length,
+            endHeaderIndex,
+          );
+          dataAfterHeaders = data.substring(endHeaderIndex + headerEnd.length);
+        } else {
+          const buffer = asBufferView(data);
+
+          endStatusIndex = buffer.indexOf(statusLineEndBuffer);
+          endHeaderIndex = buffer.indexOf(headerEndBuffer);
+          statusLine = buffer.toString('latin1', 0, endStatusIndex);
+          headerData = buffer.toString(
+            'utf8',
+            endStatusIndex + statusLineEndBuffer.length,
+            endHeaderIndex,
+          );
+          dataAfterHeaders = buffer.subarray(
+            endHeaderIndex + headerEndBuffer.length,
+          );
+        }
+
+        const status = +statusLine.split(' ')[1]!;
         const headers = parseHeaders(headerData);
-        log.debug(
-          'SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS',
-          () => ({
-            headers,
-          }),
-        );
+
+        if (debugEnabled) {
+          log.debug(
+            'SERVERLESS_ADAPTER:RESPONSE_STREAM:FRAMEWORK_HEADERS',
+            () => ({
+              headers,
+            }),
+          );
+        }
 
         internalWritable = onReceiveHeaders(status, headers);
-
-        // Node prefixes the headers to the first body write, which includes the
-        // first chunk size when the response is chunked.
-        const dataAfterHeaders = stringData.substring(endHeaderIndex + 4);
 
         // Responses without a body (eg. 204) write only the headers and never
         // write again, so the callback has to be called here or the response
         // never emits `finish`.
-        if (dataAfterHeaders === '') {
+        if (dataAfterHeaders.length === 0) {
           if (typeof cb === 'function') process.nextTick(cb);
 
           return true;
@@ -143,10 +195,10 @@ export class ServerlessStreamResponse extends ServerResponse {
 
         // An empty chunked body arrives as 0\r\n\r\n right after the headers,
         // and the decoder ends the writable.
-        return writeBody(Buffer.from(dataAfterHeaders), cb);
+        return writeBody(dataAfterHeaders, cb);
       }
 
-      return writeBody(toBodyBuffer(data), cb);
+      return writeBody(data, cb);
     });
 
     this.assignSocket(socket as unknown as Socket);

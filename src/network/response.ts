@@ -1,17 +1,22 @@
 // ATTRIBUTION: https://github.com/dougmoscrop/serverless-http
 import { IncomingMessage, ServerResponse } from 'node:http';
 import type { Socket } from 'node:net';
-import { ChunkedBodyDecoder, toBodyBuffer } from './body';
+import { ChunkedBodyDecoder, asBufferView, toBodyBuffer } from './body';
 import { createSocketShim } from './socket';
-import { getString } from './utils';
 
-const headerEnd = '\r\n\r\n';
+const headerEnd = Buffer.from('\r\n\r\n');
+const headerEndString = '\r\n\r\n';
 
 const BODY = Symbol('Response body');
 const HEADERS = Symbol('Response headers');
 
 function addData(stream: ServerlessResponse, data: unknown) {
   stream[BODY].push(toBodyBuffer(data));
+}
+
+// The decoder allocates its output, so it can be stored without another copy.
+function addOwnedData(stream: ServerlessResponse, data: Buffer) {
+  stream[BODY].push(data);
 }
 
 /**
@@ -58,22 +63,33 @@ export class ServerlessResponse extends ServerResponse {
         return;
       }
 
-      for (const chunk of decoder.push(toBodyBuffer(data)))
-        addData(this, chunk);
+      for (const chunk of decoder.push(asBufferView(data)))
+        addOwnedData(this, chunk);
     };
 
     const socket = createSocketShim((data, _encoding, cb) => {
       if (this._header === '' || this._wroteHeader) writeBody(data);
       else {
         // Node prefixes the headers to the first body write, which includes the
-        // first chunk size when the response is chunked.
-        const string = getString(data);
-        const index = string.indexOf(headerEnd);
+        // first chunk size when the response is chunked. Find the boundary in
+        // the bytes instead of converting the whole write to a string.
+        let remainder: string | Buffer | null = null;
 
-        if (index !== -1) {
-          const remainder = string.slice(index + headerEnd.length);
+        if (typeof data === 'string') {
+          const index = data.indexOf(headerEndString);
 
-          if (remainder) writeBody(remainder);
+          if (index !== -1)
+            remainder = data.slice(index + headerEndString.length);
+        } else {
+          const buffer = asBufferView(data);
+          const index = buffer.indexOf(headerEnd);
+
+          if (index !== -1)
+            remainder = buffer.subarray(index + headerEnd.length);
+        }
+
+        if (remainder !== null) {
+          if (remainder.length > 0) writeBody(remainder);
 
           this._wroteHeader = true;
         }
@@ -110,6 +126,10 @@ export class ServerlessResponse extends ServerResponse {
   }
 
   static body(res: ServerlessResponse): Buffer {
+    // The decoder hands over buffers it owns, and a chunk is never written to
+    // twice, so a single collected chunk can be returned without another copy.
+    if (res[BODY].length === 1) return res[BODY][0];
+
     return Buffer.concat(res[BODY]);
   }
 
