@@ -32,17 +32,39 @@ const eventV1ApiGateway = createApiGatewayV1('GET', '/test');
 
 const suite = new benchmark.Suite();
 
+// benchmark 2.x runs a suite synchronously unless the deferred flag is set, and
+// all three handlers below only settle on a later tick. Without the flag the
+// promises pile up for the whole sampling window and the process runs out of
+// heap, so every entry reports back through the deferred object instead.
 suite.add(
   '@h4ad/serverless-adapter',
-  async () => await handler(eventV1ApiGateway, context, callback),
+  {
+    defer: true,
+    fn: deferred =>
+      Promise.resolve(handler(eventV1ApiGateway, context, callback))
+        .then(() => deferred.resolve())
+        .catch(deferred.reject),
+  },
 );
 suite.add(
   '@vendia/serverless-express',
-  async () => await vendiaHandler(eventV1ApiGateway, context, callback),
+  {
+    defer: true,
+    fn: deferred =>
+      Promise.resolve(vendiaHandler(eventV1ApiGateway, context, callback))
+        .then(() => deferred.resolve())
+        .catch(deferred.reject),
+  },
 );
 suite.add(
   'serverless-http',
-  async () => await serverlessHttpHandler(eventV1ApiGateway, context),
+  {
+    defer: true,
+    fn: deferred =>
+      Promise.resolve(serverlessHttpHandler(eventV1ApiGateway, context))
+        .then(() => deferred.resolve())
+        .catch(deferred.reject),
+  },
 );
 
 suite
@@ -52,6 +74,4 @@ suite
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
   })
-  .run({
-    async: false,
-  });
+  .run();
