@@ -28,6 +28,12 @@
     "@docusaurus/module-type-aliases": "3.10.2",
     "typescript": "7.0.2"
   },
+  "overrides": {
+    "minimatch": "^11.0.3",
+    "serialize-javascript": "^7.1.4",
+    "tinypool": "^2.2.0",
+    "uuid": "^14.0.3"
+  },
   "browserslist": {
     "production": [
       ">0.5%",
