@@ -1,7 +1,4 @@
 {
-  "env": {
-    "targets": "node >= 18"
-  },
   "module": {
     "type": "commonjs",
     "strict": true,

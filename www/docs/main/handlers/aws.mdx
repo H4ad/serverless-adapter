@@ -55,10 +55,10 @@ But when you enable the `RESPONSE_STREAM` mode within your Lambda settings, the 
 
 To support this behavior, we need to change three things:
 
-- Instead of `DefaultHandler`, you should use [AwsStreamHandler](../../api/handlers/AwsStreamHandler).
-- Instead of `PromiseResolver` or whatever, you should use [DummyResolver](../../api/resolvers/DummyResolver).
+- Instead of `DefaultHandler`, you should use [AwsStreamHandler](../../api/Handlers/AwsStreamHandler).
+- Instead of `PromiseResolver` or whatever, you should use [DummyResolver](../../api/Resolvers/DummyResolver).
   - Resolvers are not used in this mode, so you can just use this dummy version.
-- Add the adapter [ApiGatewayV2Adapter](../../api/adapters/aws/ApiGatewayV2Adapter).
+- Add the adapter [ApiGatewayV2Adapter](../../api/Adapters/AWS/ApiGatewayV2Adapter).
   - It is required to handle function URLs, but you can add more if you wish.
 
 ```ts title="index.ts"
@@ -85,7 +85,7 @@ As you see, we only have to change the `setHandler`, `setResolver` and `setAdapt
 
 ### My execution is taking too long
 
-Well, maybe is caused because your event loop is not empty when the request finishes, in this case, you can set `callbackWaitsForEmptyEventLoop=false` on [AwsStreamHandler](../../api/handlers/AwsStreamHandler).
+Well, maybe is caused because your event loop is not empty when the request finishes, in this case, you can set `callbackWaitsForEmptyEventLoop=false` on [AwsStreamHandler](../../api/Handlers/AwsStreamHandler).
 
 
 ```ts title="index.ts"

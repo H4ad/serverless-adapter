@@ -3,7 +3,7 @@ import CodeBlock from '@theme/CodeBlock';
 import React from 'react';
 import styles from './styles.module.css';
 
-export default function HowToStart(): JSX.Element {
+export default function HowToStart(): React.JSX.Element {
   return (
     <section className={styles.howto}>
       <div className={styles.howtoContainer}>

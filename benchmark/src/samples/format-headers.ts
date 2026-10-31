@@ -1,5 +1,5 @@
-import benchmark from 'benchmark';
-import { BothValueHeaders } from '../../../src';
+import { Suite } from 'bench-node';
+import { BothValueHeaders } from '@h4ad/serverless-adapter';
 import { createApiGatewayV1 } from '../events';
 
 function getFlattenedHeadersMap(
@@ -57,25 +57,24 @@ function getFlattenedHeadersV3(
 
 const eventV1ApiGateway = createApiGatewayV1('GET', '/test');
 
-const suite = new benchmark.Suite();
+const suite = new Suite();
 
-suite.add('getFlattenedHeadersMap', () =>
-  getFlattenedHeadersMap(eventV1ApiGateway.headers),
-);
-suite.add('getFlattenedHeadersV2', () =>
-  getFlattenedHeadersV2(eventV1ApiGateway.headers),
-);
-suite.add('getFlattenedHeadersV3', () =>
-  getFlattenedHeadersV3(eventV1ApiGateway.headers),
-);
+let result: Record<string, string>;
+
+suite.add('getFlattenedHeadersMap', () => {
+  result = getFlattenedHeadersMap(eventV1ApiGateway.headers);
+});
+suite.add('getFlattenedHeadersV2', () => {
+  result = getFlattenedHeadersV2(eventV1ApiGateway.headers);
+});
+suite.add('getFlattenedHeadersV3', () => {
+  result = getFlattenedHeadersV3(eventV1ApiGateway.headers);
+});
 
 suite
-  .on('cycle', function (event) {
-    console.log(String(event.target));
-  })
-  .on('complete', function () {
-    console.log('Fastest is ' + this.filter('fastest').map('name'));
-  })
-  .run({
-    async: false,
+  .run()
+  .then(() => console.log(`last result had ${Object.keys(result).length} keys`))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
   });
