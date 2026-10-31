@@ -116,6 +116,36 @@ describe('ServerlessResponse', () => {
     }
   });
 
+  it('should ignore a body write without a header terminator', () => {
+    const response = new ServerlessResponse({
+      method: 'GET',
+    });
+
+    // a buffer written before the header block is complete cannot be split
+    // from the headers, so it is ignored until the terminator arrives
+    (response as any)._header = 'HTTP/1.1 200 OK\r\n';
+
+    expect(() =>
+      (response as any).socket.write(Buffer.from('body')),
+    ).not.toThrow();
+    expect((response as any)._wroteHeader).toBeUndefined();
+  });
+
+  it('should split the header from a body written as a buffer', () => {
+    const response = new ServerlessResponse({
+      method: 'GET',
+    });
+
+    (response as any)._header = 'HTTP/1.1 200 OK\r\n';
+
+    (response as any).socket.write(
+      Buffer.from('HTTP/1.1 200 OK\r\nx-test: yes\r\n\r\nbody'),
+    );
+
+    expect((response as any)._wroteHeader).toBe(true);
+    expect(ServerlessResponse.body(response).toString()).toBe('body');
+  });
+
   it('should can pipe response and return correct data', async () => {
     const options: [
       value: string | Buffer | Uint8Array,

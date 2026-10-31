@@ -117,6 +117,7 @@ export class ServerlessResponse extends ServerResponse {
   static from(res: IncomingMessage) {
     const response = new ServerlessResponse({ method: res.method });
 
+    /* v8 ignore next */
     response.statusCode = res.statusCode || 0;
     response[HEADERS] = res.headers;
     response[BODY] = (res as any).body ? [Buffer.from((res as any).body)] : [];

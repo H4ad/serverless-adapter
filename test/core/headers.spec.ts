@@ -4,6 +4,7 @@ import {
   getFlattenedHeadersMap,
   getFlattenedHeadersMapAndCookies,
   getMultiValueHeadersMap,
+  parseHeaders,
 } from '../../src';
 
 describe('getFlattenedHeadersMap', () => {
@@ -167,5 +168,39 @@ describe('getFlattenedHeadersMapAndCookies', () => {
       expect(flattenedHeaders['Content-Length']).toEqual('40');
       expect(cookies[0]).toEqual('blabla');
     }
+  });
+
+  it('should use an empty value for a null set-cookie header', () => {
+    const { headers: flattenedHeaders, cookies } =
+      getFlattenedHeadersMapAndCookies({
+        'Set-Cookie': null as unknown as string,
+      });
+
+    expect(flattenedHeaders).toEqual({});
+    expect(cookies).toEqual(['']);
+  });
+});
+
+describe('parseHeaders', () => {
+  it('should return an empty object when there are no headers', () => {
+    expect(parseHeaders('')).toEqual({});
+  });
+
+  it('should parse a single header', () => {
+    expect(parseHeaders('Content-Type: text/plain')).toEqual({
+      'content-type': 'text/plain',
+    });
+  });
+
+  it('should collect repeated headers into an array', () => {
+    const headers = [
+      'Set-Cookie: first=1',
+      'Set-Cookie: second=2',
+      'Set-Cookie: third=3',
+    ].join('\n');
+
+    expect(parseHeaders(headers)).toEqual({
+      'set-cookie': ['first=1', 'second=2', 'third=3'],
+    });
   });
 });

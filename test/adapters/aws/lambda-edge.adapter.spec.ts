@@ -288,6 +288,28 @@ describe(LambdaEdgeAdapter.name, () => {
       }
     });
 
+    it('should map an empty header value to an empty string with option "shouldUseHeadersFromFramework"', () => {
+      const event = createLambdaEdgeViewerEvent('GET', '/potato.png');
+      const body = JSON.stringify(event.Records[0].cf.request);
+
+      const customAdapter = new LambdaEdgeAdapter({
+        shouldUseHeadersFromFramework: true,
+      });
+
+      const result = customAdapter.getResponse({
+        event,
+        body,
+        headers: { batata: '' },
+        log: {} as ILogger,
+        statusCode: 200,
+        isBase64Encoded: false,
+      });
+
+      expect(result!.headers!['batata']).toStrictEqual([
+        { key: 'batata', value: '' },
+      ]);
+    });
+
     it('should return the correct mapping for the response with option "disallowedHeaders"', () => {
       const disallowedHeadersList =
         DEFAULT_LAMBDA_EDGE_DISALLOWED_HEADERS.filter(

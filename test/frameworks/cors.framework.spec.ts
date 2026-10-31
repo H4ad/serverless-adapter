@@ -220,6 +220,24 @@ async function handleRestExpects<TApp>(
   else expect(spySendRequest).not.toHaveBeenCalled();
 }
 
+describe('formatHeaderValuesAddedByCorsPackage', () => {
+  it('should join array values of headers added by the cors package', () => {
+    const framework = new CorsFramework(new ExpressFramework());
+    const response = createResponse('GET');
+
+    response.setHeader('Access-Control-Allow-Origin', [
+      'http://localhost:3000',
+      'http://localhost:4000',
+    ]);
+
+    (framework as any).formatHeaderValuesAddedByCorsPackage(response);
+
+    expect(response.getHeader('access-control-allow-origin')).toBe(
+      'http://localhost:3000,http://localhost:4000',
+    );
+  });
+});
+
 describe('CorsFramework', () => {
   describe('express', () => {
     for (const corsTest of corsOptions) {

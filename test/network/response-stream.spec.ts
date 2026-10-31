@@ -183,4 +183,84 @@ describe('ServerlessStreamResponse', () => {
 
     await drained;
   });
+
+  it('should forward the body when the response is not chunked', async () => {
+    const { response, body } = createResponse();
+
+    // only a response with a body restriction such as 204 turns the flag off
+    // by itself, and Node drops the body in that case
+    response.flushHeaders();
+    (response as any).chunkedEncoding = false;
+
+    (response as any).socket.write(Buffer.alloc(0));
+    response.write('hello');
+    response.end();
+
+    await once(response, 'finish');
+
+    expect(body()).toBe('hello');
+  });
+
+  describe('socket writes', () => {
+    function createSocketResponse() {
+      const received: Buffer[] = [];
+
+      const sink = new Writable({
+        write(chunk, _encoding, callback) {
+          received.push(Buffer.from(chunk));
+          callback();
+        },
+      });
+
+      const onReceiveHeaders = vitest.fn(() => sink);
+
+      const response = new ServerlessStreamResponse({
+        method: 'GET',
+        onReceiveHeaders,
+        log,
+      });
+
+      return {
+        socket: (response as any).socket,
+        onReceiveHeaders,
+        sink,
+        body: () => Buffer.concat(received).toString(),
+      };
+    }
+
+    it('should write every chunk completed by one socket write', () => {
+      const { socket, body } = createSocketResponse();
+
+      socket.write('HTTP/1.1 200 OK\r\n\r\n');
+      socket.write(Buffer.from('5\r\nhello\r\n5\r\nworld\r\n0\r\n\r\n'));
+
+      expect(body()).toBe('helloworld');
+    });
+
+    it('should end the sink when the last chunk arrives on its own', async () => {
+      const { socket, sink, body } = createSocketResponse();
+
+      socket.write('HTTP/1.1 200 OK\r\n\r\n');
+      socket.write(Buffer.from('5\r\nhello\r\n'));
+      socket.write(Buffer.from('0\r\n\r\n'));
+
+      await once(sink, 'finish');
+
+      expect(body()).toBe('hello');
+    });
+
+    it('should parse a header block written as a buffer', () => {
+      const { socket, onReceiveHeaders, body } = createSocketResponse();
+
+      socket.write(
+        Buffer.from('HTTP/1.1 204 No Content\r\nx-test: yes\r\n\r\n'),
+      );
+
+      expect(onReceiveHeaders).toHaveBeenCalledWith(204, { 'x-test': 'yes' });
+
+      socket.write(Buffer.from('0\r\n\r\n'));
+
+      expect(body()).toBe('');
+    });
+  });
 });

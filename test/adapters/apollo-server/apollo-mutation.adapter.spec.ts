@@ -260,6 +260,33 @@ describe('integration: should be able to convert', () => {
     );
     expect(sqsAdapterSpy).toHaveBeenNthCalledWith(1, props);
   });
+
+  it('should use an empty event variable when the base adapter request has no body', () => {
+    const eventData = createSQSEvent();
+    const adapter = new SQSAdapter();
+
+    vitest.spyOn(adapter, 'getRequest').mockReturnValueOnce({
+      method: 'POST',
+      path: '/',
+      headers: {},
+      remoteAddress: '',
+    });
+
+    const mutationAdapter = new ApolloServerMutationAdapter(adapter, {
+      mutationName: 'aws',
+    });
+
+    const request = mutationAdapter.getRequest(
+      eventData,
+      null,
+      createDefaultLogger(),
+    );
+
+    expect(JSON.parse(request.body!.toString())).toHaveProperty(
+      'variables.event',
+      '',
+    );
+  });
 });
 
 it('getAdapterName: should mutate the name of adapter', () => {

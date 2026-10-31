@@ -109,4 +109,52 @@ describe('ChunkedBodyDecoder', () => {
       'invalid chunk size',
     );
   });
+
+  it('should skip leading whitespace and read lowercase hex sizes', () => {
+    const raw = Buffer.from(' \ta\r\n0123456789\r\n');
+
+    expect(decode(raw, endChunk)).toEqual({ body: '0123456789', ended: true });
+  });
+
+  it('should read uppercase hex sizes', () => {
+    const raw = Buffer.from('A\r\n0123456789\r\n');
+
+    expect(decode(raw, endChunk)).toEqual({ body: '0123456789', ended: true });
+  });
+
+  it('should throw when the size starts with a non hex character', () => {
+    const decoder = new ChunkedBodyDecoder();
+
+    expect(() => decoder.push(Buffer.from('-\r\n'))).toThrowError(
+      'invalid chunk size',
+    );
+  });
+
+  it('should assemble a chunk larger than the direct allocation limit', () => {
+    const size = 16 * 1024 * 1024 + 1;
+    const payload = Buffer.alloc(size, 0x61);
+    const header = Buffer.from(`${size.toString(16)}\r\n`);
+    const crlf = Buffer.from(CRLF);
+    const decoder = new ChunkedBodyDecoder();
+
+    // one big chunk delivered in a single write: a single allocated part
+    const single = decoder.push(Buffer.concat([header, payload, crlf]));
+
+    expect(Buffer.concat(single)).toHaveLength(size);
+
+    // one big chunk delivered across writes: the parts are joined at the end
+    expect(decoder.push(header)).toEqual([]);
+
+    const half = Math.floor(size / 2);
+
+    expect(decoder.push(payload.subarray(0, half))).toEqual([]);
+
+    const rest = decoder.push(
+      Buffer.concat([payload.subarray(half), crlf, endChunk]),
+    );
+
+    expect(Buffer.concat(rest)).toHaveLength(size);
+    expect(rest).toHaveLength(1);
+    expect(decoder.ended).toBe(true);
+  });
 });

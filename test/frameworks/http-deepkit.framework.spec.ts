@@ -44,6 +44,33 @@ it('should convert correctly when the value is not an buffer', async () => {
   expect(resultBody.toString()).toEqual('test');
 });
 
+it('should convert correctly when the value is a buffer', async () => {
+  const framework = new HttpDeepkitFramework();
+  const kernel: Partial<HttpKernel> = {
+    handleRequest: vitest.fn((request, response) => {
+      request.pipe(response);
+
+      return void 0 as any;
+    }),
+  };
+
+  const request = new ServerlessRequest({
+    body: Buffer.from('test'),
+    url: '/test',
+    method: 'POST',
+    headers: {},
+  });
+  const response = new ServerlessResponse({
+    method: 'POST',
+  });
+
+  framework.sendRequest(kernel as HttpKernel, request, response);
+
+  await waitForStreamComplete(response);
+
+  expect(ServerlessResponse.body(response).toString()).toEqual('test');
+});
+
 describe('deepkit', () => {
   it('should return valid json on get request', async () => {
     const app = new App({
