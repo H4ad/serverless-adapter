@@ -245,12 +245,18 @@ jobs:
           fi
 
       # A tag from before the pnpm migration has no pnpm lockfile to freeze
-      # against, so that branch keeps installing the way it already did.
+      # against, so that branch keeps installing the way it already did. The
+      # package manager that installed the tree also runs the scripts: pnpm 12
+      # reinstalls before `pnpm run` when node_modules was laid out by npm, and
+      # that install resolves from package.json instead of the npm lockfile.
       - name: Install Deps
+        id: deps
         run: |
           if [ -f pnpm-lock.yaml ]; then
+            echo "pm=pnpm" >> "$GITHUB_OUTPUT"
             pnpm install --frozen-lockfile
           else
+            echo "pm=npm" >> "$GITHUB_OUTPUT"
             npm ci
           fi
 
@@ -284,10 +290,10 @@ jobs:
         run: pnpm version "${VERSION}" --no-git-tag-version
 
       - name: Build
-        run: pnpm build
+        run: ${{ steps.deps.outputs.pm }} run build
 
       - name: Test
-        run: pnpm test
+        run: ${{ steps.deps.outputs.pm }} run test
 
       - name: NPM Publish
         if: ${{ !inputs.dry_run && steps.npm_version.outputs.skip != 'true' }}
