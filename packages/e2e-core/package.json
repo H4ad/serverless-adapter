@@ -1,0 +1,16 @@
+{
+  "name": "@e2e/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "express": "4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.21"
+  }
+}

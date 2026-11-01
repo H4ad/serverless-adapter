@@ -17,3 +17,8 @@ allowBuilds:
 # the lockfile stays a single document. package.json still pins the version for
 # pnpm/action-setup, and no config dependencies are in use here.
 pmOnFail: ignore
+
+# The e2e harness lives in its own private packages and is installed with the
+# library, so one `pnpm install` at the root covers a run.
+packages:
+  - packages/*

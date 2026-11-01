@@ -16,14 +16,21 @@
     "build:docs": "tsc -p tsconfig.doc.json",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
-    "lint": "oxlint --fix ./src/ ./test/ && oxfmt --write ./src/ ./test/",
+    "lint": "oxlint --fix ./src/ ./test/ ./packages/ && oxfmt --write ./src/ ./test/ ./packages/",
     "docs:generate": "pnpm docs:generate:parsing && pnpm docs:generate:markdown && pnpm docs:generate:api-pages",
     "docs:generate:parsing": "pnpm build:docs && tsx scripts/parse-docs.ts",
     "docs:generate:markdown": "tsx ./scripts/generate-markdown.ts",
     "docs:generate:api-pages": "tsx ./scripts/generate-api-pages.ts",
     "test:watch": "vitest --watch",
     "test": "vitest --run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "e2e:local": "tsx packages/e2e-cli/src/cli.ts local",
+    "e2e:up": "tsx packages/e2e-cli/src/cli.ts up",
+    "e2e:test": "tsx packages/e2e-cli/src/cli.ts test",
+    "e2e:down": "tsx packages/e2e-cli/src/cli.ts down",
+    "e2e:leftovers": "tsx packages/e2e-cli/src/cli.ts leftovers",
+    "e2e:run": "tsx packages/e2e-cli/src/cli.ts run",
+    "e2e:reap": "tsx packages/e2e-cli/src/cli.ts reap"
   },
   "repository": {
     "type": "git",

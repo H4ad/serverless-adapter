@@ -120,6 +120,19 @@ dist
 # Compiled code
 lib/
 
+# e2e runner state and build output
+packages/*/.state/
+packages/*/.terraform/
+packages/*/terraform.tfstate*
+packages/*/dist/
+packages/*/build/
+
+# `lib/` above is for compiled output, and it also swallows the e2e harness
+# helpers under packages/e2e-core/src/lib. Re-include them explicitly so a new
+# helper is not silently untracked.
+!packages/e2e-core/src/lib/
+!packages/e2e-core/src/lib/**
+
 # IDEs
 .idea
 
