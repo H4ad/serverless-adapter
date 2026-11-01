@@ -1,0 +1,19 @@
+# pnpm 12 runs a dependency's install script only when it is listed here.
+# esbuild installs its platform binary, protobufjs (pulled in by @apollo/server)
+# checks its codegen, and @firebase/util has an install hook. Everything else
+# stays blocked, and strictDepBuilds fails the install if a new one appears,
+# which is the signal to review it before it runs.
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@firebase/util': true
+  esbuild: true
+  protobufjs: true
+
+# pnpm 12 records its own resolved version in a leading lockfile document when
+# it enforces `packageManager`, which makes pnpm-lock.yaml a two-document YAML
+# stream. Single-document readers then see only pnpm's own binaries and report
+# no dependencies, so GitHub's dependency graph and Dependabot alerts go blind
+# (pnpm/pnpm#13805). `ignore` drops the check, so there is nothing to record and
+# the lockfile stays a single document. package.json still pins the version for
+# pnpm/action-setup, and no config dependencies are in use here.
+pmOnFail: ignore

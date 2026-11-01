@@ -47,23 +47,28 @@ jobs:
         uses: googleapis/release-please-action@v5
         id: release
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        if: ${{ steps.release.outputs.release_created }}
+
       - name: Use Node 24.x
         uses: actions/setup-node@v7
         if: ${{ steps.release.outputs.release_created }}
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
+          cache: pnpm
 
       - name: Install Deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Build
-        run: npm run build
+        run: pnpm build
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Test
-        run: npm run test
+        run: pnpm test
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Get Coverage Info
@@ -97,6 +102,14 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
+
+      # This job runs on a branch cut off a release tag, and every tag published
+      # before the pnpm migration carries npm's lockfile and no `packageManager`
+      # field. pnpm/action-setup cannot run there, because it refuses to guess a
+      # version, so pnpm is pinned here. On a newer tag pnpm follows the version
+      # package.json pins, and does so by itself.
+      - name: Setup pnpm
+        run: npm install -g pnpm@12
 
       # A prerelease is the safe default: a plain `4.4.1` satisfies `^4.4.0`, so it lands in
       # every consumer's next install, and dist-tags do not gate range resolution. Accepting
@@ -231,8 +244,21 @@ jobs:
             echo "on_dist_tag=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # A tag from before the pnpm migration has no pnpm lockfile to freeze
+      # against, so that branch keeps installing the way it already did. The
+      # package manager that installed the tree also runs the scripts: pnpm 12
+      # reinstalls before `pnpm run` when node_modules was laid out by npm, and
+      # that install resolves from package.json instead of the npm lockfile.
       - name: Install Deps
-        run: npm ci
+        id: deps
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "pm=pnpm" >> "$GITHUB_OUTPUT"
+            pnpm install --frozen-lockfile
+          else
+            echo "pm=npm" >> "$GITHUB_OUTPUT"
+            npm ci
+          fi
 
       # A dist-tag is what a bare `npm i` resolves through, so publishing a version below the one
       # already on it would silently downgrade everyone following that tag. Compare against the
@@ -256,17 +282,18 @@ jobs:
             exit 1
           fi
 
-      # Also rewrites package-lock.json, so the lock stays in sync with the version.
+      # The tree is never committed from here, so only package.json needs rewriting.
+      # pnpm does not record the project version in the lockfile.
       - name: Set package version
         env:
           VERSION: ${{ inputs.version }}
-        run: npm version "${VERSION}" --no-git-tag-version
+        run: pnpm version "${VERSION}" --no-git-tag-version
 
       - name: Build
-        run: npm run build
+        run: ${{ steps.deps.outputs.pm }} run build
 
       - name: Test
-        run: npm run test
+        run: ${{ steps.deps.outputs.pm }} run test
 
       - name: NPM Publish
         if: ${{ !inputs.dry_run && steps.npm_version.outputs.skip != 'true' }}

@@ -21,20 +21,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: '22.x'
+          cache: pnpm
 
       - name: Install Lib Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Docs Dependencies
         run: npm ci
         working-directory: www
 
       - name: Parse TSDoc Documentation
-        run: npm run docs:generate
+        run: pnpm docs:generate
 
       - name: Build Docs
         run: npm run build

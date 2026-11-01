@@ -51,7 +51,7 @@ windows:
       # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
       # synchronize: after
       panes:
-        - npm run test:watch
+        - pnpm test:watch
         - clear
   - docs:
       layout: tilled

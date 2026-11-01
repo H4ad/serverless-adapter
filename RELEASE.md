@@ -60,6 +60,10 @@ release instead of moving back to an old line.
    git commit -m "ci: add release workflow to hotfix branch"
    ```
 
+   A tag cut before the pnpm migration has npm's lockfile and no `packageManager` field. The
+   workflow handles that on its own: it pins pnpm for the job and installs with `npm ci` when
+   there is no `pnpm-lock.yaml`, so bringing only `release.yml` over is still enough.
+
 2. Apply the fix. Open a PR targeting `hotfix/4.4.1` so CI runs, or commit directly.
 
 3. Run **Actions → Release → Run workflow**:

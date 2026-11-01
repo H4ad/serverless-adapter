@@ -5,7 +5,8 @@ on:
   pull_request:
     paths:
       - 'src/**'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - 'package.json'
       - 'tsconfig.json'
       - 'tsconfig.*.json'
@@ -22,25 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Update NPM Version
-        run: npm i -g npm
+          cache: pnpm
 
       - name: Install Lib Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Build
-        run: npm run build
+        run: pnpm build
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
       - name: Get Coverage Info
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # https://github.com/codecov/codecov-action/releases/tag/v7.1.1
@@ -55,20 +57,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
           node-version: '22.x'
+          cache: pnpm
 
       - name: Install Lib Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Docs Dependencies
         run: npm ci
         working-directory: www
 
       - name: Parse TSDoc Documentation
-        run: npm run docs:generate
+        run: pnpm docs:generate
 
       - name: Build Docs
         run: npm run build

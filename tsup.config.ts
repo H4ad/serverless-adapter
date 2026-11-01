@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
 const adapters = [
@@ -75,7 +75,16 @@ const packageExports = {
   ...resolvers.reduce(createExportReducer('resolvers'), {}),
 };
 
-execSync(`npm pkg set exports='${JSON.stringify(packageExports)}' --json`);
+// The exports map is derived from the entry lists above, so rewrite package.json
+// before packing. Editing it here instead of shelling out to `npm pkg set` keeps
+// the build working with only pnpm installed.
+const packageJsonUrl = new URL('./package.json', import.meta.url);
+const packageJson = JSON.parse(readFileSync(packageJsonUrl, 'utf8'));
+
+writeFileSync(
+  packageJsonUrl,
+  `${JSON.stringify({ ...packageJson, exports: packageExports }, null, 2)}\n`,
+);
 
 export default defineConfig({
   outDir: './lib',
