@@ -1,0 +1,181 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Ephemeral Lambda@Edge smoke test for serverless-adapter.
+
+# Lambda@Edge is slow to deploy and slow to remove, so this stack is only used
+# by the manual, once-per-release workflow. One distribution, one association
+# and one function keep the waiting time and the teardown small.
+
+Parameters:
+  RunId:
+    Type: String
+    Description: Lowercase run id, used in every resource name.
+  ExpireAt:
+    Type: String
+    Description: Tag the reaper reads to decide when this run is abandoned.
+  CodeBucket:
+    Type: String
+  CodeKey:
+    Type: String
+  OriginBucketName:
+    Type: String
+
+Resources:
+  OriginBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref OriginBucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+        - Key: expire-at
+          Value: !Ref ExpireAt
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub 'sae2e-edge-${RunId}'
+        Description: Private origin for the e2e smoke
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref OriginBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${OriginBucketName}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+
+  EdgeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+        - Key: expire-at
+          Value: !Ref ExpireAt
+
+  OriginFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'sae2e-edge-origin-${RunId}'
+      Runtime: nodejs22.x
+      Handler: index.originRequest
+      Role: !GetAtt EdgeRole.Arn
+      MemorySize: 128
+      Timeout: 10
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref CodeKey
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+        - Key: expire-at
+          Value: !Ref ExpireAt
+
+  OriginVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref OriginFunction
+
+  OriginPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref OriginVersion
+      Principal: edgelambda.amazonaws.com
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'sae2e-edge-${RunId}'
+        PriceClass: PriceClass_100
+        HttpVersion: http2
+        IPV6Enabled: false
+        Origins:
+          - Id: origin
+            DomainName: !GetAtt OriginBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: origin
+          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+          OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eafa07d3
+          Compress: false
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !Ref OriginVersion
+              IncludeBody: true
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: none
+      Tags:
+        - Key: project
+          Value: serverless-adapter-e2e
+        - Key: run-id
+          Value: !Ref RunId
+        - Key: expire-at
+          Value: !Ref ExpireAt
+
+Outputs:
+  BaseUrl:
+    Value: !Sub 'https://${Distribution.DomainName}'
+  DistributionId:
+    Value: !Ref Distribution
+  OriginFunctionName:
+    Value: !Ref OriginFunction

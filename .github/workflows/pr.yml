@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'src/**'
+      - 'packages/**'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - 'package.json'
