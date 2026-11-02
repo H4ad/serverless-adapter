@@ -48,7 +48,7 @@ jobs:
         id: release
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Use Node 24.x
