@@ -22,7 +22,7 @@
   "dependencies": {
     "@h4ad/serverless-adapter": "file:../h4ad-serverless-adapter-0.0.0-development.tgz",
     "@swc/cli": "0.8.2",
-    "@swc/core": "1.16.21",
+    "@swc/core": "1.16.22",
     "@vendia/serverless-express": "4.12.6",
     "bench-node": "0.15.0",
     "express": "5.3.0",
